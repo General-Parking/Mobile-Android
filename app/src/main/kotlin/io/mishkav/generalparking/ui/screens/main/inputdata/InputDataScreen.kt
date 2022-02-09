@@ -1,4 +1,4 @@
-package io.mishkav.generalparking.ui.components
+package io.mishkav.generalparking.ui.screens.main.inputdata
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -6,8 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -15,20 +13,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.mishkav.generalparking.ui.theme.Typography
+import androidx.compose.ui.res.stringResource
+import io.mishkav.generalparking.R
+import io.mishkav.generalparking.ui.components.ScreenTextfield
+import io.mishkav.generalparking.ui.components.buttons.LowerButton
+import io.mishkav.generalparking.ui.components.lines.TextfieldUnderLine
+import io.mishkav.generalparking.ui.components.texts.ScreenBody
+import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-
-@Preview(showBackground = true)
 @Composable
 fun InputDataScreen() {
+
+    var textEdit4 by rememberSaveable { mutableStateOf("") }
+    var textEdit1 by rememberSaveable { mutableStateOf("") }
+    var textEdit2 by rememberSaveable { mutableStateOf("") }
+    var textEdit3 by rememberSaveable { mutableStateOf("") }
+    var textModel by rememberSaveable { mutableStateOf("") }
+    var textPhone by rememberSaveable { mutableStateOf("") }
+    var textCard by rememberSaveable { mutableStateOf("") }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -36,33 +45,14 @@ fun InputDataScreen() {
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 40.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        ) {
-            Text(
-                text = "Регистрация",
-                fontSize = 35.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(vertical = 12.dp)
-                    .align(Alignment.BottomCenter)
-            )
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        ) {
-            Text(
-                text = "Добавьте информацию, чтобы начать пользоваться приложением.",
-                fontSize = 18.sp,
-                style = TextStyle(textAlign = TextAlign.Center),
-                modifier = Modifier
-                    .align(Alignment.Center)
-            )
-        }
+        ScreenTitle(
+            text = stringResource(R.string.registration),
+            modifier = Modifier.weight(1f)
+        )
+        ScreenBody(
+            text = stringResource(R.string.input_data_text),
+            modifier = Modifier.weight(1f)
+        )
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -75,8 +65,8 @@ fun InputDataScreen() {
                     .width(300.dp)
                     .height(60.dp)
                     .background(
-                        Color(0xff000000),
-                        shape = RoundedCornerShape(25)
+                        Color.Black,
+                        shape = MaterialTheme.shapes.medium
                     )
                     .align(Alignment.CenterHorizontally)
             ) {
@@ -88,13 +78,10 @@ fun InputDataScreen() {
                         .width(200.dp)
                         .fillMaxHeight()
                         .background(
-                            Color(0xffffffff),
-                            shape = RoundedCornerShape(25)
+                            Color.White,
+                            shape = MaterialTheme.shapes.medium
                         )
                 ) {
-                    var textEdit1 by rememberSaveable { mutableStateOf("") }
-                    var textEdit2 by rememberSaveable { mutableStateOf("") }
-                    var textEdit3 by rememberSaveable { mutableStateOf("") }
 
                     TextField(
                         value = textEdit1,
@@ -103,7 +90,7 @@ fun InputDataScreen() {
                                 textEdit1 = it
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                        placeholder = { Text("А") },
+                        placeholder = { Text(stringResource(R.string.a)) },
                         textStyle = TextStyle(fontSize = 30.sp),
                         colors = TextFieldDefaults.textFieldColors(
                             focusedIndicatorColor = Color.Transparent,
@@ -123,7 +110,7 @@ fun InputDataScreen() {
                                 textEdit2 = it
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        placeholder = { Text("000") },
+                        placeholder = { Text(stringResource(R.string.zeros)) },
                         textStyle = TextStyle(fontSize = 40.sp),
                         colors = TextFieldDefaults.textFieldColors(
                             focusedIndicatorColor = Color.Transparent,
@@ -143,7 +130,7 @@ fun InputDataScreen() {
                                 textEdit3 = it
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                        placeholder = { Text("АА") },
+                        placeholder = { Text(stringResource(R.string.aa)) },
                         textStyle = TextStyle(fontSize = 30.sp),
                         colors = TextFieldDefaults.textFieldColors(
                             focusedIndicatorColor = Color.Transparent,
@@ -157,15 +144,14 @@ fun InputDataScreen() {
                             .fillMaxHeight()
                     )
                 }
-                var textEdit4 by rememberSaveable { mutableStateOf("") }
-                Row(
+                Column(
                     modifier = Modifier
                         .padding(vertical = 2.dp)
                         .width(90.dp)
                         .fillMaxHeight()
                         .background(
-                            Color(0xffffffff),
-                            shape = RoundedCornerShape(25)
+                            Color.White,
+                            shape = MaterialTheme.shapes.medium
                         )
                 ) {
                     TextField(
@@ -175,7 +161,7 @@ fun InputDataScreen() {
                                 textEdit4 = it
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        placeholder = { Text("000") },
+                        placeholder = { Text(stringResource(R.string.zeros)) },
                         textStyle = TextStyle(fontSize = 30.sp),
                         colors = TextFieldDefaults.textFieldColors(
                             focusedIndicatorColor = Color.Transparent,
@@ -188,22 +174,19 @@ fun InputDataScreen() {
                     )
 
                     Text(
-                        text = "RUS",
+                        text = stringResource(R.string.rus),
                         style = TextStyle(textAlign = TextAlign.Center)
                     )
                 }
             }
             Text(
-                text = "У меня другой формат номера",
-                style = TextStyle(textAlign = TextAlign.Center),
-                color = Color(0xff0000ff),
+                text = stringResource(R.string.other_number_format),
+                style = Typography.body1,
+                color = Color.Blue,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
             )
         }
-        var textModel by rememberSaveable { mutableStateOf("") }
-        var textPhone by rememberSaveable { mutableStateOf("") }
-        var textCard by rememberSaveable { mutableStateOf("") }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -213,114 +196,68 @@ fun InputDataScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                TextField(
+                ScreenTextfield(
                     value = textModel,
                     onValueChange = {
                         textModel = it
                     },
-                    label = { Text("Марка автомобиля") },
-                    textStyle = Typography.body1,
-                    colors = TextFieldDefaults.textFieldColors(
-                        focusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        backgroundColor = Color.Transparent,
-                    ),
-                    singleLine = true,
+                    keyboardType = KeyboardType.Text,
+                    label = stringResource(R.string.car_model),
+                    placeholder = "",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 1.dp)
                 )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(1.dp)
-                        .background(color = Color(0xaaaaaaaa))
-                )
+                TextfieldUnderLine()
             }
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                TextField(
+                ScreenTextfield(
                     value = textPhone,
-                    singleLine = true,
                     onValueChange = {
                         textPhone = it
                     },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                    label = { Text("Номер телефона") },
-                    textStyle = Typography.body1,
-                    colors = TextFieldDefaults.textFieldColors(
-                        focusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        backgroundColor = Color.Transparent,
-                    ),
+                    keyboardType = KeyboardType.Phone,
+                    label = stringResource(R.string.phone),
+                    placeholder = "",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 1.dp)
                 )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(1.dp)
-                        .background(color = Color(0xaaaaaaaa))
-                )
+                TextfieldUnderLine()
             }
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                TextField(
+                ScreenTextfield(
                     value = textCard,
                     onValueChange = {
                         textCard = it
                     },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    label = { Text("Банковская карта") },
-                    textStyle = Typography.body1,
-                    colors = TextFieldDefaults.textFieldColors(
-                        focusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        backgroundColor = Color.Transparent,
-                    ),
-                    singleLine = true,
+                    keyboardType = KeyboardType.Number,
+                    label = stringResource(R.string.card),
+                    placeholder = "",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 1.dp)
                 )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(1.dp)
-                        .background(color = Color(0xaaaaaaaa))
-                )
+                TextfieldUnderLine()
             }
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(3f)
-        ) {
-            Button(
-                onClick = { },
-                shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xffffcc00)),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
 
-
-            ) {
-                Text(
-                    text = "Создать аккаунт",
-                    color = Color(0xffffffff),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
+        LowerButton(
+            text = stringResource(R.string.create_account),
+            onClick = {},
+            modifier = Modifier.weight(3f)
+        )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewInputDataScreen() {
+    InputDataScreen()
 }
