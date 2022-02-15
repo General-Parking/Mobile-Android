@@ -5,13 +5,17 @@ import android.util.Log
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
+import io.mishkav.generalparking.dagger.AppComponent
+import io.mishkav.generalparking.dagger.DaggerAppComponent
 import timber.log.Timber
 
 class GeneralParkingApp: Application() {
 
     override fun onCreate() {
         super.onCreate()
+        // appComponent = DaggerAppComponent.builder()
 
+        //logging
         val formatStrategy = PrettyFormatStrategy
             .newBuilder()
             .showThreadInfo(true)
@@ -30,10 +34,13 @@ class GeneralParkingApp: Application() {
         }
     }
 
-
     private fun initTimberDebugTree() = object : Timber.DebugTree() {
         override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
             Logger.log(priority, "-$tag", message, t)
         }
+    }
+
+    companion object {
+        lateinit var appComponent: AppComponent
     }
 }
