@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">GeneralParking</string>
+    <string name="basic_error">Something wrong, check your connection</string>
 </resources>

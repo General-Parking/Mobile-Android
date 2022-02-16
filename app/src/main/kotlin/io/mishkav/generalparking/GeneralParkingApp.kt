@@ -9,11 +9,14 @@ import io.mishkav.generalparking.dagger.AppComponent
 import io.mishkav.generalparking.dagger.DaggerAppComponent
 import timber.log.Timber
 
-class GeneralParkingApp: Application() {
+class GeneralParkingApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        // appComponent = DaggerAppComponent.builder()
+        appComponent = DaggerAppComponent
+            .builder()
+            .context(this)
+            .build()
 
         //logging
         val formatStrategy = PrettyFormatStrategy

@@ -8,13 +8,13 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
 import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
-import timber.log.Timber
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.d("on Create")
         setContent {
             GeneralParkingTheme {
                 // A surface container using the 'background' color from the theme
@@ -28,7 +28,17 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting(name: String) {
-    Text(text = "Hello $name!")
+
+    val viewModel: AuthViewModel = viewModel()
+
+    viewModel.signIn("test", "123456")
+
+    Text(
+        text = "Hello world!\n" +
+        "${viewModel.signInResult.value.data}\n" +
+            "${viewModel.signInResult.value.message}\n"
+    )
+
 }
 
 @Preview(showBackground = true)
