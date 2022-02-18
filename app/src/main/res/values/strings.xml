@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">GeneralParking</string>
     <string name="basic_error">Something wrong, check your connection</string>
+
+    <string name="error_auth">"Bad authorization, please try one more time"</string>
+    <string name="error_registration">"Bad registration, maybe this email already exist"</string>
 </resources>
