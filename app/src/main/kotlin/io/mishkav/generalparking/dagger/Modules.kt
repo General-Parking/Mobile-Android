@@ -1,6 +1,8 @@
 package io.mishkav.generalparking.dagger
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -14,6 +16,10 @@ class FirebaseAuthModule {
     @Singleton
     @Provides
     fun provideFirebaseAuthInstance() = FirebaseAuth.getInstance()
+
+    @Singleton
+    @Provides
+    fun provideFirebaseDatabase() = Firebase.database.reference
 }
 
 @Module
