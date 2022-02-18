@@ -1,4 +1,4 @@
-package io.mishkav.generalparking.ui.screens.main.authorization
+package io.mishkav.generalparking.ui.screens.authorization
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue

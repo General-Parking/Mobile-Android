@@ -1,8 +1,7 @@
-package io.mishkav.generalparking.ui.screens.main.profile
+package io.mishkav.generalparking.ui.screens.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

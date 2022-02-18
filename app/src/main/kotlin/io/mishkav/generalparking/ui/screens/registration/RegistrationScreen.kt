@@ -1,4 +1,4 @@
-package io.mishkav.generalparking.ui.screens.main.registration
+package io.mishkav.generalparking.ui.screens.registration
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue

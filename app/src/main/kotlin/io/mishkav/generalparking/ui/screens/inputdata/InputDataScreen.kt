@@ -1,4 +1,4 @@
-package io.mishkav.generalparking.ui.screens.main.inputdata
+package io.mishkav.generalparking.ui.screens.inputdata
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -30,10 +30,10 @@ import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 @Composable
 fun InputDataScreen() {
 
-    var textEdit4 by rememberSaveable { mutableStateOf("") }
-    var textEdit1 by rememberSaveable { mutableStateOf("") }
-    var textEdit2 by rememberSaveable { mutableStateOf("") }
-    var textEdit3 by rememberSaveable { mutableStateOf("") }
+    var textRightZeros by rememberSaveable { mutableStateOf("") }
+    var textLeftSymbol by rememberSaveable { mutableStateOf("") }
+    var textLeftZeros by rememberSaveable { mutableStateOf("") }
+    var textRightSymbol by rememberSaveable { mutableStateOf("") }
     var textModel by rememberSaveable { mutableStateOf("") }
     var textPhone by rememberSaveable { mutableStateOf("") }
     var textCard by rememberSaveable { mutableStateOf("") }
@@ -84,10 +84,10 @@ fun InputDataScreen() {
                 ) {
 
                     TextField(
-                        value = textEdit1,
+                        value = textLeftSymbol,
                         onValueChange = {
                             if (it.length <= 1)
-                                textEdit1 = it
+                                textLeftSymbol = it
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                         placeholder = { Text(stringResource(R.string.a)) },
@@ -104,10 +104,10 @@ fun InputDataScreen() {
                             .fillMaxHeight()
                     )
                     TextField(
-                        value = textEdit2,
+                        value = textLeftZeros,
                         onValueChange = {
                             if (it.length <= 3)
-                                textEdit2 = it
+                                textLeftZeros = it
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         placeholder = { Text(stringResource(R.string.zeros)) },
@@ -124,10 +124,10 @@ fun InputDataScreen() {
                             .fillMaxHeight()
                     )
                     TextField(
-                        value = textEdit3,
+                        value = textRightSymbol,
                         onValueChange = {
                             if (it.length <= 2)
-                                textEdit3 = it
+                                textRightSymbol = it
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                         placeholder = { Text(stringResource(R.string.aa)) },
@@ -155,10 +155,10 @@ fun InputDataScreen() {
                         )
                 ) {
                     TextField(
-                        value = textEdit4,
+                        value = textRightZeros,
                         onValueChange = {
                             if (it.length <= 3)
-                                textEdit4 = it
+                                textRightZeros = it
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         placeholder = { Text(stringResource(R.string.zeros)) },
