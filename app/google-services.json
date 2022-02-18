@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "682056175289",
+    "firebase_url": "https://general-parking-test-default-rtdb.firebaseio.com",
+    "project_id": "general-parking-test",
+    "storage_bucket": "general-parking-test.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:682056175289:android:b734f5fb33d4f6ec4f5568",
+        "android_client_info": {
+          "package_name": "io.mishkav.generalparking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "682056175289-tum88ni51ds5lc2euj6fl03f3sjvsiq0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAP6zTAnAXRb5nB_vNCN3z-ti4RsHpnn4s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "682056175289-tum88ni51ds5lc2euj6fl03f3sjvsiq0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

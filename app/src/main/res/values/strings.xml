@@ -40,4 +40,5 @@
     <string name="profile_default_num_auto">A111AA111</string>
     <string name="profile_cards">Банковские карты:</string>
     <string name="exit">Выйти</string>
+    <string name="basic_error">Something wrong, check your connection</string>
 </resources>
