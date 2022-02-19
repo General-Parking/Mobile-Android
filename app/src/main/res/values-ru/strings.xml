@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">GeneralParking</string>
+    <string name="basic_error">Произожшла ошибка, проверьте подключение к интернету</string>
+
+    <string name="error_auth">Ошибка авторизации, попробуйте ещё раз</string>
+    <string name="error_registration">Ошибка регистрации, возможно такой аккаунт уже существует</string>
+</resources>

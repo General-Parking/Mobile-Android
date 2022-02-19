@@ -52,7 +52,7 @@ fun Greeting(name: String) {
         Text(
             text = "Hello world!\n" +
                 "sign in = ${signInResult}\n" +
-                "create user = ${createUserResult}"
+                "create user = ${createUserResult} = ${createUserResult.message}"
         )
 
         Button(

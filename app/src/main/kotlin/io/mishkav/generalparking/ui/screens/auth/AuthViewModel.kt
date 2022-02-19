@@ -26,14 +26,14 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
 
     fun signIn(email: String, password: String) = viewModelScope.launch {
         signInResult.value = LoadingResult()
-        signInResult.loadOrError(R.string.error_auth) {
+        signInResult.loadOrError() {
             authRepository.signInWithEmailAndPassword(email, password)
         }
     }
 
     fun createNewUser(email: String, password: String) = viewModelScope.launch {
         createNewUserResult.value = LoadingResult()
-        createNewUserResult.loadOrError(R.string.error_registration) {
+        createNewUserResult.loadOrError("R.string.error_registration") {
             authRepository.createUserWithEmailAndPassword(email, password)
         }
     }
