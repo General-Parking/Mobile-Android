@@ -1,11 +1,11 @@
 package io.mishkav.generalparking.ui.utils
 
+import io.mishkav.generalparking.R
 import timber.log.Timber
 
 inline fun <T> MutableResultFlow<T>.loadOrError(
-    message: String = "basic error",
+    message: Int = R.string.basic_error,
     isLoadingResult: Boolean = true,
-    isDefaultMessage: Boolean = false,
     load: () -> T?
 ) {
     if (isLoadingResult)
@@ -15,9 +15,6 @@ inline fun <T> MutableResultFlow<T>.loadOrError(
         SuccessResult(load())
     } catch (e: Exception) {
         Timber.wtf(e)
-        if (isDefaultMessage)
-            ErrorResult(message)
-        else
-            ErrorResult(e.message)
+        ErrorResult(message, e.message)
     }
 }

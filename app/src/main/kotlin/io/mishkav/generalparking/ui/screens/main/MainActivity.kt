@@ -1,5 +1,6 @@
 package io.mishkav.generalparking.ui.screens.main
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -52,7 +53,9 @@ fun Greeting(name: String) {
         Text(
             text = "Hello world!\n" +
                 "sign in = ${signInResult}\n" +
-                "create user = ${createUserResult} = ${createUserResult.message}"
+                "create user = ${createUserResult}\n" +
+                "${createUserResult.message?.let { stringResource(id = it) }}\n" +
+                "${createUserResult.exceptionMessage}"
         )
 
         Button(
