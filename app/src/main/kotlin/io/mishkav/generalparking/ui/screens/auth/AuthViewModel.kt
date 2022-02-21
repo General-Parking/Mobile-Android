@@ -6,7 +6,6 @@ import io.mishkav.generalparking.GeneralParkingApp
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.dagger.AppComponent
 import io.mishkav.generalparking.domain.repositories.IAuthRepository
-import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
 import io.mishkav.generalparking.ui.utils.loadOrError
 import kotlinx.coroutines.launch

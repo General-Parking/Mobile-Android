@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "io.mishkav.generalparking"
-        minSdk 27
+        minSdk 23
         targetSdk 32
         versionCode 1
         versionName "1.0"
@@ -28,8 +28,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility "1.8"
+        targetCompatibility "1.8"
     }
     kotlinOptions {
         jvmTarget = '1.8'
@@ -77,7 +77,7 @@ dependencies {
     // Logs
     implementation 'com.jakewharton.timber:timber:5.0.1'
     implementation 'com.orhanobut:logger:2.2.0'
-    
+
     // Json
     implementation 'com.google.code.gson:gson:2.8.7'
 
