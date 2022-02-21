@@ -11,13 +11,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
 import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
-import io.mishkav.generalparking.ui.utils.ErrorResult
-import io.mishkav.generalparking.ui.utils.LoadingResult
-import io.mishkav.generalparking.ui.utils.SuccessResult
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,23 +36,32 @@ fun Greeting(name: String) {
 
     val viewModel: AuthViewModel = viewModel()
 
-    val result by viewModel.signInResult.collectAsState()
+    val signInResult by viewModel.signInResult.collectAsState()
+    val createUserResult by viewModel.createNewUserResult.collectAsState()
 
-    val text: String = when (result) {
-        is SuccessResult -> "success"
-        is ErrorResult -> "error"
-        is LoadingResult -> "loading"
-        else -> "wtf"
-    }
+    val email = "mvorozhtsov@bk.ru"
+    val password = "123456"
+
     Column {
         Text(
             text = "Hello world!\n" +
-                    text
+                "sign in = ${signInResult}\n" +
+                "create user = ${createUserResult}\n" +
+                "${createUserResult.message?.let { stringResource(id = it) }}\n" +
+                "${createUserResult.exceptionMessage}"
         )
 
         Button(
             onClick = {
-                viewModel.signIn("test@test.test", "123456")
+                viewModel.createNewUser(email, password)
+            }
+        ) {
+            Text("Create")
+        }
+
+        Button(
+            onClick = {
+                viewModel.signIn(email, password)
             }
         ) {
             Text("Auth")
