@@ -16,14 +16,14 @@ fun ScreenTextfield(
     value: String,
     onValueChange: (String) -> Unit,
     keyboardType: KeyboardType,
-    label: String,
-    placeholder: String
+    label: @Composable (() -> Unit)? = null,
+    placeholder: @Composable (() -> Unit)? = null
 ) = TextField(
     value = value,
     onValueChange = onValueChange,
     keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-    label = { Text(label) },
-    placeholder = { Text(placeholder) },
+    label = label,
+    placeholder = placeholder,
     singleLine = true,
     textStyle = Typography.body1,
     colors = TextFieldDefaults.textFieldColors(

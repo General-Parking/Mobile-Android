@@ -2,6 +2,9 @@ package io.mishkav.generalparking.ui.screens.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -12,14 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.ScreenTextfield
 import io.mishkav.generalparking.ui.components.lines.TextfieldUnderLine
@@ -41,16 +41,28 @@ fun ProfileScreen() {
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 24.dp)
+            .padding(
+                horizontal = dimensionResource(R.dimen.main_hor_padding),
+                vertical = dimensionResource(R.dimen.main_vert_padding)
+            )
     ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(7f)
+                .verticalScroll(rememberScrollState())
+        ) {
         Image(
             painter = painterResource(R.drawable.ic_avatar),
             contentDescription = "",
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .width(100.dp)
-                .height(90.dp)
-                .weight(1.2f)
+                .size(
+                    width = dimensionResource(R.dimen.image_width),
+                    height = dimensionResource(R.dimen.image_width)
+                )
         )
         TextField(
             value = textName,
@@ -58,7 +70,7 @@ fun ProfileScreen() {
                 textName = it
             },
             label = { Text(stringResource(R.string.name)) },
-            textStyle = TextStyle(fontSize = 40.sp, fontWeight = Bold),
+            textStyle = Typography.h4,
             colors = TextFieldDefaults.textFieldColors(
                 focusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,
@@ -66,108 +78,104 @@ fun ProfileScreen() {
                 backgroundColor = Color.Transparent,
             ),
             modifier = Modifier
-                .weight(1f)
                 .align(Alignment.CenterHorizontally)
                 .width(IntrinsicSize.Min)
         )
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(2.2f)
-                .padding(vertical = 8.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.profile_phone),
-                style = Typography.subtitle1
-            )
-            ScreenTextfield(
-                value = textPhone,
-                onValueChange = {
-                    textPhone = it
-                },
-                keyboardType = KeyboardType.Phone,
-                label = "",
-                placeholder = stringResource(R.string.profile_default_phone),
+
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-            )
-            Text(
-                text = stringResource(R.string.profile_email),
-                style = Typography.subtitle1
-            )
-            ScreenTextfield(
-                value = textEmail,
-                onValueChange = {
-                    textEmail = it
-                },
-                keyboardType = KeyboardType.Email,
-                label = "",
-                placeholder = stringResource(R.string.profile_default_email),
+                    .padding(vertical = dimensionResource(R.dimen.profile_field_padding))
+            ) {
+                Text(
+                    text = stringResource(R.string.profile_phone),
+                    style = Typography.subtitle1
+                )
+                ScreenTextfield(
+                    value = textPhone,
+                    onValueChange = {
+                        textPhone = it
+                    },
+                    keyboardType = KeyboardType.Phone,
+                    placeholder = { Text(stringResource(R.string.profile_default_phone)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                Text(
+                    text = stringResource(R.string.profile_email),
+                    style = Typography.subtitle1
+                )
+                ScreenTextfield(
+                    value = textEmail,
+                    onValueChange = {
+                        textEmail = it
+                    },
+                    keyboardType = KeyboardType.Email,
+                    placeholder = { Text(stringResource(R.string.profile_default_email)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                TextfieldUnderLine()
+            }
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-            )
-            TextfieldUnderLine()
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(2.2f)
-                .padding(vertical = 8.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.profile_auto),
-                style = Typography.subtitle1
-            )
-            ScreenTextfield(
-                value = textAuto,
-                onValueChange = {
-                    textAuto = it
-                },
-                keyboardType = KeyboardType.Text,
-                label = "",
-                placeholder = stringResource(R.string.profile_default_auto),
+                    .padding(vertical = dimensionResource(R.dimen.profile_field_padding))
+            ) {
+                Text(
+                    text = stringResource(R.string.profile_auto),
+                    style = Typography.subtitle1
+                )
+                ScreenTextfield(
+                    value = textAuto,
+                    onValueChange = {
+                        textAuto = it
+                    },
+                    keyboardType = KeyboardType.Text,
+                    placeholder = { Text(stringResource(R.string.profile_default_auto)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                Text(
+                    text = stringResource(R.string.profile_num_auto),
+                    style = Typography.subtitle1
+                )
+                ScreenTextfield(
+                    value = textNumAuto,
+                    onValueChange = {
+                        textNumAuto = it
+                    },
+                    keyboardType = KeyboardType.Text,
+                    placeholder = { Text(stringResource(R.string.profile_default_num_auto)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                TextfieldUnderLine()
+            }
+            Column(
+                verticalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxWidth()
-            )
-            Text(
-                text = stringResource(R.string.profile_num_auto),
-                style = Typography.subtitle1
-            )
-            ScreenTextfield(
-                value = textNumAuto,
-                onValueChange = {
-                    textNumAuto = it
-                },
-                keyboardType = KeyboardType.Text,
-                label = "",
-                placeholder = stringResource(R.string.profile_default_num_auto),
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-            TextfieldUnderLine()
-        }
-        Column(
-            verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(2f)
-                .padding(vertical = 8.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.profile_cards),
-                style = Typography.subtitle1
-            )
-            TextfieldUnderLine()
+                    .padding(vertical = dimensionResource(R.dimen.profile_field_padding))
+            ) {
+                Text(
+                    text = stringResource(R.string.profile_cards),
+                    style = Typography.subtitle1
+                )
+                TextfieldUnderLine()
+            }
         }
         Box(
-            modifier = Modifier.fillMaxWidth().weight(1f)
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
         ) {
             Button(
                 onClick = { },
                 shape = Shapes.large,
                 colors = ButtonDefaults.buttonColors(backgroundColor = Red),
                 modifier = Modifier
-                    .width(220.dp)
+                    .width(dimensionResource(R.dimen.exit_button_width))
                     .align(Alignment.BottomCenter)
             ) {
                 Text(

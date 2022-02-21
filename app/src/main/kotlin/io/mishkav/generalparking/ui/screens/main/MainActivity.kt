@@ -11,15 +11,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.snapshots.SnapshotApplyResult
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
 import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
-import io.mishkav.generalparking.ui.utils.MutableResultFlow
-import io.mishkav.generalparking.ui.utils.Result
 import io.mishkav.generalparking.ui.utils.SuccessResult
 
 class MainActivity : ComponentActivity() {
@@ -52,7 +49,7 @@ fun Greeting(name: String) {
     Column {
         Text(
             text = "Hello world!\n" +
-                "${text}"
+                    text
         )
 
         Button(

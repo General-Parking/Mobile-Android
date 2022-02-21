@@ -21,7 +21,6 @@ fun ScreenTitle(
         text = text,
         style = Typography.h4,
         modifier = Modifier
-            .padding(vertical = 10.dp)
             .align(Alignment.BottomCenter)
     )
 }

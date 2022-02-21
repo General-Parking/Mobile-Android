@@ -18,7 +18,7 @@
     <string name="registration_text">Создайте аккаунт, чтобы пользоваться приложением</string>
     <string name="name">Имя</string>
     <string name="use_terms">Нажимая продолжить, вы соглашаетесь с</string>
-    <string name="use_terms_href"><![CDATA[<u>пользовательским соглашением</u>]]></string>
+    <string name="use_terms_href">пользовательским соглашением</string>
     <string name="have_account">Есть аккаунт?</string>
     <string name="input_data_text">Добавьте информацию, чтобы начать пользоваться приложением.</string>
     <string name="a">А</string>
