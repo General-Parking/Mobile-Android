@@ -1,4 +1,4 @@
-package io.mishkav.generalparking.ui.screens.auth.forgotpassword
+package io.mishkav.generalparking.ui.screens.auth.forgotPassword
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue

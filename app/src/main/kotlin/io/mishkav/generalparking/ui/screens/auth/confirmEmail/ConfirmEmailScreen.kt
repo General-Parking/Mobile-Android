@@ -1,4 +1,4 @@
-package io.mishkav.generalparking.ui.screens.auth.confirmemail
+package io.mishkav.generalparking.ui.screens.auth.confirmEmail
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text

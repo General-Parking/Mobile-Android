@@ -1,4 +1,4 @@
-package io.mishkav.generalparking.ui.screens.auth.inputdata
+package io.mishkav.generalparking.ui.screens.auth.inputData
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
