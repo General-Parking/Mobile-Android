@@ -5,15 +5,20 @@ import androidx.lifecycle.viewModelScope
 import io.mishkav.generalparking.GeneralParkingApp
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.dagger.AppComponent
+import io.mishkav.generalparking.domain.entities.User
 import io.mishkav.generalparking.domain.repositories.IAuthRepository
+import io.mishkav.generalparking.domain.repositories.IDatabaseRepository
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
 import io.mishkav.generalparking.ui.utils.loadOrError
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) : ViewModel() {
+
     @Inject
     lateinit var authRepository: IAuthRepository
+    @Inject
+    lateinit var databaseRepository: IDatabaseRepository
 
     val signInResult = MutableResultFlow<Unit>()
     val createNewUserResult = MutableResultFlow<Unit>()
@@ -29,10 +34,15 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
         }
     }
 
-    fun createNewUser(email: String, password: String) = viewModelScope.launch {
+    fun createNewUser(name: String, email: String, password: String) = viewModelScope.launch {
         createNewUserResult.loadOrError(R.string.error_registration) {
             authRepository.createUserWithEmailAndPassword(email, password)
-            //Вставка данных в бд
+            databaseRepository.insertUserData(
+                User.getInstance(
+                    email = email,
+                    name = name
+                )
+            )
         }
     }
 

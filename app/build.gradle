@@ -63,7 +63,7 @@ dependencies {
     implementation 'androidx.activity:activity-compose:1.4.0'
 
     // Lifecycle for viewModel
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1"
 
     // Firebase
     implementation platform('com.google.firebase:firebase-bom:29.1.0')

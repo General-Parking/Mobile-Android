@@ -39,6 +39,7 @@ fun Greeting(name: String) {
     val signInResult by viewModel.signInResult.collectAsState()
     val createUserResult by viewModel.createNewUserResult.collectAsState()
 
+    val name = "Misha"
     val email = "mvorozhtsov@bk.ru"
     val password = "123456"
 
@@ -53,7 +54,7 @@ fun Greeting(name: String) {
 
         Button(
             onClick = {
-                viewModel.createNewUser(email, password)
+                viewModel.createNewUser(name, email, password)
             }
         ) {
             Text("Create")
