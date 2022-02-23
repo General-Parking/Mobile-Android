@@ -6,6 +6,7 @@ import io.mishkav.generalparking.domain.entities.User
 fun User.toMap(): Map<String, *> {
     with(UserFields) {
         return mapOf(
+            FIELD_ACCOUNT_BALANCE to accountBalance,
             FIELD_EMAIL to arrive,
             FIELD_NAME to name,
             FIELD_NUMBER_AUTO to numberAuto,
@@ -39,6 +40,7 @@ fun getMetaUserInfoInstance(
 
 object UserFields {
     const val FIELD_EMAIL = "email"
+    const val FIELD_ACCOUNT_BALANCE = "account_balance"
     const val FIELD_NAME = "name"
     const val FIELD_NUMBER_AUTO = "number_auto"
     const val FIELD_PROFILE_IMAGE = "profile_image"
@@ -53,6 +55,7 @@ object UserFields {
     const val FIELD_EXIT = "exit"
     const val FIELD_CAR_BRAND = "car_brand"
     const val FIELD_PHONE_NUMBER = "phone_number"
+    const val FIELD_REMAINING_BOOKING_TIME = "remaining_booking_time"
 
     object DefaultFields {
         const val DEFAULT_STRING_FIELD = ""

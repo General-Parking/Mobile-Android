@@ -40,8 +40,10 @@
     <string name="profile_default_num_auto">A111AA111</string>
     <string name="profile_cards">Bank cards:</string>
     <string name="exit">Exit</string>
-    <string name="basic_error">Something wrong, check your connection</string>
 
+    <string name="basic_error">Something wrong, check your connection</string>
     <string name="error_auth">Bad authorization, please try one more time</string>
     <string name="error_registration">Bad registration, maybe this email already exist</string>
+    <string name="error_email_not_verified">Email not verified. Please, check your mailbox</string>
+    <string name="error_null_user">There is no active user. Please, sign in</string>
 </resources>

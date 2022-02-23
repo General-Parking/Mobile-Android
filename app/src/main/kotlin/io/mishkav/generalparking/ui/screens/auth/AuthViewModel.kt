@@ -31,6 +31,7 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
     fun signIn(email: String, password: String) = viewModelScope.launch {
         signInResult.loadOrError(R.string.error_auth) {
             authRepository.signInWithEmailAndPassword(email, password)
+            // val user = databaseRepository.getUserDataFromDatabase()
         }
     }
 

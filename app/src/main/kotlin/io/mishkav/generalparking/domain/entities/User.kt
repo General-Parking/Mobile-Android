@@ -73,7 +73,7 @@ data class User(
                 reservationPlace = reservationPlace,
                 timeArrive = timeArrive,
                 timeReservation = timeReservation,
-                timeExit = timeExit,
+                timeExit = timeExit
             )
         }
     }

@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
 import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

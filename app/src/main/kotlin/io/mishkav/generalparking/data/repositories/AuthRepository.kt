@@ -2,6 +2,7 @@ package io.mishkav.generalparking.data.repositories
 
 import com.google.firebase.auth.FirebaseAuth
 import io.mishkav.generalparking.data.exceptions.EmailNotVerifiedException
+import io.mishkav.generalparking.data.exceptions.NullUserException
 import io.mishkav.generalparking.domain.repositories.IAuthRepository
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -14,8 +15,8 @@ class AuthRepository @Inject constructor(
         return firebaseAuth.currentUser != null
     }
 
-    override fun isEmailVerified(): Boolean {
-        return firebaseAuth.currentUser!!.isEmailVerified
+    override fun isEmailVerified(): Boolean? {
+        return firebaseAuth.currentUser?.isEmailVerified
     }
 
     override fun signOut() {
@@ -24,8 +25,13 @@ class AuthRepository @Inject constructor(
 
     override suspend fun signInWithEmailAndPassword(email: String, password: String) {
         firebaseAuth.signInWithEmailAndPassword(email, password).await()
-        if (!isEmailVerified())
-            throw EmailNotVerifiedException()
+
+        isEmailVerified().let { verified ->
+            if (verified == null)
+                throw NullUserException()
+            if (!verified)
+                throw EmailNotVerifiedException()
+        }
     }
 
     override suspend fun createUserWithEmailAndPassword(email: String, password: String) {
@@ -34,7 +40,9 @@ class AuthRepository @Inject constructor(
     }
 
     override suspend fun sendEmailVerification(email: String) {
-        firebaseAuth.currentUser!!.let { user ->
+        firebaseAuth.currentUser.let { user ->
+            if (user == null)
+                throw NullUserException()
             user.sendEmailVerification()
         }
     }
