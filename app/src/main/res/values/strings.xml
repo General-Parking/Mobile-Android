@@ -4,7 +4,7 @@
     <string name="authorization_welcome">Welcome! Sign in to start using the app</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
-    <string name="forgot_password">Forgot your password?</string>
+    <string name="forgot_password">Forgot password?</string>
     <string name="log_in">Login</string>
     <string name="no_account">Don\'t have an account?</string>
     <string name="create">Create</string>

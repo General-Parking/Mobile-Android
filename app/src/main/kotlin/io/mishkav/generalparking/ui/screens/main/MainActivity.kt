@@ -3,29 +3,35 @@ package io.mishkav.generalparking.ui.screens.main
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import io.mishkav.generalparking.ui.screens.auth.authorization.AuthorizationScreen
+import io.mishkav.generalparking.ui.screens.auth.confirmEmail.ConfirmEmailScreen
+import io.mishkav.generalparking.ui.screens.auth.forgotPassword.ForgotPasswordScreen
+import io.mishkav.generalparking.ui.screens.auth.registration.RegistrationScreen
+import io.mishkav.generalparking.ui.screens.auth.registrationExtensionData.RegistrationExtensionData
 import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
-import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
+            val navController = rememberNavController()
+            val viewModel: MainViewModel = viewModel()
+
             GeneralParkingTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    Greeting("Android")
+                    MainScreen(
+                        viewModel = viewModel,
+                        navController = navController
+                    )
                 }
             }
         }
@@ -33,49 +39,52 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String) {
+fun MainScreen(
+    viewModel: MainViewModel,
+    navController: NavHostController
+) {
+    // val isAuthorized by viewModel.isAuthorized.collectAsState()
 
-    val viewModel: AuthViewModel = viewModel()
-
-    val signInResult by viewModel.signInResult.collectAsState()
-    val createUserResult by viewModel.createNewUserResult.collectAsState()
-
-    val name = "Misha"
-    val email = "mvorozhtsov@bk.ru"
-    val password = "123456"
-
-    Column {
-        Text(
-            text = "Hello world!\n" +
-                "sign in = ${signInResult}\n" +
-                "create user = ${createUserResult}\n" +
-                "${createUserResult.message?.let { stringResource(id = it) }}\n" +
-                "${createUserResult.exceptionMessage}"
-        )
-
-        Button(
-            onClick = {
-                viewModel.createNewUser(name, email, password)
-            }
-        ) {
-            Text("Create")
+    NavHost(
+        navController = navController,
+        startDestination = Routes.authorization
+    ) {
+        composable(Routes.authorization) {
+            AuthorizationScreen(
+                navController = navController
+            )
         }
 
-        Button(
-            onClick = {
-                viewModel.signIn(email, password)
-            }
-        ) {
-            Text("Auth")
+        composable(Routes.confirmEmail) {
+            ConfirmEmailScreen(
+                navController = navController
+            )
         }
 
+        composable(Routes.forgotPassword) {
+            ForgotPasswordScreen(
+                navController = navController
+            )
+        }
+
+        composable(Routes.registration) {
+            RegistrationScreen(
+                navController = navController
+            )
+        }
+
+        composable(Routes.registrationExtensionData) {
+            RegistrationExtensionData(
+                navController = navController
+            )
+        }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    GeneralParkingTheme {
-        Greeting("Android")
-    }
+object Routes {
+    const val authorization = "authorization"
+    const val confirmEmail = "confirmEmail"
+    const val forgotPassword = "forgotPassword"
+    const val registration = "registration"
+    const val registrationExtensionData = "registrationExtensionData"
 }

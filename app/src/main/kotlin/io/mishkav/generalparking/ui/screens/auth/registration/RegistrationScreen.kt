@@ -7,6 +7,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -14,6 +15,8 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.ScreenTextfield
 import io.mishkav.generalparking.ui.components.buttons.TextButton
@@ -21,10 +24,48 @@ import io.mishkav.generalparking.ui.components.buttons.CreateButton
 import io.mishkav.generalparking.ui.components.lines.TextfieldUnderLine
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
+import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
+import io.mishkav.generalparking.ui.screens.main.Routes
 import io.mishkav.generalparking.ui.theme.Typography
+import io.mishkav.generalparking.ui.utils.ErrorResult
+import io.mishkav.generalparking.ui.utils.LoadingResult
+import io.mishkav.generalparking.ui.utils.SuccessResult
+import kotlinx.coroutines.Job
+import kotlin.reflect.KFunction3
 
 @Composable
-fun RegistrationScreen() {
+fun RegistrationScreen(
+    navController: NavHostController
+) {
+    val viewModel: AuthViewModel = viewModel()
+    val createNewUserResult by viewModel.createNewUserResult.collectAsState()
+    val navigateToLogin: () -> Unit = {
+        navController.navigate(Routes.authorization) {
+            popUpTo(Routes.registration) { inclusive = true }
+        }
+    }
+
+    createNewUserResult.also { result ->
+        when (result) {
+            is ErrorResult -> {}
+            is SuccessResult -> {
+                navController.navigate(Routes.confirmEmail)
+            }
+            is LoadingResult -> {}
+        }
+    }
+
+    RegistrationScreenContent(
+        createNewUser = viewModel::createNewUser,
+        navigateToLogin = navigateToLogin
+    )
+}
+
+@Composable
+fun RegistrationScreenContent(
+    createNewUser: (name: String, email: String, password: String) -> Unit = { _, _, _ -> },
+    navigateToLogin: () -> Unit = {}
+) {
 
     var textEmail by rememberSaveable { mutableStateOf("") }
     var textPassword by rememberSaveable { mutableStateOf("") }
@@ -35,7 +76,10 @@ fun RegistrationScreen() {
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = dimensionResource(R.dimen.main_hor_padding), vertical = dimensionResource(R.dimen.main_vert_padding))
+            .padding(
+                horizontal = dimensionResource(R.dimen.main_hor_padding),
+                vertical = dimensionResource(R.dimen.main_vert_padding)
+            )
     ) {
         ScreenTitle(
             text = stringResource(R.string.registration),
@@ -60,7 +104,7 @@ fun RegistrationScreen() {
                         textName = it
                     },
                     keyboardType = KeyboardType.Text,
-                    label = { Text(stringResource(R.string.name))},
+                    label = { Text(stringResource(R.string.name)) },
                     modifier = Modifier
                         .fillMaxWidth()
                 )
@@ -76,7 +120,7 @@ fun RegistrationScreen() {
                         textEmail = it
                     },
                     keyboardType = KeyboardType.Email,
-                    label = { Text(stringResource(R.string.email))},
+                    label = { Text(stringResource(R.string.email)) },
                     modifier = Modifier
                         .fillMaxWidth()
                 )
@@ -92,7 +136,7 @@ fun RegistrationScreen() {
                         textPassword = it
                     },
                     keyboardType = KeyboardType.Password,
-                    label = { Text(stringResource(R.string.password))},
+                    label = { Text(stringResource(R.string.password)) },
                     modifier = Modifier
                         .fillMaxWidth()
                 )
@@ -102,7 +146,13 @@ fun RegistrationScreen() {
 
         TextButton(
             text = stringResource(R.string.continue_text),
-            onClick = {},
+            onClick = {
+                createNewUser(
+                    textName,
+                    textEmail,
+                    textPassword
+                )
+            },
             modifier = Modifier.weight(1f)
         )
 
@@ -140,7 +190,7 @@ fun RegistrationScreen() {
             )
             CreateButton(
                 text = stringResource(R.string.log_in),
-                onClick = { }
+                onClick = navigateToLogin
             )
         }
     }
@@ -149,5 +199,5 @@ fun RegistrationScreen() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewRegistrationScreen() {
-    RegistrationScreen()
+    RegistrationScreenContent()
 }

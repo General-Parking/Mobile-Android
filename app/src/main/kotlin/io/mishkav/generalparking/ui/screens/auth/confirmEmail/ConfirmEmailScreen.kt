@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.buttons.TextButton
 import io.mishkav.generalparking.ui.components.buttons.CreateButton
@@ -16,7 +17,13 @@ import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.theme.Typography
 
 @Composable
-fun ConfirmEmailScreen() {
+fun ConfirmEmailScreen(navController: NavHostController) {
+    ConfirmEmailScreenContent()
+}
+
+
+@Composable
+fun ConfirmEmailScreenContent() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -61,5 +68,5 @@ fun ConfirmEmailScreen() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewConfirmEmailScreen() {
-    ConfirmEmailScreen()
+    ConfirmEmailScreenContent()
 }

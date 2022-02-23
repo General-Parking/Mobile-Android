@@ -12,7 +12,7 @@
     <string name="forgot_password_text">Введите почтовый адрес указанный при регистрации</string>
     <string name="continue_text">Продолжить</string>
     <string name="confirm_email">Подтверждение почты</string>
-    <string name="confirm_email_text">На почту aaaaaaaa@gmail.com пришло сообщение с дальнейшими инструкциями</string>
+    <string name="confirm_email_text">На почту пришло сообщение с дальнейшими инструкциями, пожалуйста подтвердите почту</string>
     <string name="confirm_continue">Подтверждена, продолжить</string>
     <string name="other_account">Другой аккаунт?</string>
     <string name="registration">Регистрация</string>

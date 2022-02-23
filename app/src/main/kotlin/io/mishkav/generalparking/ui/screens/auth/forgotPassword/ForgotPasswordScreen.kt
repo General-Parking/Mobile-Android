@@ -13,6 +13,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.ScreenTextfield
 import io.mishkav.generalparking.ui.components.buttons.TextButton
@@ -21,7 +22,12 @@ import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 
 @Composable
-fun ForgotPasswordScreen() {
+fun ForgotPasswordScreen(navController: NavHostController) {
+    ForgotPasswordScreenContent()
+}
+
+@Composable
+fun ForgotPasswordScreenContent() {
 
     var textEmail by rememberSaveable { mutableStateOf("") }
 
@@ -69,5 +75,5 @@ fun ForgotPasswordScreen() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewForgotPasswordScreen() {
-    ForgotPasswordScreen()
+    ForgotPasswordScreenContent()
 }

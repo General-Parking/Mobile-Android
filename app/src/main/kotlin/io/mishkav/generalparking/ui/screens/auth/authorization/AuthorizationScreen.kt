@@ -1,5 +1,6 @@
 package io.mishkav.generalparking.ui.screens.auth.authorization
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
@@ -7,6 +8,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,6 +17,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.ScreenTextfield
 import io.mishkav.generalparking.ui.components.buttons.TextButton
@@ -22,10 +26,43 @@ import io.mishkav.generalparking.ui.components.buttons.CreateButton
 import io.mishkav.generalparking.ui.components.lines.TextfieldUnderLine
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
+import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
+import io.mishkav.generalparking.ui.screens.main.Routes
 import io.mishkav.generalparking.ui.theme.Typography
+import io.mishkav.generalparking.ui.utils.ErrorResult
+import io.mishkav.generalparking.ui.utils.LoadingResult
+import io.mishkav.generalparking.ui.utils.SuccessResult
 
 @Composable
-fun AuthorizationScreen() {
+fun AuthorizationScreen(
+    navController: NavHostController
+) {
+    val viewModel: AuthViewModel = viewModel()
+    val signInResult by viewModel.signInResult.collectAsState()
+    signInResult.also { result ->
+        when (result) {
+            is ErrorResult -> {}
+            is SuccessResult -> {
+                //На карты
+                //navController.navigate()
+            }
+            is LoadingResult -> {}
+        }
+    }
+
+    AuthorizationScreenContent(
+        signIn = viewModel::signIn,
+        navigateToRegistrationScreen = {
+            navController.navigate(Routes.registration)
+        }
+    )
+}
+
+@Composable
+fun AuthorizationScreenContent(
+    signIn: (email: String, password: String) -> Unit = { _, _ -> },
+    navigateToRegistrationScreen: () -> Unit = {}
+) {
 
     var textEmail by rememberSaveable { mutableStateOf("") }
     var textPassword by rememberSaveable { mutableStateOf("") }
@@ -35,7 +72,10 @@ fun AuthorizationScreen() {
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = dimensionResource(R.dimen.main_hor_padding), vertical = dimensionResource(R.dimen.main_vert_padding))
+            .padding(
+                horizontal = dimensionResource(R.dimen.main_hor_padding),
+                vertical = dimensionResource(R.dimen.main_vert_padding)
+            )
     ) {
         ScreenTitle(
             text = stringResource(R.string.authorization),
@@ -60,7 +100,7 @@ fun AuthorizationScreen() {
                         textEmail = it
                     },
                     keyboardType = KeyboardType.Email,
-                    label = { Text(stringResource(R.string.email))},
+                    label = { Text(stringResource(R.string.email)) },
                     modifier = Modifier
                         .fillMaxWidth()
                 )
@@ -83,11 +123,11 @@ fun AuthorizationScreen() {
                         label = { Text(stringResource(R.string.password)) },
                         modifier = Modifier.width(250.dp)
                     )
-                    CreateButton(
-                        text = stringResource(R.string.forgot_password),
-                        onClick = { },
-                        modifier = Modifier.width(150.dp)
-                    )
+                    // CreateButton(
+                    //     text = stringResource(R.string.forgot_password),
+                    //     onClick = { },
+                    //     modifier = Modifier.width(150.dp)
+                    // )
                 }
                 TextfieldUnderLine()
             }
@@ -113,15 +153,19 @@ fun AuthorizationScreen() {
             )
             CreateButton(
                 text = stringResource(R.string.create),
-                onClick = { }
+                onClick = navigateToRegistrationScreen
             )
         }
 
+        CreateButton(
+            text = stringResource(R.string.forgot_password),
+            onClick = { }
+        )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewAuthorizationScreen() {
-    AuthorizationScreen()
+    AuthorizationScreenContent()
 }

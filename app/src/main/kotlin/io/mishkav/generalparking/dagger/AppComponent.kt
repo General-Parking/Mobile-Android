@@ -4,6 +4,7 @@ import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
 import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
+import io.mishkav.generalparking.ui.screens.main.MainViewModel
 import javax.inject.Singleton
 
 @Singleton
@@ -17,5 +18,6 @@ interface AppComponent {
     }
 
     fun inject(authViewModel: AuthViewModel)
+    fun inject(mainViewModel: MainViewModel)
 }
 

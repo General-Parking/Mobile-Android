@@ -11,7 +11,7 @@ class AuthRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth
 ) : IAuthRepository {
 
-    override fun isUserAuthenticated(): Boolean {
+    override fun isUserAuthorized(): Boolean {
         return firebaseAuth.currentUser != null
     }
 

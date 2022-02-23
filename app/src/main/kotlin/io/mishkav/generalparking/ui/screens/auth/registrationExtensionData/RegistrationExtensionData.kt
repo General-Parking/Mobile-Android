@@ -1,4 +1,4 @@
-package io.mishkav.generalparking.ui.screens.auth.inputData
+package io.mishkav.generalparking.ui.screens.auth.registrationExtensionData
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import io.mishkav.generalparking.ui.theme.Typography
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.ScreenTextfield
 import io.mishkav.generalparking.ui.components.buttons.TextButton
@@ -30,7 +31,12 @@ import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.theme.Shapes
 
 @Composable
-fun InputDataScreen() {
+fun RegistrationExtensionData(navController: NavHostController) {
+    RegistrationExtensionDataContent()
+}
+
+@Composable
+fun RegistrationExtensionDataContent() {
 
     var textRightZeros by rememberSaveable { mutableStateOf("") }
     var textLeftSymbol by rememberSaveable { mutableStateOf("") }
@@ -254,5 +260,5 @@ fun InputDataScreen() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewInputDataScreen() {
-    InputDataScreen()
+    RegistrationExtensionDataContent()
 }

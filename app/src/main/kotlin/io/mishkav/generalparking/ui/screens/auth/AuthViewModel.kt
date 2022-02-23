@@ -17,6 +17,7 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
 
     @Inject
     lateinit var authRepository: IAuthRepository
+
     @Inject
     lateinit var databaseRepository: IDatabaseRepository
 
