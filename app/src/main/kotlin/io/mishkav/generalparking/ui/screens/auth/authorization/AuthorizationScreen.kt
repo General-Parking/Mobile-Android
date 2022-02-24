@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.google.accompanist.insets.systemBarsPadding
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.ScreenTextfield
 import io.mishkav.generalparking.ui.components.buttons.TextButton
@@ -76,6 +77,7 @@ fun AuthorizationScreenContent(
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxWidth()
+            .systemBarsPadding()
             .padding(
                 horizontal = dimensionResource(R.dimen.main_hor_padding),
                 vertical = dimensionResource(R.dimen.main_vert_padding)
