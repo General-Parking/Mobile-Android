@@ -22,7 +22,10 @@ import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 
 @Composable
-fun ForgotPasswordScreen(navController: NavHostController) {
+fun ForgotPasswordScreen(
+    navController: NavHostController,
+    onError: @Composable (Int) -> Unit
+) {
     ForgotPasswordScreenContent()
 }
 

@@ -35,7 +35,8 @@ import kotlin.reflect.KFunction3
 
 @Composable
 fun RegistrationScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    onError: @Composable (Int) -> Unit
 ) {
     val viewModel: AuthViewModel = viewModel()
     val createNewUserResult by viewModel.createNewUserResult.collectAsState()

@@ -17,10 +17,12 @@ import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.theme.Typography
 
 @Composable
-fun ConfirmEmailScreen(navController: NavHostController) {
+fun ConfirmEmailScreen(
+    navController: NavHostController,
+    onError: @Composable (Int) -> Unit
+) {
     ConfirmEmailScreenContent()
 }
-
 
 @Composable
 fun ConfirmEmailScreenContent() {
@@ -29,7 +31,10 @@ fun ConfirmEmailScreenContent() {
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = dimensionResource(R.dimen.main_hor_padding), vertical = dimensionResource(R.dimen.main_vert_padding))
+            .padding(
+                horizontal = dimensionResource(R.dimen.main_hor_padding),
+                vertical = dimensionResource(R.dimen.main_vert_padding)
+            )
     ) {
         ScreenTitle(
             text = stringResource(R.string.confirm_email),

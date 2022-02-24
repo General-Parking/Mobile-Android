@@ -3,14 +3,29 @@ package io.mishkav.generalparking.ui.screens.main
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.MaterialTheme
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.MaterialTheme.shapes
+import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.Snackbar
+import androidx.compose.material.SnackbarHost
 import androidx.compose.material.Surface
+import androidx.compose.material.contentColorFor
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.insets.ProvideWindowInsets
+import com.google.accompanist.insets.navigationBarsPadding
 import io.mishkav.generalparking.ui.screens.auth.authorization.AuthorizationScreen
 import io.mishkav.generalparking.ui.screens.auth.confirmEmail.ConfirmEmailScreen
 import io.mishkav.generalparking.ui.screens.auth.forgotPassword.ForgotPasswordScreen
@@ -24,13 +39,34 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
+            val scaffoldState = rememberScaffoldState()
             val viewModel: MainViewModel = viewModel()
 
             GeneralParkingTheme {
-                Surface(color = MaterialTheme.colors.background) {
-                    MainScreen(
-                        viewModel = viewModel,
-                        navController = navController
+                ProvideWindowInsets(windowInsetsAnimationsEnabled = true) {
+                    Scaffold(
+                        scaffoldState = scaffoldState,
+                        snackbarHost = {
+                            SnackbarHost(
+                                hostState = it,
+                                modifier = Modifier.navigationBarsPadding()
+                            ) {
+                                Snackbar(
+                                    snackbarData = it,
+                                    backgroundColor = MaterialTheme.colorScheme.surface,
+                                    contentColor = contentColorFor(MaterialTheme.colorScheme.surface),
+                                    shape = shapes.medium
+                                )
+                            }
+                        },
+                        content = {
+                            MainScreen(
+                                viewModel = viewModel,
+                                navController = navController,
+                                scaffoldState = scaffoldState,
+                                paddingValues = it
+                            )
+                        }
                     )
                 }
             }
@@ -41,42 +77,62 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen(
     viewModel: MainViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    scaffoldState: ScaffoldState,
+    paddingValues: PaddingValues
 ) {
+    val onError: @Composable (Int) -> Unit = { message ->
+        val strMessage = stringResource(message)
+        LaunchedEffect(Unit) {
+            scaffoldState.snackbarHostState.showSnackbar(strMessage)
+        }
+    }
+
     // val isAuthorized by viewModel.isAuthorized.collectAsState()
-
-    NavHost(
-        navController = navController,
-        startDestination = Routes.authorization
+    Surface(
+        color = MaterialTheme.colorScheme.background,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
     ) {
-        composable(Routes.authorization) {
-            AuthorizationScreen(
-                navController = navController
-            )
-        }
+        NavHost(
+            navController = navController,
+            startDestination = Routes.authorization
+        ) {
+            composable(Routes.authorization) {
+                AuthorizationScreen(
+                    navController = navController,
+                    onError = onError
+                )
+            }
 
-        composable(Routes.confirmEmail) {
-            ConfirmEmailScreen(
-                navController = navController
-            )
-        }
+            composable(Routes.confirmEmail) {
+                ConfirmEmailScreen(
+                    navController = navController,
+                    onError = onError
+                )
+            }
 
-        composable(Routes.forgotPassword) {
-            ForgotPasswordScreen(
-                navController = navController
-            )
-        }
+            composable(Routes.forgotPassword) {
+                ForgotPasswordScreen(
+                    navController = navController,
+                    onError = onError
+                )
+            }
 
-        composable(Routes.registration) {
-            RegistrationScreen(
-                navController = navController
-            )
-        }
+            composable(Routes.registration) {
+                RegistrationScreen(
+                    navController = navController,
+                    onError = onError
+                )
+            }
 
-        composable(Routes.registrationExtensionData) {
-            RegistrationExtensionData(
-                navController = navController
-            )
+            composable(Routes.registrationExtensionData) {
+                RegistrationExtensionData(
+                    navController = navController,
+                    onError = onError
+                )
+            }
         }
     }
 }

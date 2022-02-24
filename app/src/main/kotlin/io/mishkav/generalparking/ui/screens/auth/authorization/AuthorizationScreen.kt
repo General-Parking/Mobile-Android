@@ -1,6 +1,5 @@
 package io.mishkav.generalparking.ui.screens.auth.authorization
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,13 +34,14 @@ import io.mishkav.generalparking.ui.utils.SuccessResult
 
 @Composable
 fun AuthorizationScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    onError: @Composable (Int) -> Unit
 ) {
     val viewModel: AuthViewModel = viewModel()
     val signInResult by viewModel.signInResult.collectAsState()
     signInResult.also { result ->
         when (result) {
-            is ErrorResult -> {}
+            is ErrorResult -> onError(result.message!!)
             is SuccessResult -> {
                 //На карты
                 //navController.navigate()
@@ -54,6 +54,9 @@ fun AuthorizationScreen(
         signIn = viewModel::signIn,
         navigateToRegistrationScreen = {
             navController.navigate(Routes.registration)
+        },
+        navigateToForgotPasswordScreen = {
+            navController.navigate(Routes.forgotPassword)
         }
     )
 }
@@ -61,7 +64,8 @@ fun AuthorizationScreen(
 @Composable
 fun AuthorizationScreenContent(
     signIn: (email: String, password: String) -> Unit = { _, _ -> },
-    navigateToRegistrationScreen: () -> Unit = {}
+    navigateToRegistrationScreen: () -> Unit = {},
+    navigateToForgotPasswordScreen: () -> Unit = {}
 ) {
 
     var textEmail by rememberSaveable { mutableStateOf("") }
@@ -123,11 +127,6 @@ fun AuthorizationScreenContent(
                         label = { Text(stringResource(R.string.password)) },
                         modifier = Modifier.width(250.dp)
                     )
-                    // CreateButton(
-                    //     text = stringResource(R.string.forgot_password),
-                    //     onClick = { },
-                    //     modifier = Modifier.width(150.dp)
-                    // )
                 }
                 TextfieldUnderLine()
             }
@@ -135,7 +134,12 @@ fun AuthorizationScreenContent(
 
         TextButton(
             text = stringResource(R.string.log_in),
-            onClick = {},
+            onClick = {
+                signIn(
+                    textEmail,
+                    textPassword
+                )
+            },
             modifier = Modifier.weight(1f)
         )
         Row(
@@ -159,7 +163,7 @@ fun AuthorizationScreenContent(
 
         CreateButton(
             text = stringResource(R.string.forgot_password),
-            onClick = { }
+            onClick = navigateToForgotPasswordScreen
         )
     }
 }

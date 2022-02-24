@@ -31,7 +31,10 @@ import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.theme.Shapes
 
 @Composable
-fun RegistrationExtensionData(navController: NavHostController) {
+fun RegistrationExtensionData(
+    navController: NavHostController,
+    onError: @Composable (Int) -> Unit
+) {
     RegistrationExtensionDataContent()
 }
 
