@@ -42,6 +42,8 @@
     <string name="profile_cards">Банковские карты:</string>
     <string name="exit">Выйти</string>
 
+    <string name="success_sending_email">Письмо успешно отправлено, скорее на почту!</string>
+
     <string name="error_auth">Ошибка авторизации, попробуйте ещё раз</string>
     <string name="error_registration">Ошибка регистрации, возможно такой аккаунт уже существует</string>
     <string name="error_email_not_verified">Почта не подтверждена. Пожалуйста, проверьте свою почту</string>

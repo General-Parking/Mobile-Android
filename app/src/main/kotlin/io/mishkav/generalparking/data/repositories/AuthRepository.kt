@@ -16,6 +16,7 @@ class AuthRepository @Inject constructor(
     }
 
     override fun isEmailVerified(): Boolean? {
+        firebaseAuth.currentUser?.reload()
         return firebaseAuth.currentUser?.isEmailVerified
     }
 

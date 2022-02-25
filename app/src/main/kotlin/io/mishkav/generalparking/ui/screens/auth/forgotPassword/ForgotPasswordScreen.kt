@@ -7,12 +7,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.ScreenTextfield
@@ -20,17 +23,38 @@ import io.mishkav.generalparking.ui.components.buttons.TextButton
 import io.mishkav.generalparking.ui.components.lines.TextfieldUnderLine
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
+import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
+import io.mishkav.generalparking.ui.screens.main.Routes
+import io.mishkav.generalparking.ui.utils.ErrorResult
+import io.mishkav.generalparking.ui.utils.LoadingResult
+import io.mishkav.generalparking.ui.utils.SuccessResult
 
 @Composable
 fun ForgotPasswordScreen(
     navController: NavHostController,
-    onError: @Composable (Int) -> Unit
+    onShowMessage: @Composable (Int) -> Unit
 ) {
-    ForgotPasswordScreenContent()
+    val viewModel: AuthViewModel = viewModel()
+    val resetPasswordResult by viewModel.resetPasswordResult.collectAsState()
+    resetPasswordResult.also { result ->
+        when (result) {
+            is ErrorResult -> onShowMessage(result.message!!)
+            is SuccessResult -> {
+                onShowMessage(R.string.success_sending_email)
+            }
+            is LoadingResult -> {}
+        }
+    }
+
+    ForgotPasswordScreenContent(
+        resetPassword = viewModel::resetPassword
+    )
 }
 
 @Composable
-fun ForgotPasswordScreenContent() {
+fun ForgotPasswordScreenContent(
+    resetPassword: (email: String) -> Unit = { _ -> }
+) {
 
     var textEmail by rememberSaveable { mutableStateOf("") }
 
@@ -39,7 +63,10 @@ fun ForgotPasswordScreenContent() {
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = dimensionResource(R.dimen.main_hor_padding), vertical = dimensionResource(R.dimen.main_vert_padding))
+            .padding(
+                horizontal = dimensionResource(R.dimen.main_hor_padding),
+                vertical = dimensionResource(R.dimen.main_vert_padding)
+            )
     ) {
         ScreenTitle(
             text = stringResource(R.string.forgot_password),
@@ -60,7 +87,7 @@ fun ForgotPasswordScreenContent() {
                     textEmail = it
                 },
                 keyboardType = KeyboardType.Email,
-                label = { Text(stringResource(R.string.email))},
+                label = { Text(stringResource(R.string.email)) },
                 modifier = Modifier
                     .fillMaxWidth()
             )
@@ -69,7 +96,11 @@ fun ForgotPasswordScreenContent() {
 
         TextButton(
             text = stringResource(R.string.continue_text),
-            onClick = {},
+            onClick = {
+                resetPassword(
+                    textEmail
+                )
+            },
             modifier = Modifier.weight(5f)
         )
     }

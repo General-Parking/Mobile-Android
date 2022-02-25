@@ -1,5 +1,6 @@
 package io.mishkav.generalparking.ui.screens.auth
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.mishkav.generalparking.GeneralParkingApp
@@ -24,6 +25,7 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
     val signInResult = MutableResultFlow<Unit>()
     val createNewUserResult = MutableResultFlow<Unit>()
     val resetPasswordResult = MutableResultFlow<Unit>()
+    val isEmailVerified = MutableResultFlow<Boolean>()
 
     init {
         appComponent.inject(this)
@@ -51,6 +53,12 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
     fun resetPassword(email: String) = viewModelScope.launch {
         resetPasswordResult.loadOrError {
             authRepository.sendPasswordResetEmail(email)
+        }
+    }
+
+    fun checkIsEmailVerified() {
+        isEmailVerified.loadOrError {
+            authRepository.isEmailVerified()
         }
     }
 }

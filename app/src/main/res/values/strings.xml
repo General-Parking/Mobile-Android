@@ -41,6 +41,8 @@
     <string name="profile_cards">Bank cards:</string>
     <string name="exit">Exit</string>
 
+    <string name="success_sending_email">The letter has been sent successfully, rather to the post office!</string>
+
     <string name="basic_error">Something wrong, check your connection</string>
     <string name="error_auth">Bad authorization, please try one more time</string>
     <string name="error_registration">Bad registration, maybe this email already exist</string>
