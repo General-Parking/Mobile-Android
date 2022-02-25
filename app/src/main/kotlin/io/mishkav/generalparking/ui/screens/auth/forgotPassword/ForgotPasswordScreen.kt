@@ -13,6 +13,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.ScreenTextfield
@@ -39,7 +40,7 @@ fun ForgotPasswordScreenContent() {
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = dimensionResource(R.dimen.main_hor_padding), vertical = dimensionResource(R.dimen.main_vert_padding))
+            .padding(horizontal = dimensionResource(R.dimen.main_hor_padding), vertical = 60.dp)
     ) {
         ScreenTitle(
             text = stringResource(R.string.forgot_password),

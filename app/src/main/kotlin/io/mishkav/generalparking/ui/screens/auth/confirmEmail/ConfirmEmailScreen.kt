@@ -11,7 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.buttons.TextButton
-import io.mishkav.generalparking.ui.components.buttons.CreateButton
+import io.mishkav.generalparking.ui.components.buttons.SimpleTextButton
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.theme.Typography
@@ -62,7 +62,7 @@ fun ConfirmEmailScreenContent() {
                 text = stringResource(R.string.other_account),
                 style = Typography.subtitle1
             )
-            CreateButton(
+            SimpleTextButton(
                 text = stringResource(R.string.log_in),
                 onClick = { }
             )

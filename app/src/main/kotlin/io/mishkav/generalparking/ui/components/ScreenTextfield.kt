@@ -1,12 +1,14 @@
 package io.mishkav.generalparking.ui.components
 
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import io.mishkav.generalparking.ui.theme.Typography
 
 @Composable
@@ -24,7 +26,10 @@ fun ScreenTextfield(
     label = label,
     placeholder = placeholder,
     singleLine = true,
-    textStyle = Typography.body1,
+    textStyle = Typography.body1
+        .merge(
+            LocalTextStyle.current.copy(textAlign = TextAlign.Start)
+        ),
     colors = TextFieldDefaults.textFieldColors(
         focusedIndicatorColor = Color.Transparent,
         disabledIndicatorColor = Color.Transparent,

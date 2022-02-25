@@ -20,7 +20,7 @@ import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.ScreenTextfield
 import io.mishkav.generalparking.ui.components.buttons.TextButton
-import io.mishkav.generalparking.ui.components.buttons.CreateButton
+import io.mishkav.generalparking.ui.components.buttons.SimpleTextButton
 import io.mishkav.generalparking.ui.components.lines.TextfieldUnderLine
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
@@ -30,8 +30,6 @@ import io.mishkav.generalparking.ui.theme.Typography
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
-import kotlinx.coroutines.Job
-import kotlin.reflect.KFunction3
 
 @Composable
 fun RegistrationScreen(
@@ -189,7 +187,7 @@ fun RegistrationScreenContent(
                 text = stringResource(R.string.have_account),
                 style = Typography.subtitle1
             )
-            CreateButton(
+            SimpleTextButton(
                 text = stringResource(R.string.log_in),
                 onClick = navigateToLogin
             )
