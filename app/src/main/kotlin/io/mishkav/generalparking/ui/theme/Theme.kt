@@ -1,44 +1,38 @@
 package io.mishkav.generalparking.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
+import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val DarkColorPalette = darkColors(
+private val DarkColorPalette = darkColorScheme(
     primary = Yellow400,
-    primaryVariant = Yellow500,
-    onPrimary = Color.White
+    onPrimary = Color.White,
+    secondary = Yellow500,
+    secondaryContainer = Yellow500.copy(alpha = 0.5f),
+    surfaceVariant = Yellow500.copy(alpha = 0.1f),
+    background = generalParkingDarkBackground,
+    surface = generalParkingDarkBackground
 )
 
-private val LightColorPalette = lightColors(
+private val LightColorPalette = lightColorScheme(
     primary = Yellow400,
-    primaryVariant = Yellow500
-
-    /* Other default colors to override
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    */
+    onPrimary = Color.Black,
+    background = generalParkingLightBackground,
+    surface = generalParkingLightBackground
 )
 
 @Composable
 fun GeneralParkingTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() () -> Unit) {
-    val colors = if (darkTheme) {
+    val colors = if (darkTheme)
         DarkColorPalette
-    } else {
+    else
         LightColorPalette
-    }
 
     MaterialTheme(
-        colors = colors,
-        typography = Typography,
-        shapes = Shapes,
+        colorScheme = colors,
+        typography = typography,
         content = content
     )
 }

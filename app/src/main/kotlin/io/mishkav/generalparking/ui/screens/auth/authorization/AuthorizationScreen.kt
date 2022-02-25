@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -149,6 +150,7 @@ fun AuthorizationScreenContent(
         ) {
             Text(
                 text = stringResource(R.string.no_account),
+                color = MaterialTheme.colorScheme.onPrimary,
                 style = Typography.subtitle1
             )
             SimpleTextButton(
