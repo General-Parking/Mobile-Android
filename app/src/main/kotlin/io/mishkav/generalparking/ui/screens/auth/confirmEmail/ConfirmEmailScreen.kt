@@ -2,6 +2,7 @@ package io.mishkav.generalparking.ui.screens.auth.confirmEmail
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,6 +61,7 @@ fun ConfirmEmailScreenContent() {
         ) {
             Text(
                 text = stringResource(R.string.other_account),
+                color = MaterialTheme.colorScheme.onPrimary,
                 style = Typography.subtitle1
             )
             SimpleTextButton(

@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -164,6 +165,7 @@ fun RegistrationScreenContent(
             Text(
                 text = stringResource(R.string.use_terms),
                 style = Typography.caption,
+                color = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
             )
@@ -185,6 +187,7 @@ fun RegistrationScreenContent(
         ) {
             Text(
                 text = stringResource(R.string.have_account),
+                color = MaterialTheme.colorScheme.onPrimary,
                 style = Typography.subtitle1
             )
             SimpleTextButton(
