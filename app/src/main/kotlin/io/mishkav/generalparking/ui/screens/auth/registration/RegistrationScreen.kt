@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,17 +40,17 @@ fun RegistrationScreen(
 ) {
     val viewModel: AuthViewModel = viewModel()
     val createNewUserResult by viewModel.createNewUserResult.collectAsState()
-    val navigateToLogin: () -> Unit = {
-        navController.navigate(Routes.authorization) {
-            popUpTo(Routes.registration) { inclusive = true }
-        }
+    val navigateToAuthorization: () -> Unit = {
+        navController.navigate(Routes.authorization)
     }
 
     createNewUserResult.also { result ->
         when (result) {
-            is ErrorResult -> {}
+            is ErrorResult -> onError(result.message!!)
             is SuccessResult -> {
-                navController.navigate(Routes.confirmEmail)
+                LaunchedEffect(Unit) {
+                    navController.navigate(Routes.confirmEmail)
+                }
             }
             is LoadingResult -> {}
         }
@@ -57,14 +58,14 @@ fun RegistrationScreen(
 
     RegistrationScreenContent(
         createNewUser = viewModel::createNewUser,
-        navigateToLogin = navigateToLogin
+        navigateToAuthorization = navigateToAuthorization
     )
 }
 
 @Composable
 fun RegistrationScreenContent(
     createNewUser: (name: String, email: String, password: String) -> Unit = { _, _, _ -> },
-    navigateToLogin: () -> Unit = {}
+    navigateToAuthorization: () -> Unit = {}
 ) {
 
     var textEmail by rememberSaveable { mutableStateOf("") }
@@ -192,7 +193,7 @@ fun RegistrationScreenContent(
             )
             SimpleTextButton(
                 text = stringResource(R.string.log_in),
-                onClick = navigateToLogin
+                onClick = navigateToAuthorization
             )
         }
     }

@@ -119,7 +119,7 @@ fun MainScreen(
             composable(Routes.forgotPassword) {
                 ForgotPasswordScreen(
                     navController = navController,
-                    onError = onError
+                    onShowMessage = onError
                 )
             }
 
