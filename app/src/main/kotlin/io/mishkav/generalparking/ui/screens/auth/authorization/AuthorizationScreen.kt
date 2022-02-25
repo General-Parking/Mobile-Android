@@ -149,7 +149,6 @@ fun AuthorizationScreenContent(
         ) {
             Text(
                 text = stringResource(R.string.no_account),
-                color = Color.Black,
                 style = Typography.subtitle1
             )
             SimpleTextButton(
