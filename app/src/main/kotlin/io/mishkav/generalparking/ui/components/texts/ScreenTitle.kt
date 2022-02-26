@@ -3,6 +3,7 @@ package io.mishkav.generalparking.ui.components.texts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,6 +19,7 @@ fun ScreenTitle(
     Text(
         text = text,
         style = Typography.h4,
+        color = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier
             .align(Alignment.BottomCenter)
     )

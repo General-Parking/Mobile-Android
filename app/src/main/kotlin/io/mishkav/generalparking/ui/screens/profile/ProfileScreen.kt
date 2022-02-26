@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.ScreenTextfield
 import io.mishkav.generalparking.ui.components.lines.TextfieldUnderLine
-import io.mishkav.generalparking.ui.theme.Red
+import io.mishkav.generalparking.ui.theme.Red800
 import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.theme.Typography
 
@@ -172,7 +172,7 @@ fun ProfileScreen() {
             Button(
                 onClick = { },
                 shape = Shapes.large,
-                colors = ButtonDefaults.buttonColors(backgroundColor = Red),
+                colors = ButtonDefaults.buttonColors(backgroundColor = Red800),
                 modifier = Modifier
                     .width(dimensionResource(R.dimen.exit_button_width))
                     .align(Alignment.BottomCenter)

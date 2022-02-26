@@ -3,6 +3,7 @@ package io.mishkav.generalparking.ui.screens.auth.confirmEmail
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -16,7 +17,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.buttons.TextButton
-import io.mishkav.generalparking.ui.components.buttons.CreateButton
+import io.mishkav.generalparking.ui.components.buttons.SimpleTextButton
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
@@ -94,9 +95,10 @@ fun ConfirmEmailScreenContent(
         ) {
             Text(
                 text = stringResource(R.string.other_account),
+                color = MaterialTheme.colorScheme.onPrimary,
                 style = Typography.subtitle1
             )
-            CreateButton(
+            SimpleTextButton(
                 text = stringResource(R.string.log_in),
                 onClick = navigateToAuthorization
             )

@@ -1,7 +1,6 @@
 package io.mishkav.generalparking.ui.screens.main
 
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.PaddingValues
@@ -41,37 +40,37 @@ class MainActivity : ComponentActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            val navController = rememberNavController()
-            val scaffoldState = rememberScaffoldState()
-            val viewModel: MainViewModel = viewModel()
+                val navController = rememberNavController()
+                val scaffoldState = rememberScaffoldState()
+                val viewModel: MainViewModel = viewModel()
 
-            GeneralParkingTheme {
-                ProvideWindowInsets(windowInsetsAnimationsEnabled = true) {
-                    Scaffold(
-                        scaffoldState = scaffoldState,
-                        snackbarHost = {
-                            SnackbarHost(
-                                hostState = it,
-                                modifier = Modifier.navigationBarsPadding()
-                            ) {
-                                Snackbar(
-                                    snackbarData = it,
-                                    backgroundColor = MaterialTheme.colorScheme.surface,
-                                    contentColor = contentColorFor(MaterialTheme.colorScheme.surface),
-                                    shape = shapes.medium
+                GeneralParkingTheme() {
+                    ProvideWindowInsets(windowInsetsAnimationsEnabled = true) {
+                        Scaffold(
+                            scaffoldState = scaffoldState,
+                            snackbarHost = {
+                                SnackbarHost(
+                                    hostState = it,
+                                    modifier = Modifier.navigationBarsPadding()
+                                ) {
+                                    Snackbar(
+                                        snackbarData = it,
+                                        backgroundColor = MaterialTheme.colorScheme.surface,
+                                        contentColor = contentColorFor(MaterialTheme.colorScheme.surface),
+                                        shape = shapes.medium
+                                    )
+                                }
+                            },
+                            content = {
+                                MainScreen(
+                                    viewModel = viewModel,
+                                    navController = navController,
+                                    scaffoldState = scaffoldState,
+                                    paddingValues = it
                                 )
                             }
-                        },
-                        content = {
-                            MainScreen(
-                                viewModel = viewModel,
-                                navController = navController,
-                                scaffoldState = scaffoldState,
-                                paddingValues = it
-                            )
-                        }
-                    )
-                }
+                        )
+                    }
             }
         }
     }
@@ -92,6 +91,7 @@ fun MainScreen(
     }
 
     // val isAuthorized by viewModel.isAuthorized.collectAsState()
+    // Log.d("TAG_CHECK", M)
     Surface(
         color = MaterialTheme.colorScheme.background,
         modifier = Modifier

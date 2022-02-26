@@ -7,7 +7,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,6 +14,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
@@ -24,7 +24,6 @@ import io.mishkav.generalparking.ui.components.lines.TextfieldUnderLine
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
-import io.mishkav.generalparking.ui.screens.main.Routes
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
@@ -63,10 +62,7 @@ fun ForgotPasswordScreenContent(
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                horizontal = dimensionResource(R.dimen.main_hor_padding),
-                vertical = dimensionResource(R.dimen.main_vert_padding)
-            )
+            .padding(horizontal = dimensionResource(R.dimen.main_hor_padding), vertical = 60.dp)
     ) {
         ScreenTitle(
             text = stringResource(R.string.forgot_password),

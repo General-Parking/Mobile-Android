@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -21,7 +22,7 @@ import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.ScreenTextfield
 import io.mishkav.generalparking.ui.components.buttons.TextButton
-import io.mishkav.generalparking.ui.components.buttons.CreateButton
+import io.mishkav.generalparking.ui.components.buttons.SimpleTextButton
 import io.mishkav.generalparking.ui.components.lines.TextfieldUnderLine
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
@@ -165,6 +166,7 @@ fun RegistrationScreenContent(
             Text(
                 text = stringResource(R.string.use_terms),
                 style = Typography.caption,
+                color = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
             )
@@ -186,9 +188,10 @@ fun RegistrationScreenContent(
         ) {
             Text(
                 text = stringResource(R.string.have_account),
+                color = MaterialTheme.colorScheme.onPrimary,
                 style = Typography.subtitle1
             )
-            CreateButton(
+            SimpleTextButton(
                 text = stringResource(R.string.log_in),
                 onClick = navigateToAuthorization
             )
