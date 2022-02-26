@@ -1,8 +1,7 @@
 package io.mishkav.generalparking.ui.screens.auth.confirmEmail
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,11 +22,6 @@ import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
 import io.mishkav.generalparking.ui.screens.main.Routes
 import io.mishkav.generalparking.ui.theme.Typography
-import io.mishkav.generalparking.ui.utils.ErrorResult
-import io.mishkav.generalparking.ui.utils.LoadingResult
-import io.mishkav.generalparking.ui.utils.SuccessResult
-import kotlinx.coroutines.Job
-import kotlin.reflect.KFunction1
 
 @Composable
 fun ConfirmEmailScreen(

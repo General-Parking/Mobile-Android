@@ -32,6 +32,7 @@ import io.mishkav.generalparking.ui.screens.auth.confirmEmail.ConfirmEmailScreen
 import io.mishkav.generalparking.ui.screens.auth.forgotPassword.ForgotPasswordScreen
 import io.mishkav.generalparking.ui.screens.auth.registration.RegistrationScreen
 import io.mishkav.generalparking.ui.screens.auth.registrationExtensionData.RegistrationExtensionData
+import io.mishkav.generalparking.ui.screens.map.mapScreen.MapScreen
 import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
 
 class MainActivity : ComponentActivity() {
@@ -56,7 +57,7 @@ class MainActivity : ComponentActivity() {
                                     Snackbar(
                                         snackbarData = it,
                                         backgroundColor = MaterialTheme.colorScheme.surface,
-                                        contentColor = contentColorFor(MaterialTheme.colorScheme.surface),
+                                        contentColor = MaterialTheme.colorScheme.onPrimary,
                                         shape = shapes.medium
                                     )
                                 }
@@ -91,7 +92,6 @@ fun MainScreen(
     }
 
     // val isAuthorized by viewModel.isAuthorized.collectAsState()
-    // Log.d("TAG_CHECK", M)
     Surface(
         color = MaterialTheme.colorScheme.background,
         modifier = Modifier
@@ -136,6 +136,13 @@ fun MainScreen(
                     onError = onError
                 )
             }
+
+            composable(Routes.map) {
+                MapScreen(
+                    navController = navController,
+                    onError = onError
+                )
+            }
         }
     }
 }
@@ -146,4 +153,5 @@ object Routes {
     const val forgotPassword = "forgotPassword"
     const val registration = "registration"
     const val registrationExtensionData = "registrationExtensionData"
+    const val map = "map"
 }

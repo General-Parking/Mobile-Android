@@ -7,19 +7,20 @@ fun User.toMap(): Map<String, *> {
     with(UserFields) {
         return mapOf(
             FIELD_ACCOUNT_BALANCE to accountBalance,
-            FIELD_EMAIL to arrive,
+            FIELD_ARRIVE to arrive,
+            FIELD_EMAIL to email,
+            FIELD_EXIT to exit,
+            FIELD_META_USER_INFO to metaUserInfo,
             FIELD_NAME to name,
             FIELD_NUMBER_AUTO to numberAuto,
             FIELD_PROFILE_IMAGE to profileImage,
-            FIELD_META_USER_INFO to metaUserInfo,
+            FIELD_REMAINING_BOOKING_TIME to remainingBookingTime,
             FIELD_RESERVATION_ADDRESS to reservationAddress,
             FIELD_RESERVATION_LEVEL to reservationLevel,
             FIELD_RESERVATION_PLACE to reservationPlace,
-            FIELD_TIME_RESERVATION to timeReservation,
             FIELD_TIME_ARRIVE to timeArrive,
-            FIELD_TIME_EXIT to timeExit,
-            FIELD_ARRIVE to arrive,
-            FIELD_EXIT to exit
+            FIELD_TIME_RESERVATION to timeReservation,
+            FIELD_TIME_EXIT to timeExit
         )
     }
 }

@@ -1,16 +1,17 @@
 package io.mishkav.generalparking.ui.screens.auth
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.mishkav.generalparking.GeneralParkingApp
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.dagger.AppComponent
+import io.mishkav.generalparking.data.utils.getMetaUserInfoInstance
 import io.mishkav.generalparking.domain.entities.User
 import io.mishkav.generalparking.domain.repositories.IAuthRepository
 import io.mishkav.generalparking.domain.repositories.IDatabaseRepository
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
 import io.mishkav.generalparking.ui.utils.loadOrError
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,6 +28,9 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
     val resetPasswordResult = MutableResultFlow<Unit>()
     val isEmailVerified = MutableResultFlow<Boolean>()
 
+    private val _currentUser = MutableStateFlow<User>(User.getInstance())
+    val currentUser = MutableResultFlow<User>()
+
     init {
         appComponent.inject(this)
     }
@@ -34,19 +38,36 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
     fun signIn(email: String, password: String) = viewModelScope.launch {
         signInResult.loadOrError(R.string.error_auth) {
             authRepository.signInWithEmailAndPassword(email, password)
-            // val user = databaseRepository.getUserDataFromDatabase()
         }
     }
 
     fun createNewUser(name: String, email: String, password: String) = viewModelScope.launch {
         createNewUserResult.loadOrError(R.string.error_registration) {
             authRepository.createUserWithEmailAndPassword(email, password)
-            databaseRepository.insertUserData(
-                User.getInstance(
-                    email = email,
-                    name = name
+            _currentUser.value = _currentUser.value.copy(
+                email = email,
+                name = name
+            )
+            databaseRepository.insertUserData(_currentUser.value)
+        }
+    }
+
+    fun insertExtensionUserData(
+        numberAuto: String,
+        carBrand: String,
+        phoneNumber: String
+    ) = viewModelScope.launch {
+        currentUser.loadOrError {
+            _currentUser.value = _currentUser.value.copy(
+                numberAuto = numberAuto,
+                metaUserInfo = getMetaUserInfoInstance(
+                    carBrand = carBrand,
+                    name = _currentUser.value.name,
+                    phoneNumber = phoneNumber
                 )
             )
+            databaseRepository.insertUserData(_currentUser.value)
+            _currentUser.value
         }
     }
 

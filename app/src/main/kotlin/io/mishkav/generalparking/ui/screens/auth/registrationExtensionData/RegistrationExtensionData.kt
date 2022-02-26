@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import io.mishkav.generalparking.ui.theme.Typography
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.ScreenTextfield
@@ -28,33 +31,58 @@ import io.mishkav.generalparking.ui.components.buttons.TextButton
 import io.mishkav.generalparking.ui.components.lines.TextfieldUnderLine
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
+import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
+import io.mishkav.generalparking.ui.screens.main.Routes
 import io.mishkav.generalparking.ui.theme.Shapes
+import io.mishkav.generalparking.ui.utils.ErrorResult
+import io.mishkav.generalparking.ui.utils.LoadingResult
+import io.mishkav.generalparking.ui.utils.SuccessResult
 
 @Composable
 fun RegistrationExtensionData(
     navController: NavHostController,
     onError: @Composable (Int) -> Unit
 ) {
-    RegistrationExtensionDataContent()
+    val viewModel: AuthViewModel = viewModel()
+    val currentUser by viewModel.currentUser.collectAsState()
+    currentUser.also { result ->
+        when (result) {
+            is ErrorResult -> onError(result.message!!)
+            is SuccessResult -> {
+                LaunchedEffect(Unit) {
+                    navController.navigate(Routes.map)
+                }
+            }
+            is LoadingResult -> {}
+        }
+    }
+
+    RegistrationExtensionDataContent(
+        insertExtensionUserData = viewModel::insertExtensionUserData
+    )
 }
 
 @Composable
-fun RegistrationExtensionDataContent() {
+fun RegistrationExtensionDataContent(
+    insertExtensionUserData: (numberAuto: String, carBrand: String, phoneNumber: String) -> Unit = { _, _, _ -> }
+) {
 
-    var textRightZeros by rememberSaveable { mutableStateOf("") }
-    var textLeftSymbol by rememberSaveable { mutableStateOf("") }
-    var textLeftZeros by rememberSaveable { mutableStateOf("") }
-    var textRightSymbol by rememberSaveable { mutableStateOf("") }
+    var textNumberAutoLeftSymbols by rememberSaveable { mutableStateOf("") }
+    var textNumberAutoDigits by rememberSaveable { mutableStateOf("") }
+    var textNumberAutoRightSymbols by rememberSaveable { mutableStateOf("") }
+    var textNumberAutoRegion by rememberSaveable { mutableStateOf("") }
     var textModel by rememberSaveable { mutableStateOf("") }
     var textPhone by rememberSaveable { mutableStateOf("") }
-    var textCard by rememberSaveable { mutableStateOf("") }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = dimensionResource(R.dimen.main_hor_padding), vertical = dimensionResource(R.dimen.main_vert_padding))
+            .padding(
+                horizontal = dimensionResource(R.dimen.main_hor_padding),
+                vertical = dimensionResource(R.dimen.main_vert_padding)
+            )
     ) {
         ScreenTitle(
             text = stringResource(R.string.registration),
@@ -94,12 +122,14 @@ fun RegistrationExtensionDataContent() {
                 ) {
 
                     TextField(
-                        value = textLeftSymbol,
+                        value = textNumberAutoLeftSymbols,
                         onValueChange = {
                             if (it.length <= 1)
-                                textLeftSymbol = it
+                                textNumberAutoLeftSymbols = it
                         },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text
+                        ),
                         placeholder = { Text(stringResource(R.string.a)) },
                         textStyle = TextStyle(fontSize = 23.sp, fontWeight = FontWeight.Bold),
                         colors = TextFieldDefaults.textFieldColors(
@@ -113,10 +143,10 @@ fun RegistrationExtensionDataContent() {
                             .fillMaxHeight()
                     )
                     TextField(
-                        value = textLeftZeros,
+                        value = textNumberAutoDigits,
                         onValueChange = {
                             if (it.length <= 3)
-                                textLeftZeros = it
+                                textNumberAutoDigits = it
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         placeholder = { Text(stringResource(R.string.zeros)) },
@@ -132,10 +162,10 @@ fun RegistrationExtensionDataContent() {
                             .fillMaxHeight()
                     )
                     TextField(
-                        value = textRightSymbol,
+                        value = textNumberAutoRightSymbols,
                         onValueChange = {
                             if (it.length <= 2)
-                                textRightSymbol = it
+                                textNumberAutoRightSymbols = it
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                         placeholder = { Text(stringResource(R.string.aa)) },
@@ -163,10 +193,10 @@ fun RegistrationExtensionDataContent() {
                         )
                 ) {
                     TextField(
-                        value = textRightZeros,
+                        value = textNumberAutoRegion,
                         onValueChange = {
                             if (it.length <= 3)
-                                textRightZeros = it
+                                textNumberAutoRegion = it
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         placeholder = { Text(stringResource(R.string.zeros)) },
@@ -212,7 +242,7 @@ fun RegistrationExtensionDataContent() {
                         textModel = it
                     },
                     keyboardType = KeyboardType.Text,
-                    label = { Text(stringResource(R.string.car_model))},
+                    label = { Text(stringResource(R.string.car_model)) },
                     modifier = Modifier
                         .fillMaxWidth()
                 )
@@ -228,23 +258,7 @@ fun RegistrationExtensionDataContent() {
                         textPhone = it
                     },
                     keyboardType = KeyboardType.Phone,
-                    label = { Text(stringResource(R.string.phone))},
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-                TextfieldUnderLine()
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                ScreenTextfield(
-                    value = textCard,
-                    onValueChange = {
-                        textCard = it
-                    },
-                    keyboardType = KeyboardType.Number,
-                    label = { Text(stringResource(R.string.card))},
+                    label = { Text(stringResource(R.string.phone)) },
                     modifier = Modifier
                         .fillMaxWidth()
                 )
@@ -254,7 +268,13 @@ fun RegistrationExtensionDataContent() {
 
         TextButton(
             text = stringResource(R.string.create_account),
-            onClick = {},
+            onClick = {
+                insertExtensionUserData(
+                    textNumberAutoLeftSymbols + textNumberAutoDigits + textNumberAutoRightSymbols + textNumberAutoRegion,
+                    textModel,
+                    textPhone
+                )
+            },
             modifier = Modifier.weight(1f)
         )
     }
