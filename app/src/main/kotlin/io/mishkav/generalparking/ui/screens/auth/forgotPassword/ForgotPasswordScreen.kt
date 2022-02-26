@@ -19,11 +19,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.ScreenTextfield
+import io.mishkav.generalparking.ui.components.UnderlinedTextfield
 import io.mishkav.generalparking.ui.components.buttons.TextButton
 import io.mishkav.generalparking.ui.components.lines.TextfieldUnderLine
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
+import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
@@ -72,23 +74,14 @@ fun ForgotPasswordScreenContent(
             text = stringResource(R.string.forgot_password_text),
             modifier = Modifier.weight(1f)
         )
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        ) {
-            ScreenTextfield(
-                value = textEmail,
-                onValueChange = {
-                    textEmail = it
-                },
-                keyboardType = KeyboardType.Email,
-                label = { Text(stringResource(R.string.email)) },
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-            TextfieldUnderLine()
-        }
+        UnderlinedTextfield(
+            value = textEmail,
+            onValueChange = {
+                textEmail = it
+            },
+            keyboardType = KeyboardType.Email,
+            label = { Text(stringResource(R.string.email)) }
+        )
 
         TextButton(
             text = stringResource(R.string.continue_text),
@@ -105,5 +98,8 @@ fun ForgotPasswordScreenContent(
 @Preview(showBackground = true)
 @Composable
 fun PreviewForgotPasswordScreen() {
-    ForgotPasswordScreenContent()
+    GeneralParkingTheme() {
+        ForgotPasswordScreenContent()
+
+    }
 }

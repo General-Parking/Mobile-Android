@@ -27,6 +27,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.ScreenTextfield
+import io.mishkav.generalparking.ui.components.UnderlinedTextfield
 import io.mishkav.generalparking.ui.components.buttons.TextButton
 import io.mishkav.generalparking.ui.components.lines.TextfieldUnderLine
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
@@ -97,126 +98,137 @@ fun RegistrationExtensionDataContent(
                 .fillMaxWidth()
                 .weight(2f)
         ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
+            Box(
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .padding(vertical = 10.dp)
-                    .width(300.dp)
-                    .height(90.dp)
+                    .width(303.dp)
+                    .height(103.dp)
                     .background(
-                        Color.Black,
+                        Color.White,
                         shape = Shapes.small
                     )
                     .align(Alignment.CenterHorizontally)
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier
-                        .padding(vertical = 2.dp)
-                        .width(200.dp)
-                        .fillMaxHeight()
+                        .width(300.dp)
+                        .height(100.dp)
                         .background(
-                            Color.White,
+                            Color.Black,
                             shape = Shapes.small
                         )
                 ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(vertical = 4.dp)
+                            .width(200.dp)
+                            .fillMaxHeight()
+                            .background(
+                                Color.White,
+                                shape = Shapes.small
+                            )
+                    ) {
 
-                    TextField(
-                        value = textNumberAutoLeftSymbols,
-                        onValueChange = {
-                            if (it.length <= 1)
-                                textNumberAutoLeftSymbols = it
-                        },
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Text
-                        ),
-                        placeholder = { Text(stringResource(R.string.a)) },
-                        textStyle = TextStyle(fontSize = 23.sp, fontWeight = FontWeight.Bold),
-                        colors = TextFieldDefaults.textFieldColors(
-                            focusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            backgroundColor = Color.Transparent,
-                        ),
-                        modifier = Modifier
-                            .width(50.dp)
-                            .fillMaxHeight()
-                    )
-                    TextField(
-                        value = textNumberAutoDigits,
-                        onValueChange = {
-                            if (it.length <= 3)
-                                textNumberAutoDigits = it
-                        },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        placeholder = { Text(stringResource(R.string.zeros)) },
-                        textStyle = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.Bold),
-                        colors = TextFieldDefaults.textFieldColors(
-                            focusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            backgroundColor = Color.Transparent,
-                        ),
-                        modifier = Modifier
-                            .width(80.dp)
-                            .fillMaxHeight()
-                    )
-                    TextField(
-                        value = textNumberAutoRightSymbols,
-                        onValueChange = {
-                            if (it.length <= 2)
-                                textNumberAutoRightSymbols = it
-                        },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                        placeholder = { Text(stringResource(R.string.aa)) },
-                        textStyle = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
-                        colors = TextFieldDefaults.textFieldColors(
-                            focusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            backgroundColor = Color.Transparent,
-                        ),
-                        modifier = Modifier
-                            .width(70.dp)
-                            .fillMaxHeight()
-                    )
-                }
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .padding(vertical = 2.dp)
-                        .width(90.dp)
-                        .fillMaxHeight()
-                        .background(
-                            Color.White,
-                            shape = Shapes.small
+                        TextField(
+                            value = textNumberAutoLeftSymbols,
+                            onValueChange = {
+                                if (it.length <= 1)
+                                    textNumberAutoLeftSymbols = it
+                            },
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Text
+                            ),
+                            placeholder = { Text(stringResource(R.string.a)) },
+                            textStyle = TextStyle(fontSize = 23.sp, fontWeight = FontWeight.Bold),
+                            colors = TextFieldDefaults.textFieldColors(
+                                focusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                backgroundColor = Color.Transparent,
+                            ),
+                            modifier = Modifier
+                                .width(50.dp)
+                                .fillMaxHeight()
                         )
-                ) {
-                    TextField(
-                        value = textNumberAutoRegion,
-                        onValueChange = {
-                            if (it.length <= 3)
-                                textNumberAutoRegion = it
-                        },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        placeholder = { Text(stringResource(R.string.zeros)) },
-                        textStyle = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.Bold),
-                        colors = TextFieldDefaults.textFieldColors(
-                            focusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            backgroundColor = Color.Transparent,
-                        ),
+                        TextField(
+                            value = textNumberAutoDigits,
+                            onValueChange = {
+                                if (it.length <= 3)
+                                    textNumberAutoDigits = it
+                            },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            placeholder = { Text(stringResource(R.string.zeros)) },
+                            textStyle = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.Bold),
+                            colors = TextFieldDefaults.textFieldColors(
+                                focusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                backgroundColor = Color.Transparent,
+                            ),
+                            modifier = Modifier
+                                .width(80.dp)
+                                .fillMaxHeight()
+                        )
+                        TextField(
+                            value = textNumberAutoRightSymbols,
+                            onValueChange = {
+                                if (it.length <= 2)
+                                    textNumberAutoRightSymbols = it
+                            },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                            placeholder = { Text(stringResource(R.string.aa)) },
+                            textStyle = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
+                            colors = TextFieldDefaults.textFieldColors(
+                                focusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                backgroundColor = Color.Transparent,
+                            ),
+                            modifier = Modifier
+                                .width(70.dp)
+                                .fillMaxHeight()
+                        )
+                    }
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(60.dp)
-                    )
-                    Text(
-                        text = stringResource(R.string.rus),
-                        fontSize = 20.sp,
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                    )
+                            .padding(vertical = 3.dp)
+                            .width(90.dp)
+                            .fillMaxHeight()
+                            .background(
+                                Color.White,
+                                shape = Shapes.small
+                            )
+                    ) {
+                        TextField(
+                            value = textNumberAutoRegion,
+                            onValueChange = {
+                                if (it.length <= 3)
+                                    textNumberAutoRegion = it
+                            },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            placeholder = { Text(stringResource(R.string.zeros)) },
+                            textStyle = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.Bold),
+                            colors = TextFieldDefaults.textFieldColors(
+                                focusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                backgroundColor = Color.Transparent,
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.rus),
+                            fontSize = 20.sp,
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                        )
+                    }
                 }
             }
             Text(
@@ -232,38 +244,23 @@ fun RegistrationExtensionDataContent(
                 .fillMaxWidth()
                 .weight(3f)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                ScreenTextfield(
-                    value = textModel,
-                    onValueChange = {
-                        textModel = it
-                    },
-                    keyboardType = KeyboardType.Text,
-                    label = { Text(stringResource(R.string.car_model)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-                TextfieldUnderLine()
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                ScreenTextfield(
-                    value = textPhone,
-                    onValueChange = {
-                        textPhone = it
-                    },
-                    keyboardType = KeyboardType.Phone,
-                    label = { Text(stringResource(R.string.phone)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-                TextfieldUnderLine()
-            }
+            UnderlinedTextfield(
+                value = textModel,
+                onValueChange = {
+                    textModel = it
+                },
+                keyboardType = KeyboardType.Text,
+                label = { Text(stringResource(R.string.car_model)) }
+            )
+            UnderlinedTextfield(
+                value = textPhone,
+                onValueChange = {
+                    textPhone = it
+                },
+                keyboardType = KeyboardType.Phone,
+                label = { Text(stringResource(R.string.phone)) }
+            )
+
         }
 
         TextButton(

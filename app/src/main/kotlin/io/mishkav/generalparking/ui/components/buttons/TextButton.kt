@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.theme.Typography
+import io.mishkav.generalparking.ui.theme.generalParkingLightBackground
 
 @Composable
 fun TextButton(
@@ -30,7 +31,7 @@ fun TextButton(
     ) {
         Text(
             text = text,
-            color = MaterialTheme.colorScheme.onPrimary,
+            color = generalParkingLightBackground,
             style = Typography.button
         )
     }

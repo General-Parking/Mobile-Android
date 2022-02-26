@@ -1,29 +1,28 @@
 package io.mishkav.generalparking.ui.screens.auth.registration
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
-import io.mishkav.generalparking.ui.components.ScreenTextfield
+import io.mishkav.generalparking.ui.components.UnderlinedTextfield
 import io.mishkav.generalparking.ui.components.buttons.TextButton
 import io.mishkav.generalparking.ui.components.buttons.SimpleTextButton
-import io.mishkav.generalparking.ui.components.lines.TextfieldUnderLine
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
@@ -71,6 +70,8 @@ fun RegistrationScreenContent(
     var textEmail by rememberSaveable { mutableStateOf("") }
     var textPassword by rememberSaveable { mutableStateOf("") }
     var textName by rememberSaveable { mutableStateOf("") }
+    var passwordVisibility by remember { mutableStateOf(false) }
+
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -95,54 +96,45 @@ fun RegistrationScreenContent(
                 .fillMaxWidth()
                 .weight(3f)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                ScreenTextfield(
-                    value = textName,
-                    onValueChange = {
-                        textName = it
-                    },
-                    keyboardType = KeyboardType.Text,
-                    label = { Text(stringResource(R.string.name)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-                TextfieldUnderLine()
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                ScreenTextfield(
-                    value = textEmail,
-                    onValueChange = {
-                        textEmail = it
-                    },
-                    keyboardType = KeyboardType.Email,
-                    label = { Text(stringResource(R.string.email)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-                TextfieldUnderLine()
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                ScreenTextfield(
-                    value = textPassword,
-                    onValueChange = {
-                        textPassword = it
-                    },
-                    keyboardType = KeyboardType.Password,
-                    label = { Text(stringResource(R.string.password)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-                TextfieldUnderLine()
-            }
+            UnderlinedTextfield(
+                value = textName,
+                onValueChange = {
+                    textName = it
+                },
+                keyboardType = KeyboardType.Text,
+                label = { Text(stringResource(R.string.name)) }
+            )
+            UnderlinedTextfield(
+                value = textEmail,
+                onValueChange = {
+                    textEmail = it
+                },
+                keyboardType = KeyboardType.Email,
+                label = { Text(stringResource(R.string.email)) }
+            )
+            UnderlinedTextfield(
+                value = textPassword,
+                onValueChange = {
+                    textPassword = it
+                },
+                visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardType = KeyboardType.Password,
+                label = { Text(stringResource(R.string.password)) },
+                trailingIcon = {
+                    val image = if (passwordVisibility)
+                        Icons.Filled.Visibility
+                    else Icons.Filled.VisibilityOff
+
+                    IconButton(onClick = {
+                        passwordVisibility = !passwordVisibility
+                    }) {
+                        Icon(
+                            imageVector  = image, "",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
+            )
         }
 
         TextButton(
