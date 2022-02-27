@@ -13,7 +13,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -23,6 +25,8 @@ import androidx.compose.ui.unit.sp
 import io.mishkav.generalparking.ui.theme.Typography
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
@@ -34,10 +38,12 @@ import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
 import io.mishkav.generalparking.ui.screens.main.Routes
+import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
 import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
+import java.util.*
 
 @Composable
 fun RegistrationExtensionData(
@@ -63,6 +69,8 @@ fun RegistrationExtensionData(
     )
 }
 
+fun String.onlyLetters() = all { it.isLetter() }
+
 @Composable
 fun RegistrationExtensionDataContent(
     insertExtensionUserData: (numberAuto: String, carBrand: String, phoneNumber: String) -> Unit = { _, _, _ -> }
@@ -74,6 +82,8 @@ fun RegistrationExtensionDataContent(
     var textNumberAutoRegion by rememberSaveable { mutableStateOf("") }
     var textModel by rememberSaveable { mutableStateOf("") }
     var textPhone by rememberSaveable { mutableStateOf("") }
+
+    val focusManager = LocalFocusManager.current
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -136,10 +146,15 @@ fun RegistrationExtensionDataContent(
                             value = textNumberAutoLeftSymbols,
                             onValueChange = {
                                 if (it.length <= 1)
-                                    textNumberAutoLeftSymbols = it
+                                    textNumberAutoLeftSymbols =
+                                        if (it == it.uppercase() && it.onlyLetters()) it
+                                        else ""
+                                if (textNumberAutoLeftSymbols.length == 1)
+                                    focusManager.moveFocus(FocusDirection.Right)
                             },
                             keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Text
+                                keyboardType = KeyboardType.Text,
+                                capitalization = KeyboardCapitalization.Characters
                             ),
                             placeholder = { Text(stringResource(R.string.a)) },
                             textStyle = TextStyle(fontSize = 23.sp, fontWeight = FontWeight.Bold),
@@ -157,9 +172,13 @@ fun RegistrationExtensionDataContent(
                             value = textNumberAutoDigits,
                             onValueChange = {
                                 if (it.length <= 3)
-                                    textNumberAutoDigits = it
+                                    textNumberAutoDigits =
+                                        if (it.isDigitsOnly()) it
+                                        else ""
+                                if (textNumberAutoDigits.length == 3)
+                                    focusManager.moveFocus(FocusDirection.Right)
                             },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
                             placeholder = { Text(stringResource(R.string.zeros)) },
                             textStyle = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.Bold),
                             colors = TextFieldDefaults.textFieldColors(
@@ -176,9 +195,16 @@ fun RegistrationExtensionDataContent(
                             value = textNumberAutoRightSymbols,
                             onValueChange = {
                                 if (it.length <= 2)
-                                    textNumberAutoRightSymbols = it
+                                    textNumberAutoRightSymbols =
+                                        if (it == it.uppercase() && it.onlyLetters()) it
+                                        else ""
+                                if (textNumberAutoRightSymbols.length == 2)
+                                    focusManager.moveFocus(FocusDirection.Right)
                             },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Text,
+                                capitalization = KeyboardCapitalization.Characters
+                            ),
                             placeholder = { Text(stringResource(R.string.aa)) },
                             textStyle = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
                             colors = TextFieldDefaults.textFieldColors(
@@ -207,9 +233,13 @@ fun RegistrationExtensionDataContent(
                             value = textNumberAutoRegion,
                             onValueChange = {
                                 if (it.length <= 3)
-                                    textNumberAutoRegion = it
+                                    textNumberAutoRegion =
+                                        if (it.isDigitsOnly()) it
+                                        else ""
+                                if (textNumberAutoRegion.length == 3)
+                                    focusManager.moveFocus(FocusDirection.Down)
                             },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
                             placeholder = { Text(stringResource(R.string.zeros)) },
                             textStyle = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.Bold),
                             colors = TextFieldDefaults.textFieldColors(
@@ -280,5 +310,7 @@ fun RegistrationExtensionDataContent(
 @Preview(showBackground = true)
 @Composable
 fun PreviewInputDataScreen() {
-    RegistrationExtensionDataContent()
+    GeneralParkingTheme {
+        RegistrationExtensionDataContent()
+    }
 }
