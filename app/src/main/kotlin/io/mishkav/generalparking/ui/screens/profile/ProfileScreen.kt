@@ -53,33 +53,33 @@ fun ProfileScreen() {
                 .weight(7f)
                 .verticalScroll(rememberScrollState())
         ) {
-        Image(
-            painter = painterResource(R.drawable.ic_avatar),
-            contentDescription = "",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(
-                    width = dimensionResource(R.dimen.image_width),
-                    height = dimensionResource(R.dimen.image_width)
-                )
-        )
-        TextField(
-            value = textName,
-            onValueChange = {
-                textName = it
-            },
-            label = { Text(stringResource(R.string.name)) },
-            textStyle = Typography.h4,
-            colors = TextFieldDefaults.textFieldColors(
-                focusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                backgroundColor = Color.Transparent,
-            ),
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .width(IntrinsicSize.Min)
-        )
+            Image(
+                painter = painterResource(R.drawable.ic_avatar),
+                contentDescription = "",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(
+                        width = dimensionResource(R.dimen.image_width),
+                        height = dimensionResource(R.dimen.image_width)
+                    )
+            )
+            TextField(
+                value = textName,
+                onValueChange = {
+                    textName = it
+                },
+                label = { Text(stringResource(R.string.name)) },
+                textStyle = Typography.h4,
+                colors = TextFieldDefaults.textFieldColors(
+                    focusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    backgroundColor = Color.Transparent,
+                ),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .width(IntrinsicSize.Min)
+            )
 
             Column(
                 modifier = Modifier

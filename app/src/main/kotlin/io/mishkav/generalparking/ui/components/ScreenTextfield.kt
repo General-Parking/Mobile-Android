@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import io.mishkav.generalparking.ui.theme.Typography
 
@@ -19,13 +20,17 @@ fun ScreenTextfield(
     onValueChange: (String) -> Unit,
     keyboardType: KeyboardType,
     label: @Composable (() -> Unit)? = null,
-    placeholder: @Composable (() -> Unit)? = null
+    placeholder: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    visualTransformation: VisualTransformation = VisualTransformation.None
 ) = TextField(
     value = value,
     onValueChange = onValueChange,
     keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
     label = label,
     placeholder = placeholder,
+    trailingIcon = trailingIcon,
+    visualTransformation = visualTransformation,
     singleLine = true,
     textStyle = Typography.body1
         .merge(
