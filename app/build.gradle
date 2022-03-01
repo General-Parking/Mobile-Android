@@ -70,7 +70,6 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0"
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
 
-
     // Accompanist
     implementation "com.google.accompanist:accompanist-pager:$accompanistVersion"
     implementation "com.google.accompanist:accompanist-pager-indicators:$accompanistVersion"
@@ -103,4 +102,8 @@ dependencies {
     // Dagger
     implementation 'com.google.dagger:dagger:2.40.5'
     kapt 'com.google.dagger:dagger-compiler:2.40.5'
+
+    // Google Maps
+    implementation "com.google.maps.android:maps-compose:1.0.0"
+    implementation "com.google.android.gms:play-services-maps:18.0.2"
 }

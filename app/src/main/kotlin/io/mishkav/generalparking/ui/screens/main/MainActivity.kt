@@ -1,5 +1,7 @@
 package io.mishkav.generalparking.ui.screens.main
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,6 +28,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.navigationBarsPadding
+import io.mishkav.generalparking.state.Session
 import io.mishkav.generalparking.ui.screens.auth.authorization.AuthorizationScreen
 import io.mishkav.generalparking.ui.screens.auth.confirmEmail.ConfirmEmailScreen
 import io.mishkav.generalparking.ui.screens.auth.forgotPassword.ForgotPasswordScreen
@@ -39,38 +42,41 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        setContent {
-                val navController = rememberNavController()
-                val scaffoldState = rememberScaffoldState()
-                val viewModel: MainViewModel = viewModel()
+        val startAgreementActivity = { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(Session.AGREEMENT_URI))) }
 
-                GeneralParkingTheme() {
-                    ProvideWindowInsets(windowInsetsAnimationsEnabled = true) {
-                        Scaffold(
-                            scaffoldState = scaffoldState,
-                            snackbarHost = {
-                                SnackbarHost(
-                                    hostState = it,
-                                    modifier = Modifier.navigationBarsPadding()
-                                ) {
-                                    Snackbar(
-                                        snackbarData = it,
-                                        backgroundColor = MaterialTheme.colorScheme.surface,
-                                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                                        shape = shapes.medium
-                                    )
-                                }
-                            },
-                            content = {
-                                MainScreen(
-                                    viewModel = viewModel,
-                                    navController = navController,
-                                    scaffoldState = scaffoldState,
-                                    paddingValues = it
+        setContent {
+            val navController = rememberNavController()
+            val scaffoldState = rememberScaffoldState()
+            val viewModel: MainViewModel = viewModel()
+
+            GeneralParkingTheme() {
+                ProvideWindowInsets(windowInsetsAnimationsEnabled = true) {
+                    Scaffold(
+                        scaffoldState = scaffoldState,
+                        snackbarHost = {
+                            SnackbarHost(
+                                hostState = it,
+                                modifier = Modifier.navigationBarsPadding()
+                            ) {
+                                Snackbar(
+                                    snackbarData = it,
+                                    backgroundColor = MaterialTheme.colorScheme.surface,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                                    shape = shapes.medium
                                 )
                             }
-                        )
-                    }
+                        },
+                        content = {
+                            MainScreen(
+                                viewModel = viewModel,
+                                navController = navController,
+                                scaffoldState = scaffoldState,
+                                paddingValues = it,
+                                startAgreementActivity = startAgreementActivity
+                            )
+                        }
+                    )
+                }
             }
         }
     }
@@ -81,7 +87,8 @@ fun MainScreen(
     viewModel: MainViewModel,
     navController: NavHostController,
     scaffoldState: ScaffoldState,
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    startAgreementActivity: () -> Unit
 ) {
     val onError: @Composable (Int) -> Unit = { message ->
         val strMessage = stringResource(message)
@@ -90,7 +97,6 @@ fun MainScreen(
         }
     }
 
-    // val isAuthorized by viewModel.isAuthorized.collectAsState()
     Surface(
         color = MaterialTheme.colorScheme.background,
         modifier = Modifier
@@ -99,7 +105,7 @@ fun MainScreen(
     ) {
         NavHost(
             navController = navController,
-            startDestination = Routes.authorization
+            startDestination = if (viewModel.isAuthorized) Routes.authorization else Routes.map
         ) {
             composable(Routes.authorization) {
                 AuthorizationScreen(
@@ -125,7 +131,8 @@ fun MainScreen(
             composable(Routes.registration) {
                 RegistrationScreen(
                     navController = navController,
-                    onError = onError
+                    onError = onError,
+                    startAgreementActivity = startAgreementActivity
                 )
             }
 

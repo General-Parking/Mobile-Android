@@ -2,6 +2,7 @@ package io.mishkav.generalparking.ui.screens.auth.registration
 
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -13,9 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -35,7 +41,8 @@ import io.mishkav.generalparking.ui.utils.SuccessResult
 @Composable
 fun RegistrationScreen(
     navController: NavHostController,
-    onError: @Composable (Int) -> Unit
+    onError: @Composable (Int) -> Unit,
+    startAgreementActivity: () -> Unit
 ) {
     val viewModel: AuthViewModel = viewModel()
     val createNewUserResult by viewModel.createNewUserResult.collectAsState()
@@ -57,14 +64,16 @@ fun RegistrationScreen(
 
     RegistrationScreenContent(
         createNewUser = viewModel::createNewUser,
-        navigateToAuthorization = navigateToAuthorization
+        navigateToAuthorization = navigateToAuthorization,
+        startAgreementActivity = startAgreementActivity
     )
 }
 
 @Composable
 fun RegistrationScreenContent(
     createNewUser: (name: String, email: String, password: String) -> Unit = { _, _, _ -> },
-    navigateToAuthorization: () -> Unit = {}
+    navigateToAuthorization: () -> Unit = {},
+    startAgreementActivity: () -> Unit = {}
 ) {
 
     var textEmail by rememberSaveable { mutableStateOf("") }
@@ -172,10 +181,17 @@ fun RegistrationScreenContent(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
             )
-            Text(
-                text = stringResource(R.string.use_terms_href),
+
+            ClickableText(
+                text = AnnotatedString(
+                    text = stringResource(R.string.use_terms_href),
+                    spanStyle = SpanStyle(
+                        color = Color.Blue,
+                        fontWeight = FontWeight.Bold
+                    )
+                ),
+                onClick = { startAgreementActivity() },
                 style = Typography.caption,
-                color = Color.Blue,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
             )
