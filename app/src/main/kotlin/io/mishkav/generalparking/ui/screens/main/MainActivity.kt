@@ -12,7 +12,6 @@ import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Snackbar
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.Surface
-import androidx.compose.material.contentColorFor
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -119,7 +118,7 @@ fun MainScreen(
             composable(Routes.forgotPassword) {
                 ForgotPasswordScreen(
                     navController = navController,
-                    onShowMessage = onError
+                    onError = onError
                 )
             }
 

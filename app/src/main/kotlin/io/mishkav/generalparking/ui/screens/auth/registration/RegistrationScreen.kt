@@ -102,7 +102,12 @@ fun RegistrationScreenContent(
                     textName = it
                 },
                 keyboardType = KeyboardType.Text,
-                label = { Text(stringResource(R.string.name)) }
+                label = {
+                    Text(
+                        text = stringResource(R.string.name),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             )
             UnderlinedTextfield(
                 value = textEmail,
@@ -110,7 +115,12 @@ fun RegistrationScreenContent(
                     textEmail = it
                 },
                 keyboardType = KeyboardType.Email,
-                label = { Text(stringResource(R.string.email)) }
+                label = {
+                    Text(
+                        text = stringResource(R.string.email),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             )
             UnderlinedTextfield(
                 value = textPassword,
@@ -129,7 +139,7 @@ fun RegistrationScreenContent(
                         passwordVisibility = !passwordVisibility
                     }) {
                         Icon(
-                            imageVector  = image, "",
+                            imageVector = image, "",
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }

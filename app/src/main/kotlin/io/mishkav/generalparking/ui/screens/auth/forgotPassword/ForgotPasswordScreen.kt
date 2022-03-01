@@ -5,6 +5,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -18,13 +21,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
-import io.mishkav.generalparking.ui.components.ScreenTextfield
 import io.mishkav.generalparking.ui.components.UnderlinedTextfield
 import io.mishkav.generalparking.ui.components.buttons.TextButton
-import io.mishkav.generalparking.ui.components.lines.TextfieldUnderLine
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
+import io.mishkav.generalparking.ui.screens.main.Routes
 import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
@@ -33,15 +35,39 @@ import io.mishkav.generalparking.ui.utils.SuccessResult
 @Composable
 fun ForgotPasswordScreen(
     navController: NavHostController,
-    onShowMessage: @Composable (Int) -> Unit
+    onError: @Composable (Int) -> Unit
 ) {
     val viewModel: AuthViewModel = viewModel()
     val resetPasswordResult by viewModel.resetPasswordResult.collectAsState()
+
     resetPasswordResult.also { result ->
         when (result) {
-            is ErrorResult -> onShowMessage(result.message!!)
+            is ErrorResult -> onError(result.message!!)
             is SuccessResult -> {
-                onShowMessage(R.string.success_sending_email)
+                AlertDialog(
+                    onDismissRequest = {},
+                    text = {
+                        ScreenBody(
+                            text = stringResource(R.string.success_sending_email)
+                        )
+                    },
+                    backgroundColor = MaterialTheme.colorScheme.background,
+                    buttons = {
+                        Row(
+                            modifier = Modifier.padding(all = 8.dp),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Button(
+                                modifier = Modifier.fillMaxWidth(),
+                                onClick = { navController.navigate(Routes.authorization) }
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.good_text)
+                                )
+                            }
+                        }
+                    }
+                )
             }
             is LoadingResult -> {}
         }
@@ -80,9 +106,13 @@ fun ForgotPasswordScreenContent(
                 textEmail = it
             },
             keyboardType = KeyboardType.Email,
-            label = { Text(stringResource(R.string.email)) }
+            label = {
+                Text(
+                    text = stringResource(R.string.email),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         )
-
         TextButton(
             text = stringResource(R.string.continue_text),
             onClick = {

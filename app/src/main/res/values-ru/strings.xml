@@ -43,6 +43,7 @@
     <string name="exit">Выйти</string>
 
     <string name="success_sending_email">Письмо успешно отправлено, скорее на почту!</string>
+    <string name="good_text">Супер!</string>
 
     <string name="error_auth">Ошибка авторизации, попробуйте ещё раз</string>
     <string name="error_registration">Ошибка регистрации, возможно такой аккаунт уже существует</string>

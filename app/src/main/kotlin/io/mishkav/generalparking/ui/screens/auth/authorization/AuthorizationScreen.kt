@@ -104,7 +104,12 @@ fun AuthorizationScreenContent(
                     textEmail = it
                 },
                 keyboardType = KeyboardType.Email,
-                label = { Text(stringResource(R.string.email)) }
+                label = {
+                    Text(
+                        text = stringResource(R.string.email),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             )
             UnderlinedTextfield(
                 value = textPassword,
@@ -113,7 +118,12 @@ fun AuthorizationScreenContent(
                 },
                 visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardType = KeyboardType.Password,
-                label = { Text(stringResource(R.string.password)) },
+                label = {
+                    Text(
+                        text = stringResource(R.string.password),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                },
                 trailingIcon = {
                     val image = if (passwordVisibility)
                         Icons.Filled.Visibility
@@ -123,7 +133,7 @@ fun AuthorizationScreenContent(
                         passwordVisibility = !passwordVisibility
                     }) {
                         Icon(
-                            imageVector  = image, "",
+                            imageVector = image, "",
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }

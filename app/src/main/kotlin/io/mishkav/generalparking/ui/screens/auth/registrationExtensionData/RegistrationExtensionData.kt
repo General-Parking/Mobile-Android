@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,10 +31,8 @@ import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
-import io.mishkav.generalparking.ui.components.ScreenTextfield
 import io.mishkav.generalparking.ui.components.UnderlinedTextfield
 import io.mishkav.generalparking.ui.components.buttons.TextButton
-import io.mishkav.generalparking.ui.components.lines.TextfieldUnderLine
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
@@ -43,7 +42,6 @@ import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
-import java.util.*
 
 @Composable
 fun RegistrationExtensionData(
@@ -280,7 +278,12 @@ fun RegistrationExtensionDataContent(
                     textModel = it
                 },
                 keyboardType = KeyboardType.Text,
-                label = { Text(stringResource(R.string.car_model)) }
+                label = {
+                    Text(
+                        text = stringResource(R.string.car_model),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             )
             UnderlinedTextfield(
                 value = textPhone,
@@ -288,7 +291,12 @@ fun RegistrationExtensionDataContent(
                     textPhone = it
                 },
                 keyboardType = KeyboardType.Phone,
-                label = { Text(stringResource(R.string.phone)) }
+                label = {
+                    Text(
+                        text = stringResource(R.string.phone),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             )
 
         }
