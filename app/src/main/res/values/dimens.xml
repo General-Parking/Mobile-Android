@@ -5,5 +5,7 @@
     <dimen name="profile_field_padding">8dp</dimen>
     <dimen name="exit_button_width">220dp</dimen>
     <dimen name="image_width">100dp</dimen>
-    <dimen name="bottom_padding">10dp</dimen>
+    <dimen name="bottom_padding">15dp</dimen>
+    <dimen name="bottom_height">270dp</dimen>
+    <dimen name="bottom_top_padding">20dp</dimen>
 </resources>

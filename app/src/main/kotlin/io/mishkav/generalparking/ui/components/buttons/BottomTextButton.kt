@@ -4,10 +4,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.theme.BottomColor
 import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.theme.Typography
@@ -16,7 +21,7 @@ import io.mishkav.generalparking.ui.theme.generalParkingLightBackground
 @Composable
 fun BottomTextButton(
     modifier: Modifier = Modifier,
-    text: String,
+    text: String = stringResource(R.string.go_reserve),
     onClick: () -> Unit
 ) = Box(
     modifier = modifier.fillMaxWidth()
@@ -33,6 +38,11 @@ fun BottomTextButton(
             text = text,
             color = generalParkingLightBackground,
             style = Typography.button
+        )
+        Icon(
+            imageVector =  Icons.Filled.ChevronRight,
+            contentDescription = "",
+            tint = generalParkingLightBackground
         )
     }
 }

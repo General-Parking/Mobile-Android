@@ -1,5 +1,6 @@
 package io.mishkav.generalparking.ui.components.buttons
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -27,12 +28,13 @@ fun IconTextButton(
 ) {
     Icon(
         imageVector =  icon,
-        contentDescription = "Localized description",
+        contentDescription = "",
         tint = color
     )
     Text(
         text = text,
         color = color,
-        style = Typography.subtitle1
+        style = Typography.subtitle1,
+        modifier = Modifier.padding(start = 5.dp)
     )
 }
