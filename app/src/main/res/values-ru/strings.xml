@@ -53,5 +53,9 @@
     <string name="error_email_not_verified">Почта не подтверждена. Пожалуйста, проверьте свою почту</string>
     <string name="error_null_user">Нет активного пользователя, необходима авторизация</string>
     <string name="go_reserve">Перейти к бронированию</string>
+    <string name="space" >" "</string>
+    <string name="bottom_title">Улица</string>
+    <string name="bottom_body">Свободно … мест из …</string>
+    <string name="minute_cost">… р/мин</string>
 
 </resources>

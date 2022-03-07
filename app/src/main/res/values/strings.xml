@@ -53,5 +53,9 @@
     <string name="error_email_not_verified">Email not verified. Please, check your mailbox</string>
     <string name="error_null_user">There is no active user. Please, sign in</string>
     <string name="go_reserve">Go to reservation</string>
+    <string name="space" >" "</string>
+    <string name="bottom_title">Street</string>
+    <string name="bottom_body">Free … seats from …</string>
+    <string name="minute_cost">… rub/min</string>
 
 </resources>

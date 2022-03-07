@@ -10,7 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.theme.Typography
 
 @Composable
@@ -28,7 +30,7 @@ fun IconTextButton(
 ) {
     Icon(
         imageVector =  icon,
-        contentDescription = "",
+        contentDescription = stringResource(R.string.space),
         tint = color
     )
     Text(

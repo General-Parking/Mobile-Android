@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.android.gms.maps.GoogleMapOptions
@@ -28,15 +29,67 @@ import io.mishkav.generalparking.ui.components.buttons.BottomTextButton
 import io.mishkav.generalparking.ui.components.buttons.IconTextButton
 import io.mishkav.generalparking.ui.components.texts.BottomBody
 import io.mishkav.generalparking.ui.components.texts.BottomTitle
-import io.mishkav.generalparking.ui.theme.BottomColor
-import io.mishkav.generalparking.ui.theme.Shapes
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MapScreen(
     navController: NavHostController,
     onError: @Composable (Int) -> Unit
+) {
+
+}
+
+@Composable
+fun BottomContent(
+    textTitle: String = stringResource(R.string.bottom_title),
+    textBody: String = stringResource(R.string.bottom_body),
+    textCost: String = stringResource(R.string.minute_cost)
+) = Column(
+    modifier = Modifier
+        .padding(
+            horizontal = dimensionResource(R.dimen.bottom_padding),
+            vertical = dimensionResource(R.dimen.bottom_top_padding)
+        )
+) {
+    BottomTitle(
+        text = textTitle
+    )
+    BottomBody(
+        text = textBody
+    )
+    Row (
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp)
+            .horizontalScroll(rememberScrollState())
+    ) {
+        IconTextButton(
+            icon = Icons.Filled.SwapCalls,
+            text = stringResource(R.string.route),
+            color = MaterialTheme.colorScheme.primary,
+            onClick = {}
+        )
+        Spacer(Modifier.weight(1f))
+        Text(
+            text = textCost,
+            color = MaterialTheme.colorScheme.onPrimary
+        )
+        IconTextButton(
+            icon = Icons.Outlined.Info,
+            text = stringResource(R.string.more),
+            onClick = {}
+        )
+    }
+    BottomTextButton(
+        onClick = {}
+    )
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun MapScreenContent(
 ) {
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
@@ -44,53 +97,14 @@ fun MapScreen(
     val coroutineScope = rememberCoroutineScope()
 
     BottomSheetScaffold(
-        sheetShape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp),
+        sheetShape = RoundedCornerShape(
+            dimensionResource(R.dimen.bottom_shape), dimensionResource(R.dimen.bottom_shape),
+            dimensionResource(R.dimen.null_dp), dimensionResource(R.dimen.null_dp)
+        ),
         scaffoldState = bottomSheetScaffoldState,
         sheetBackgroundColor = MaterialTheme.colorScheme.background,
-        sheetContent = {
-            Column(
-                modifier = Modifier
-                    .padding(
-                        horizontal = dimensionResource(R.dimen.bottom_padding),
-                        vertical = dimensionResource(R.dimen.bottom_top_padding)
-                    )
-            ) {
-                BottomTitle(
-                    text = "Улица"
-                )
-                BottomBody(
-                    text = "Свободно ... мест из ..."
-                )
-                Row (
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 10.dp)
-                        .horizontalScroll(rememberScrollState())
-                ) {
-                    IconTextButton(
-                        icon = Icons.Filled.SwapCalls,
-                        text = stringResource(R.string.route),
-                        color = BottomColor,
-                        onClick = {}
-                    )
-                    Spacer(Modifier.weight(1f))
-                    Text(
-                        text = ".. р/мин",
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                    IconTextButton(
-                        icon = Icons.Outlined.Info,
-                        text = stringResource(R.string.more),
-                        onClick = {}
-                    )
-                }
-                BottomTextButton(
-                    onClick = {}
-                )
-            }
-        }, sheetPeekHeight = 0.dp
+        sheetContent = { BottomContent() },
+        sheetPeekHeight = dimensionResource(R.dimen.null_dp)
     ) {
         val singapore = LatLng(1.35, 103.87)
         GoogleMap(
@@ -117,4 +131,10 @@ fun MapScreen(
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewMapScreen() {
+    MapScreenContent()
 }
