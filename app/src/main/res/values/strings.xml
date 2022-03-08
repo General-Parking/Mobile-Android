@@ -57,5 +57,10 @@
     <string name="bottom_title">Street</string>
     <string name="bottom_body">Free … seats from …</string>
     <string name="minute_cost">… rub/min</string>
+    <string name="parking_scheme">Parking scheme</string>
+    <string name="choose_seat">Choose a free seat:</string>
+    <string name="free">" — free"</string>
+    <string name="taken">" — taken"</string>
+    <string name="reserve">Reserve</string>
 
 </resources>

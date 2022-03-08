@@ -56,6 +56,11 @@
     <string name="space" >" "</string>
     <string name="bottom_title">Улица</string>
     <string name="bottom_body">Свободно … мест из …</string>
-    <string name="minute_cost">… р/мин</string>
+    <string name="minute_cost">… Р/мин</string>
+    <string name="parking_scheme">Схема паркинга</string>
+    <string name="choose_seat">Выберите свободное место:</string>
+    <string name="free">" — свободные"</string>
+    <string name="taken">" — занятые"</string>
+    <string name="reserve">Забронировать</string>
 
 </resources>

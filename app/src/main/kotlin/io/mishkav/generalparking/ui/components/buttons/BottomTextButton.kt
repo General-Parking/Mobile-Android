@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.theme.Shapes
@@ -40,7 +41,7 @@ fun BottomTextButton(
             style = Typography.button
         )
         Icon(
-            imageVector =  Icons.Filled.ChevronRight,
+            imageVector = Icons.Filled.ChevronRight,
             contentDescription = stringResource(R.string.space),
             tint = generalParkingLightBackground
         )
