@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
@@ -19,7 +20,7 @@ fun SchemeScreen(
     navController: NavHostController,
     onError: @Composable (Int) -> Unit
 ) {
-
+    SchemeScreenContent()
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -31,6 +32,9 @@ fun SchemeScreenContent(
         modifier = Modifier
             .fillMaxSize()
             .systemBarsPadding()
+            .padding(
+                horizontal = dimensionResource(R.dimen.bottom_padding)
+            )
     ) {
         BottomTitle(
             text = SchemeTitle

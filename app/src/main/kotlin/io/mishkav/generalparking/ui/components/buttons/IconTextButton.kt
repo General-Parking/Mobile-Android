@@ -23,7 +23,7 @@ fun IconTextButton(
     onClick: () -> Unit
 ) = Button(
     onClick = onClick,
-    shape = Shapes.small,
+    shape = Shapes.medium,
     colors = ButtonDefaults.buttonColors(backgroundColor = color),
     modifier = modifier
 ) {

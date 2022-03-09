@@ -18,6 +18,8 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.BottomContent
+import io.mishkav.generalparking.ui.screens.auth.authorization.AuthorizationScreenContent
+import io.mishkav.generalparking.ui.screens.main.Routes
 import kotlinx.coroutines.launch
 
 @Composable
@@ -25,12 +27,17 @@ fun MapScreen(
     navController: NavHostController,
     onError: @Composable (Int) -> Unit
 ) {
-
+    MapScreenContent(
+        navigateToSchemeScreen = {
+            navController.navigate(Routes.scheme)
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MapScreenContent(
+    navigateToSchemeScreen: () -> Unit = {}
 ) {
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
@@ -44,7 +51,11 @@ fun MapScreenContent(
         ),
         scaffoldState = bottomSheetScaffoldState,
         sheetBackgroundColor = MaterialTheme.colorScheme.background,
-        sheetContent = { BottomContent() },
+        sheetContent = {
+            BottomContent(
+                navigateToSchemeScreen = navigateToSchemeScreen
+            )
+        },
         sheetPeekHeight = dimensionResource(R.dimen.null_dp)
     ) {
         val singapore = LatLng(1.35, 103.87)

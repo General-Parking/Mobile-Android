@@ -25,6 +25,7 @@ fun BottomContent(
     textTitle: String = stringResource(R.string.bottom_title),
     textBody: String = stringResource(R.string.bottom_body),
     textCost: String = stringResource(R.string.minute_cost),
+    navigateToSchemeScreen: () -> Unit = {},
     modifier: Modifier = Modifier
 ) = Column(
     modifier = modifier
@@ -65,6 +66,6 @@ fun BottomContent(
         )
     }
     BottomTextButton(
-        onClick = {}
+        onClick = navigateToSchemeScreen
     )
 }
