@@ -33,6 +33,7 @@ import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.UnderlinedTextfield
 import io.mishkav.generalparking.ui.components.buttons.TextButton
+import io.mishkav.generalparking.ui.components.loaders.CircularLoader
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
@@ -58,7 +59,16 @@ fun RegistrationExtensionData(
                     navController.navigate(Routes.map)
                 }
             }
-            is LoadingResult -> {}
+            is LoadingResult -> {
+                Box(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularLoader()
+                }
+            }
         }
     }
 
@@ -259,13 +269,6 @@ fun RegistrationExtensionDataContent(
                     }
                 }
             }
-            Text(
-                text = stringResource(R.string.other_number_format),
-                style = Typography.body1,
-                color = Color.Blue,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-            )
         }
         Column(
             modifier = Modifier

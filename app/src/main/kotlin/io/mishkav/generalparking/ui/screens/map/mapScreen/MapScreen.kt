@@ -5,17 +5,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.google.android.gms.maps.GoogleMapOptions
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
+import io.mishkav.generalparking.R
 
 @Composable
 fun MapScreen(
     navController: NavHostController,
     onError: @Composable (Int) -> Unit
 ) {
-    val singapore = LatLng(1.35, 103.87)
+    MapScreenContent(
+
+    )
+}
+
+@Composable
+fun MapScreenContent(
+
+) {
+    val singapore = LatLng(55.754001, 37.649003)
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         googleMapOptionsFactory = {
@@ -24,8 +35,14 @@ fun MapScreen(
     ) {
         Marker(
             position = singapore,
-            title = "Singapore",
-            snippet = "Marker in Singapore"
+            icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker)
         )
     }
+}
+
+@Composable
+fun MapScreenPreview(
+
+) {
+
 }

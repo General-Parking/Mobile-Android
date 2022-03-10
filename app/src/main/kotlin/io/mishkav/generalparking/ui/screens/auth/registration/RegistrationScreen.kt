@@ -1,5 +1,6 @@
 package io.mishkav.generalparking.ui.screens.auth.registration
 
+import androidx.compose.foundation.background
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.ClickableText
@@ -29,6 +30,7 @@ import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.UnderlinedTextfield
 import io.mishkav.generalparking.ui.components.buttons.TextButton
 import io.mishkav.generalparking.ui.components.buttons.SimpleTextButton
+import io.mishkav.generalparking.ui.components.loaders.CircularLoader
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
@@ -58,7 +60,16 @@ fun RegistrationScreen(
                     navController.navigate(Routes.confirmEmail)
                 }
             }
-            is LoadingResult -> {}
+            is LoadingResult -> {
+                Box(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularLoader()
+                }
+            }
         }
     }
 
