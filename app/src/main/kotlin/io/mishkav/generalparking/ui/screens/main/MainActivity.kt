@@ -3,7 +3,6 @@ package io.mishkav.generalparking.ui.screens.main
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,7 +28,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.insets.navigationBarsPadding
-import com.google.firebase.auth.FirebaseAuth
 import io.mishkav.generalparking.state.Session
 import io.mishkav.generalparking.ui.screens.auth.authorization.AuthorizationScreen
 import io.mishkav.generalparking.ui.screens.auth.confirmEmail.ConfirmEmailScreen

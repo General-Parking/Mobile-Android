@@ -10,14 +10,14 @@ import io.mishkav.generalparking.data.utils.UserFields.DefaultFields.DEFAULT_IMA
 import io.mishkav.generalparking.data.utils.UserFields.DefaultFields.DEFAULT_REMAINING_BOOKING_TIME
 import io.mishkav.generalparking.data.utils.toMap
 import io.mishkav.generalparking.domain.entities.User
-import io.mishkav.generalparking.domain.repositories.IDatabaseRepository
+import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class DatabaseRepository @Inject constructor(
+class AuthDatabaseRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val firebaseDatabase: DatabaseReference
-) : IDatabaseRepository {
+) : IAuthDatabaseRepository {
 
     private val currentUserUid: String?
         get() = firebaseAuth.currentUser?.uid

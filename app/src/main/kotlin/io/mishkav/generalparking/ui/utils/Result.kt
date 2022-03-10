@@ -3,8 +3,8 @@ package io.mishkav.generalparking.ui.utils
 import androidx.annotation.StringRes
 import kotlinx.coroutines.flow.MutableStateFlow
 
-sealed class Result<out T>(
-    val data: T? = null,
+sealed class Result<T>(
+    var data: T? = null,
     @StringRes val message: Int? = null,
     val exceptionMessage: String? = null
 )

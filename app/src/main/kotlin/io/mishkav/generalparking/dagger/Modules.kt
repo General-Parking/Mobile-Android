@@ -7,9 +7,11 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import io.mishkav.generalparking.data.repositories.AuthRepository
-import io.mishkav.generalparking.data.repositories.DatabaseRepository
+import io.mishkav.generalparking.data.repositories.AuthDatabaseRepository
+import io.mishkav.generalparking.data.repositories.MapDatabaseRepository
 import io.mishkav.generalparking.domain.repositories.IAuthRepository
-import io.mishkav.generalparking.domain.repositories.IDatabaseRepository
+import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
+import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import javax.inject.Singleton
 
 @Module
@@ -33,5 +35,9 @@ interface RepositoriesModule {
 
     @Singleton
     @Binds
-    fun bindIDatabaseRepository(databaseRepository: DatabaseRepository): IDatabaseRepository
+    fun bindIAuthDatabaseRepository(authDatabaseRepository: AuthDatabaseRepository): IAuthDatabaseRepository
+
+    @Singleton
+    @Binds
+    fun bindIMapDatabaseRepository(mapDatabaseRepository: MapDatabaseRepository): IMapDatabaseRepository
 }
