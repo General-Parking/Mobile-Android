@@ -18,7 +18,6 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.BottomContent
-import io.mishkav.generalparking.ui.screens.auth.authorization.AuthorizationScreenContent
 import io.mishkav.generalparking.ui.screens.main.Routes
 import kotlinx.coroutines.launch
 
@@ -39,9 +38,7 @@ fun MapScreen(
 fun MapScreenContent(
     navigateToSchemeScreen: () -> Unit = {}
 ) {
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
-    )
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
     BottomSheetScaffold(
