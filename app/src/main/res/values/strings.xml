@@ -41,6 +41,9 @@
     <string name="profile_cards">Bank cards:</string>
     <string name="exit">Exit</string>
 
+    <string name="route">Route</string>
+    <string name="more">More</string>
+
     <string name="success_sending_email">The letter has been sent successfully, rather to the post office!</string>
     <string name="good_text">Good!</string>
 
@@ -49,4 +52,15 @@
     <string name="error_registration">Bad registration, maybe this email already exist</string>
     <string name="error_email_not_verified">Email not verified. Please, check your mailbox</string>
     <string name="error_null_user">There is no active user. Please, sign in</string>
+    <string name="go_reserve">Go to reservation</string>
+    <string name="space" >" "</string>
+    <string name="bottom_title">Street</string>
+    <string name="bottom_body">Free … seats from …</string>
+    <string name="minute_cost">… rub/min</string>
+    <string name="parking_scheme">Parking scheme</string>
+    <string name="choose_seat">Choose a free seat:</string>
+    <string name="free">" — free"</string>
+    <string name="taken">" — taken"</string>
+    <string name="reserve">Reserve</string>
+
 </resources>

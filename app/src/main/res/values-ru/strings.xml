@@ -45,8 +45,22 @@
     <string name="success_sending_email">Письмо успешно отправлено, скорее на почту!</string>
     <string name="good_text">Супер!</string>
 
+    <string name="route">Маршрут</string>
+    <string name="more">Подробнее</string>
+
     <string name="error_auth">Ошибка авторизации, попробуйте ещё раз</string>
     <string name="error_registration">Ошибка регистрации, возможно такой аккаунт уже существует</string>
     <string name="error_email_not_verified">Почта не подтверждена. Пожалуйста, проверьте свою почту</string>
     <string name="error_null_user">Нет активного пользователя, необходима авторизация</string>
+    <string name="go_reserve">Перейти к бронированию</string>
+    <string name="space" >" "</string>
+    <string name="bottom_title">Улица</string>
+    <string name="bottom_body">Свободно … мест из …</string>
+    <string name="minute_cost">… Р/мин</string>
+    <string name="parking_scheme">Схема паркинга</string>
+    <string name="choose_seat">Выберите свободное место:</string>
+    <string name="free">" — свободные"</string>
+    <string name="taken">" — занятые"</string>
+    <string name="reserve">Забронировать</string>
+
 </resources>

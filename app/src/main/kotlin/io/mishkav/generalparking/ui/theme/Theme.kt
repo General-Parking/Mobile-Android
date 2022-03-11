@@ -5,6 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val DarkColorPalette = darkColorScheme(
     primary = Yellow400,
@@ -30,6 +31,10 @@ fun GeneralParkingTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Co
     else
         LightColorPalette
 
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setSystemBarsColor(
+        color = Color.Transparent
+    )
     MaterialTheme(
         colorScheme = colors,
         typography = typography,
