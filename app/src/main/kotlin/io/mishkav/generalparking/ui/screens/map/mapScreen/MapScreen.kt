@@ -1,6 +1,5 @@
 package io.mishkav.generalparking.ui.screens.map.mapScreen
 
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material3.MaterialTheme
@@ -9,8 +8,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.google.android.gms.maps.GoogleMapOptions
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -20,24 +27,59 @@ import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.BottomContent
 import io.mishkav.generalparking.ui.screens.main.Routes
 import kotlinx.coroutines.launch
+import com.google.maps.android.compose.rememberCameraPositionState
+import io.mishkav.generalparking.ui.components.loaders.CircularLoader
+import io.mishkav.generalparking.ui.utils.ErrorResult
+import io.mishkav.generalparking.ui.utils.LoadingResult
+import io.mishkav.generalparking.ui.utils.SuccessResult
 
 @Composable
 fun MapScreen(
     navController: NavHostController,
     onError: @Composable (Int) -> Unit
 ) {
-    MapScreenContent(
-        navigateToSchemeScreen = {
-            navController.navigate(Routes.scheme)
+    val viewModel: MapViewModel = viewModel()
+    val parkingCoordinates by viewModel.parkingCoordinatesResult.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.getParkingCoordinates()
+    }
+
+    parkingCoordinates.also { result ->
+        when (result) {
+            is ErrorResult -> onError(result.message!!)
+            is SuccessResult -> {
+                MapScreenContent(
+                    parkingCoordinates = parkingCoordinates.data ?: emptyMap(),
+                    navigateToSchemeScreen = {
+                        navController.navigate(Routes.scheme)
+                    }
+                )
+            }
+            is LoadingResult -> {
+                Box(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularLoader()
+                }
+            }
         }
-    )
+    }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MapScreenContent(
+    parkingCoordinates: Map<Pair<Double, Double>, String>? = emptyMap(),
     navigateToSchemeScreen: () -> Unit = {}
 ) {
+    val moscowLatLng = LatLng(Coordinates.Moscow.latitude, Coordinates.Moscow.longitude)
+    val cameraPosition = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(moscowLatLng, 11f)
+    }
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -55,35 +97,41 @@ fun MapScreenContent(
         },
         sheetPeekHeight = dimensionResource(R.dimen.null_dp)
     ) {
-        val singapore = LatLng(1.35, 103.87)
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
-            googleMapOptionsFactory = {
-                GoogleMapOptions().camera(CameraPosition.fromLatLngZoom(singapore, 11f))
-            }
+            cameraPositionState = cameraPosition
         ) {
-            val markerClick: (Marker) -> Boolean = {
-                coroutineScope.launch {
-                    if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
-                        bottomSheetScaffoldState.bottomSheetState.expand()
-                    } else {
-                        bottomSheetScaffoldState.bottomSheetState.collapse()
+            parkingCoordinates?.keys?.forEach { coordinates ->
+                val parkingLatLng = LatLng(coordinates.first, coordinates.second)
+                val markerClick: (Marker) -> Boolean = {
+                    coroutineScope.launch {
+                        if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+                            bottomSheetScaffoldState.bottomSheetState.expand()
+                        } else {
+                            bottomSheetScaffoldState.bottomSheetState.collapse()
+                        }
                     }
+                    false
                 }
-                false
+                Marker(
+                    position = parkingLatLng,
+                    icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker),
+                    onClick = markerClick
+                )
             }
-            Marker(
-                position = singapore,
-                title = "Singapore",
-                snippet = "Marker in Singapore",
-                onClick = markerClick
-            )
         }
     }
 }
 
+object Coordinates {
+    object Moscow {
+        const val longitude = 37.618423
+        const val latitude = 55.751244
+    }
+}
+
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewMapScreen() {
-    MapScreenContent()
 }

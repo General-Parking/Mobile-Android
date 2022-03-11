@@ -106,7 +106,7 @@ fun MainScreen(
     ) {
         NavHost(
             navController = navController,
-            startDestination = if (viewModel.isAuthorized) Routes.authorization else Routes.map
+            startDestination = if (viewModel.isAuthorized) Routes.map else Routes.authorization
         ) {
             composable(Routes.authorization) {
                 AuthorizationScreen(
