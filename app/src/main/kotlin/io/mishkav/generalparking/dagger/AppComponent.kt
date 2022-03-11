@@ -5,6 +5,7 @@ import dagger.BindsInstance
 import dagger.Component
 import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
 import io.mishkav.generalparking.ui.screens.main.MainViewModel
+import io.mishkav.generalparking.ui.screens.map.mapScreen.MapViewModel
 import javax.inject.Singleton
 
 @Singleton
@@ -19,5 +20,6 @@ interface AppComponent {
 
     fun inject(authViewModel: AuthViewModel)
     fun inject(mainViewModel: MainViewModel)
+    fun inject(mapViewModel: MapViewModel)
 }
 

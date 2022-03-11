@@ -8,7 +8,7 @@ import io.mishkav.generalparking.dagger.AppComponent
 import io.mishkav.generalparking.data.utils.getMetaUserInfoInstance
 import io.mishkav.generalparking.domain.entities.User
 import io.mishkav.generalparking.domain.repositories.IAuthRepository
-import io.mishkav.generalparking.domain.repositories.IDatabaseRepository
+import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
 import io.mishkav.generalparking.ui.utils.loadOrError
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +21,7 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
     lateinit var authRepository: IAuthRepository
 
     @Inject
-    lateinit var databaseRepository: IDatabaseRepository
+    lateinit var authDatabaseRepository: IAuthDatabaseRepository
 
     val signInResult = MutableResultFlow<Unit>()
     val createNewUserResult = MutableResultFlow<Unit>()
@@ -48,7 +48,7 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
                 email = email,
                 name = name
             )
-            databaseRepository.insertUserData(_currentUser.value)
+            authDatabaseRepository.insertUserData(_currentUser.value)
         }
     }
 
@@ -66,7 +66,7 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
                     phoneNumber = phoneNumber
                 )
             )
-            databaseRepository.insertUserData(_currentUser.value)
+            authDatabaseRepository.insertUserData(_currentUser.value)
             _currentUser.value
         }
     }
