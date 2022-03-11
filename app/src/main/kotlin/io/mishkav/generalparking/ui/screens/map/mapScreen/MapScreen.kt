@@ -24,10 +24,10 @@ import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import io.mishkav.generalparking.R
-import io.mishkav.generalparking.ui.components.BottomContent
 import io.mishkav.generalparking.ui.screens.main.Routes
 import kotlinx.coroutines.launch
 import com.google.maps.android.compose.rememberCameraPositionState
+import io.mishkav.generalparking.ui.components.BottomScreen
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
@@ -51,6 +51,7 @@ fun MapScreen(
             is SuccessResult -> {
                 MapScreenContent(
                     parkingCoordinates = parkingCoordinates.data ?: emptyMap(),
+                    setParkingAddress = viewModel::setCurrentParkingAddress,
                     navigateToSchemeScreen = {
                         navController.navigate(Routes.scheme)
                     }
@@ -73,7 +74,8 @@ fun MapScreen(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MapScreenContent(
-    parkingCoordinates: Map<Pair<Double, Double>, String>? = emptyMap(),
+    parkingCoordinates: Map<Pair<Double, Double>, String> = emptyMap(),
+    setParkingAddress: (address: String) -> Unit = {_ ->},
     navigateToSchemeScreen: () -> Unit = {}
 ) {
     val moscowLatLng = LatLng(Coordinates.Moscow.latitude, Coordinates.Moscow.longitude)
@@ -91,7 +93,7 @@ fun MapScreenContent(
         scaffoldState = bottomSheetScaffoldState,
         sheetBackgroundColor = MaterialTheme.colorScheme.background,
         sheetContent = {
-            BottomContent(
+            BottomScreen(
                 navigateToSchemeScreen = navigateToSchemeScreen
             )
         },
@@ -101,9 +103,10 @@ fun MapScreenContent(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPosition
         ) {
-            parkingCoordinates?.keys?.forEach { coordinates ->
+            for((coordinates, address) in parkingCoordinates) {
                 val parkingLatLng = LatLng(coordinates.first, coordinates.second)
                 val markerClick: (Marker) -> Boolean = {
+                    setParkingAddress(address)
                     coroutineScope.launch {
                         if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
                             bottomSheetScaffoldState.bottomSheetState.expand()

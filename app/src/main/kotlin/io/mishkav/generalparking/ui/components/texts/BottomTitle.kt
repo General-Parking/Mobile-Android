@@ -6,6 +6,7 @@ import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import io.mishkav.generalparking.ui.theme.Typography
 
 @Composable
@@ -19,6 +20,7 @@ fun BottomTitle(
     Text(
         text = text,
         style = Typography.h4,
-        color = MaterialTheme.colorScheme.onPrimary
+        color = MaterialTheme.colorScheme.onPrimary,
+        textAlign = TextAlign.Start
     )
 }

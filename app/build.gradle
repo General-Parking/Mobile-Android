@@ -101,8 +101,9 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.7'
 
     // Dagger
-    implementation 'com.google.dagger:dagger:2.40.5'
-    kapt 'com.google.dagger:dagger-compiler:2.40.5'
+    implementation("com.google.dagger:dagger-android:2.41")
+    kapt("com.google.dagger:dagger-android-processor:2.41")
+    kapt("com.google.dagger:dagger-compiler:2.41")
 
     // Google Maps
     implementation "com.google.maps.android:maps-compose:1.0.0"

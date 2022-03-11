@@ -9,20 +9,39 @@ import androidx.compose.material.icons.filled.SwapCalls
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.buttons.BottomTextButton
 import io.mishkav.generalparking.ui.components.buttons.SimpleIconTextButton
 import io.mishkav.generalparking.ui.components.texts.BottomBody
 import io.mishkav.generalparking.ui.components.texts.BottomTitle
+import io.mishkav.generalparking.ui.screens.map.mapScreen.MapViewModel
+import io.mishkav.generalparking.ui.theme.Typography
 
 @Composable
-fun BottomContent(
-    textTitle: String = stringResource(R.string.bottom_title),
+fun BottomScreen(
+    navigateToSchemeScreen: () -> Unit
+) {
+    val viewModel: MapViewModel = viewModel()
+    val currentParkingAddress by viewModel.currentParkingAddress.collectAsState()
+
+    BottomScreenContent(
+        textAddress = currentParkingAddress,
+        navigateToSchemeScreen = navigateToSchemeScreen
+    )
+}
+
+@Composable
+fun BottomScreenContent(
+    textAddress: String = stringResource(R.string.bottom_title),
     textBody: String = stringResource(R.string.bottom_body),
     textCost: String = stringResource(R.string.minute_cost),
     navigateToSchemeScreen: () -> Unit = {},
@@ -35,11 +54,15 @@ fun BottomContent(
         )
 ) {
     BottomTitle(
-        text = textTitle
+        text = textAddress
     )
+
+    Spacer(modifier = Modifier.height(30.dp))
+    
     BottomBody(
         text = textBody
     )
+
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,

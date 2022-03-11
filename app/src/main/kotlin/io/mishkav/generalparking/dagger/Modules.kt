@@ -1,5 +1,6 @@
 package io.mishkav.generalparking.dagger
 
+import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -12,18 +13,23 @@ import io.mishkav.generalparking.data.repositories.MapDatabaseRepository
 import io.mishkav.generalparking.domain.repositories.IAuthRepository
 import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
 import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
+import io.mishkav.generalparking.state.Session
 import javax.inject.Singleton
 
 @Module
-class FirebaseAuthModule {
+class DataModules {
 
-    @Singleton
     @Provides
+    @Singleton
     fun provideFirebaseAuthInstance() = FirebaseAuth.getInstance()
 
-    @Singleton
     @Provides
+    @Singleton
     fun provideFirebaseDatabase() = Firebase.database.reference
+
+    @Provides
+    @Singleton
+    fun provideSession(context: Context) = Session(context)
 }
 
 @Module

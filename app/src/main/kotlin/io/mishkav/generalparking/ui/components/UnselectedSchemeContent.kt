@@ -29,9 +29,6 @@ fun UnselectedSchemeContent(
             vertical = dimensionResource(R.dimen.bottom_top_padding)
         )
 ) {
-    BottomTitle(
-        text = stringResource(R.string.choose_seat)
-    )
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -64,12 +61,6 @@ fun UnselectedSchemeContent(
         icon = Icons.Filled.Add,
         text = stringResource(R.string.reserve),
         color = Gray500,
-        onClick = {}
-    )
-    SimpleIconTextButton(
-        icon = Icons.Filled.SwapCalls,
-        text = stringResource(R.string.route),
-        color = MaterialTheme.colorScheme.primary,
         onClick = {}
     )
 }

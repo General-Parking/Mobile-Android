@@ -5,8 +5,11 @@ import androidx.lifecycle.viewModelScope
 import io.mishkav.generalparking.GeneralParkingApp
 import io.mishkav.generalparking.dagger.AppComponent
 import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
+import io.mishkav.generalparking.state.Session
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
 import io.mishkav.generalparking.ui.utils.loadOrError
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,10 +18,18 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     @Inject
     lateinit var mapDatabaseRepository: IMapDatabaseRepository
 
+    @Inject
+    lateinit var session: Session
+
     val parkingCoordinatesResult = MutableResultFlow<Map<Pair<Double, Double>, String>>()
+    val currentParkingAddress by lazy { session.currentParkingAddress }
 
     init {
         appComponent.inject(this)
+    }
+
+    fun setCurrentParkingAddress(address: String) {
+        session.changeCurrentParkingAddress(address)
     }
 
     fun getParkingCoordinates() = viewModelScope.launch {
