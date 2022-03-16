@@ -19,7 +19,7 @@ fun BottomTitle(
 ) {
     Text(
         text = text,
-        style = Typography.h4,
+        style = Typography.h5,
         color = MaterialTheme.colorScheme.onPrimary,
         textAlign = TextAlign.Start
     )

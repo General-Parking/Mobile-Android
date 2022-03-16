@@ -11,6 +11,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,7 +31,9 @@ import io.mishkav.generalparking.ui.screens.main.Routes
 import kotlinx.coroutines.launch
 import com.google.maps.android.compose.rememberCameraPositionState
 import io.mishkav.generalparking.ui.components.BottomScreen
+import io.mishkav.generalparking.ui.components.buttons.BottomTextButton
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
+import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
@@ -54,6 +59,9 @@ fun MapScreen(
                     setParkingAddress = viewModel::setCurrentParkingAddress,
                     navigateToSchemeScreen = {
                         navController.navigate(Routes.scheme)
+                    },
+                    navigateToProfileScreen = {
+                        navController.navigate(Routes.profile)
                     }
                 )
             }
@@ -75,8 +83,9 @@ fun MapScreen(
 @Composable
 fun MapScreenContent(
     parkingCoordinates: Map<Pair<Double, Double>, String> = emptyMap(),
-    setParkingAddress: (address: String) -> Unit = {_ ->},
-    navigateToSchemeScreen: () -> Unit = {}
+    setParkingAddress: (address: String) -> Unit = { _ -> },
+    navigateToSchemeScreen: () -> Unit = {},
+    navigateToProfileScreen: () -> Unit = {}
 ) {
     val moscowLatLng = LatLng(Coordinates.Moscow.latitude, Coordinates.Moscow.longitude)
     val cameraPosition = rememberCameraPositionState {
@@ -84,46 +93,60 @@ fun MapScreenContent(
     }
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
     val coroutineScope = rememberCoroutineScope()
-
-    BottomSheetScaffold(
-        sheetShape = RoundedCornerShape(
-            dimensionResource(R.dimen.bottom_shape), dimensionResource(R.dimen.bottom_shape),
-            dimensionResource(R.dimen.null_dp), dimensionResource(R.dimen.null_dp)
-        ),
-        scaffoldState = bottomSheetScaffoldState,
-        sheetBackgroundColor = MaterialTheme.colorScheme.background,
-        sheetContent = {
-            BottomScreen(
-                navigateToSchemeScreen = navigateToSchemeScreen
-            )
-        },
-        sheetPeekHeight = dimensionResource(R.dimen.null_dp)
-    ) {
-        GoogleMap(
-            modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPosition
-        ) {
-            for((coordinates, address) in parkingCoordinates) {
-                val parkingLatLng = LatLng(coordinates.first, coordinates.second)
-                val markerClick: (Marker) -> Boolean = {
-                    setParkingAddress(address)
-                    coroutineScope.launch {
-                        if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
-                            bottomSheetScaffoldState.bottomSheetState.expand()
-                        } else {
-                            bottomSheetScaffoldState.bottomSheetState.collapse()
-                        }
-                    }
-                    false
-                }
-                Marker(
-                    position = parkingLatLng,
-                    icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker),
-                    onClick = markerClick
-                )
+    Scaffold(
+        floatingActionButtonPosition = FabPosition.End,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = navigateToProfileScreen,
+                shape = Shapes.medium,
+                backgroundColor = MaterialTheme.colorScheme.background,
+                contentColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(Icons.Filled.Menu, "")
             }
-        }
-    }
+        }, content = {
+            BottomSheetScaffold(
+                sheetShape = RoundedCornerShape(
+                    dimensionResource(R.dimen.bottom_shape),
+                    dimensionResource(R.dimen.bottom_shape),
+                    dimensionResource(R.dimen.null_dp),
+                    dimensionResource(R.dimen.null_dp)
+                ),
+                scaffoldState = bottomSheetScaffoldState,
+                sheetBackgroundColor = MaterialTheme.colorScheme.background,
+                sheetContent = {
+                    BottomScreen(
+                        navigateToSchemeScreen = navigateToSchemeScreen
+                    )
+                },
+                sheetPeekHeight = dimensionResource(R.dimen.null_dp)
+            ) {
+                GoogleMap(
+                    modifier = Modifier.fillMaxSize(),
+                    cameraPositionState = cameraPosition
+                ) {
+                    for ((coordinates, address) in parkingCoordinates) {
+                        val parkingLatLng = LatLng(coordinates.first, coordinates.second)
+                        val markerClick: (Marker) -> Boolean = {
+                            setParkingAddress(address)
+                            coroutineScope.launch {
+                                if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+                                    bottomSheetScaffoldState.bottomSheetState.expand()
+                                } else {
+                                    bottomSheetScaffoldState.bottomSheetState.collapse()
+                                }
+                            }
+                            false
+                        }
+                        Marker(
+                            position = parkingLatLng,
+                            icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker),
+                            onClick = markerClick
+                        )
+                    }
+                }
+            }
+        })
 }
 
 object Coordinates {

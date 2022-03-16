@@ -1,17 +1,19 @@
 package io.mishkav.generalparking.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.res.dimensionResource
@@ -19,12 +21,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.buttons.IconTextButton
+import io.mishkav.generalparking.ui.components.buttons.SimpleIconButton
 import io.mishkav.generalparking.ui.components.texts.BottomTitle
 import io.mishkav.generalparking.ui.theme.Gray500
 import io.mishkav.generalparking.ui.theme.Shapes
+import io.mishkav.generalparking.ui.theme.generalParkingLightBackground
 
 @Composable
-fun UnselectedSchemeContent(
+fun SelectedSchemeContent(
 ) = Surface(
     elevation = 15.dp,
     color = MaterialTheme.colorScheme.background,
@@ -55,41 +59,33 @@ fun UnselectedSchemeContent(
             )
     ) {
         BottomTitle(
-            text = stringResource(R.string.choose_seat)
+            text = stringResource(R.string.chosen_seat),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = dimensionResource(R.dimen.standard_padding))
+        )
+        Text(
+            text = stringResource(R.string.floor_number),
+            color = MaterialTheme.colorScheme.onPrimary
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 10.dp)
+                .padding(vertical = dimensionResource(R.dimen.standard_padding))
         ) {
-            Box(
-                Modifier
-                    .clip(Shapes.medium)
-                    .size(20.dp)
-                    .background(MaterialTheme.colorScheme.primary)
-            )
-            Text(
-                text = stringResource(R.string.free),
-                color = MaterialTheme.colorScheme.onPrimary
+            IconTextButton(
+                icon = Icons.Filled.Add,
+                text = stringResource(R.string.reserve),
+                color = MaterialTheme.colorScheme.primary,
+                onClick = {}
             )
             Spacer(Modifier.width(5.dp))
-            Box(
-                Modifier
-                    .clip(Shapes.medium)
-                    .size(20.dp)
-                    .background(Gray500)
-            )
-            Text(
-                text = stringResource(R.string.taken),
-                color = MaterialTheme.colorScheme.onPrimary
+            SimpleIconButton(
+                icon = Icons.Filled.Close,
+                color = Gray500,
+                onClick = { }
             )
         }
-        IconTextButton(
-            icon = Icons.Filled.Add,
-            text = stringResource(R.string.reserve),
-            color = Gray500,
-            onClick = {}
-        )
     }
 }

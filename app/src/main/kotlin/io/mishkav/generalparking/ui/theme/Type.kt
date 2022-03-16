@@ -21,6 +21,12 @@ val Typography = Typography(
         fontSize = 35.sp,
         textAlign = TextAlign.Center
     ),
+    h5 = TextStyle (
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+        textAlign = TextAlign.Center
+    ),
     button = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Bold,

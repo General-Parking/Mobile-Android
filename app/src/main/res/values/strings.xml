@@ -62,5 +62,8 @@
     <string name="free">" — free"</string>
     <string name="taken">" — taken"</string>
     <string name="reserve">Reserve</string>
+    <string name="chosen_seat">Seat 2107</string>
+    <string name="floor_number">-1st floor</string>
+    <string name="reserved">Reserved</string>
 
 </resources>

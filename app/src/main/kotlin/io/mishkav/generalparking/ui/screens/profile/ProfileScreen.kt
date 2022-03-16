@@ -19,15 +19,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.ScreenTextfield
 import io.mishkav.generalparking.ui.components.lines.TextfieldUnderLine
+import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
 import io.mishkav.generalparking.ui.theme.Red800
 import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.theme.Typography
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(
+    navController: NavHostController,
+    onError: @Composable (Int) -> Unit
+) {
+    ProfileScreenContent()
+}
+
+@Composable
+fun ProfileScreenContent(
+) {
 
     var textName by rememberSaveable { mutableStateOf("") }
     var textPhone by rememberSaveable { mutableStateOf("") }
@@ -190,5 +201,7 @@ fun ProfileScreen() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewProfileScreen() {
-    ProfileScreen()
+    GeneralParkingTheme {
+        ProfileScreenContent()
+    }
 }
