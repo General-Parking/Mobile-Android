@@ -55,8 +55,8 @@
     <string name="go_reserve">Go to reservation</string>
     <string name="space" >" "</string>
     <string name="bottom_title">Street</string>
-    <string name="bottom_body">Free … seats from …</string>
-    <string name="minute_cost">… rub/min</string>
+    <string name="bottom_body">Free 317 seats from 380</string>
+    <string name="minute_cost">12 ₽/min</string>
     <string name="parking_scheme">Parking scheme</string>
     <string name="choose_seat">Choose a free seat:</string>
     <string name="free">" — free"</string>
