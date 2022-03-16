@@ -12,7 +12,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -31,7 +30,6 @@ import io.mishkav.generalparking.ui.screens.main.Routes
 import kotlinx.coroutines.launch
 import com.google.maps.android.compose.rememberCameraPositionState
 import io.mishkav.generalparking.ui.components.BottomScreen
-import io.mishkav.generalparking.ui.components.buttons.BottomTextButton
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
 import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.utils.ErrorResult

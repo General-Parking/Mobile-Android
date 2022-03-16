@@ -2,14 +2,11 @@ package io.mishkav.generalparking.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,8 +21,6 @@ import io.mishkav.generalparking.ui.components.buttons.IconTextButton
 import io.mishkav.generalparking.ui.components.buttons.SimpleIconButton
 import io.mishkav.generalparking.ui.components.texts.BottomTitle
 import io.mishkav.generalparking.ui.theme.Gray500
-import io.mishkav.generalparking.ui.theme.Shapes
-import io.mishkav.generalparking.ui.theme.generalParkingLightBackground
 
 @Composable
 fun SelectedSchemeContent(

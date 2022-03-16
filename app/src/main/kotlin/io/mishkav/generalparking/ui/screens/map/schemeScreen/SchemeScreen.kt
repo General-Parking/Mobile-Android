@@ -15,8 +15,6 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.insets.systemBarsPadding
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.ReservedSchemeContent
-import io.mishkav.generalparking.ui.components.SelectedSchemeContent
-import io.mishkav.generalparking.ui.components.UnselectedSchemeContent
 import io.mishkav.generalparking.ui.components.texts.BottomBody
 import io.mishkav.generalparking.ui.components.texts.BottomTitle
 import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
