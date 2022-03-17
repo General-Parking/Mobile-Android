@@ -142,7 +142,6 @@ object Coordinates {
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun PreviewMapScreen() {
