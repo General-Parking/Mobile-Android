@@ -57,8 +57,6 @@ fun BottomScreenContent(
         text = textAddress
     )
 
-    Spacer(modifier = Modifier.height(30.dp))
-    
     BottomBody(
         text = textBody
     )
