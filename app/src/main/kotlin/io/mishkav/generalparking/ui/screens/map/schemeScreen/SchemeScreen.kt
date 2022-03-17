@@ -1,5 +1,7 @@
 package io.mishkav.generalparking.ui.screens.map.schemeScreen
 
+import android.util.Log
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
@@ -33,13 +35,19 @@ import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Card
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
-import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeSizes.BASE_TILE_SIZE
+import io.mishkav.generalparking.ui.components.ReservedSchemeContent
+import io.mishkav.generalparking.ui.components.SelectedSchemeContent
+import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeConsts
+import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeConsts.BASE_TILE_SIZE
 import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingTile
 
 @Composable
@@ -50,9 +58,14 @@ fun SchemeScreen(
     val viewModel: SchemeViewModel = viewModel()
     val currentParkingAddress by viewModel.currentParkingAddress.collectAsState()
     val parkingSchemeResult by viewModel.parkingSchemeResult.collectAsState()
+    val selectedParkingPlace by viewModel.selectedParkingPlace.collectAsState()
+    val setParkingPlaceReservation by viewModel.setParkingPlaceReservationResult.collectAsState()
+    val removeParkingPlaceReservation by viewModel.removeParkingPlaceReservationResult.collectAsState()
+    val isPlaceParkingSelected by viewModel.isPlaceParkingSelected.collectAsState()
 
     //Что-то придумать с floor
     LaunchedEffect(Unit) {
+        viewModel.onOpen()
         viewModel.getParkingScheme(-1)
     }
 
@@ -63,7 +76,14 @@ fun SchemeScreen(
                 parkingSchemeResult.data?.let {
                     SchemeScreenContent(
                         textAddress = currentParkingAddress,
-                        parkingScheme = it
+                        parkingScheme = it,
+                        selectedParkingPlace = selectedParkingPlace,
+                        isPlaceParkingSelected = isPlaceParkingSelected,
+                        isGivenPlaceSelected = viewModel::isGivenPlaceSelected,
+                        onGetSelectedParkingPlace = viewModel::getSelectedParkingPlace,
+                        onSelectParkingPlace = viewModel::setParkingPlace,
+                        onParkingPlaceReserved = viewModel::setParkingPlaceReservation,
+                        onRemoveParkingPlaceReserved = viewModel::removeParkingPlaceReservation,
                     )
                 }
             }
@@ -79,12 +99,62 @@ fun SchemeScreen(
             }
         }
     }
+
+
+    setParkingPlaceReservation.also { result ->
+        when (result) {
+            is ErrorResult -> onError(result.message!!)
+            is SuccessResult -> {
+                viewModel.setIsPlaceParkingSelected(true)
+                viewModel.setParkingPlaceDataToSession()
+            }
+            is LoadingResult -> {
+                Box(
+                    modifier = Modifier
+                        .alpha(0.5f)
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularLoader()
+                }
+            }
+        }
+    }
+
+    removeParkingPlaceReservation.also { result ->
+        when (result) {
+            is ErrorResult -> onError(result.message!!)
+            is SuccessResult -> {
+
+                viewModel.setIsPlaceParkingSelected(false)
+            }
+            is LoadingResult -> {
+                Box(
+                    modifier = Modifier
+                        .alpha(0.5f)
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularLoader()
+                }
+            }
+        }
+    }
 }
 
 @Composable
 fun SchemeScreenContent(
     textAddress: String = stringResource(R.string.bottom_title),
-    parkingScheme: ParkingScheme
+    parkingScheme: ParkingScheme,
+    selectedParkingPlace: String = ParkingSchemeConsts.EMPTY_STRING,
+    isPlaceParkingSelected: Boolean = false,
+    isGivenPlaceSelected: (name: String) -> Boolean = { _ -> false },
+    onGetSelectedParkingPlace: () -> String = { ParkingSchemeConsts.EMPTY_STRING },
+    onSelectParkingPlace: (name: String, coordinates: String) -> Unit = { _, _ -> },
+    onParkingPlaceReserved: (floor: Int) -> Unit = { _ -> },
+    onRemoveParkingPlaceReserved: (floor: Int) -> Unit = { _ -> }
 ) {
     Column(
         modifier = Modifier
@@ -97,7 +167,7 @@ fun SchemeScreenContent(
     ) {
         Column(
             modifier = Modifier
-                .weight(2f)
+                .weight(1f)
                 .padding(
                     horizontal = dimensionResource(R.dimen.bottom_padding)
                 )
@@ -106,7 +176,7 @@ fun SchemeScreenContent(
                 text = textAddress
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             BottomBody(
                 text = stringResource(R.string.parking_scheme)
@@ -115,24 +185,61 @@ fun SchemeScreenContent(
 
         Column(
             modifier = Modifier
-                .weight(7f),
+                .weight(8f)
+                .padding(
+                    horizontal = dimensionResource(R.dimen.bottom_padding)
+                ),
             verticalArrangement = Arrangement.Center
         ) {
-
-            DrawScheme(
-                parkingScheme = parkingScheme
-            )
+            Card(
+                elevation = 8.dp,
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                DrawScheme(
+                    parkingScheme = parkingScheme,
+                    onGetSelectedParkingPlace = onGetSelectedParkingPlace,
+                    onSelectParkingPlace = onSelectParkingPlace,
+                    isGivenPlaceSelected = isGivenPlaceSelected
+                )
+            }
         }
 
         Column(
             modifier = Modifier
-                .weight(1f)
+                .weight(2f)
                 .padding(
-                    horizontal = dimensionResource(R.dimen.bottom_padding)
+                    start = dimensionResource(R.dimen.bottom_padding),
+                    end = dimensionResource(R.dimen.bottom_padding),
+                    top = dimensionResource(R.dimen.standard_padding)
                 ),
-            verticalArrangement = Arrangement.Bottom
         ) {
-            UnselectedSchemeContent()
+            val height by animateDpAsState(
+                if (selectedParkingPlace.isEmpty()) 90.dp else 250.dp
+
+            )
+
+            Card(
+                elevation = 8.dp,
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier
+                    .height(height)
+            ) {
+                if (isPlaceParkingSelected)
+                    ReservedSchemeContent(
+                        name = selectedParkingPlace,
+                        onClick = { onRemoveParkingPlaceReserved(-1) }
+                    )
+                else {
+                    if (selectedParkingPlace.isEmpty())
+                        UnselectedSchemeContent()
+                    else
+                        SelectedSchemeContent(
+                            name = selectedParkingPlace,
+                            onClick = { onParkingPlaceReserved(-1) }
+                        )
+                }
+            }
         }
     }
 }
@@ -140,7 +247,10 @@ fun SchemeScreenContent(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DrawScheme(
-    parkingScheme: ParkingScheme
+    parkingScheme: ParkingScheme,
+    onGetSelectedParkingPlace: () -> String = { ParkingSchemeConsts.EMPTY_STRING },
+    onSelectParkingPlace: (name: String, coordinates: String) -> Unit = { _, _ -> },
+    isGivenPlaceSelected: (name: String) -> Boolean = { _ -> false }
 ) {
     var scale by remember { mutableStateOf(1f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
@@ -171,7 +281,11 @@ fun DrawScheme(
                             null -> EmptyLotTile()
                             else -> parkingScheme.places["${height}_${width}"]?.let {
                                 ParkingLotTile(
-                                    parkingTile = ParkingTile(it)
+                                    parkingTile = ParkingTile(it),
+                                    onGetSelectedParkingPlace = onGetSelectedParkingPlace,
+                                    coordinates = "${height}_${width}",
+                                    onClick = onSelectParkingPlace,
+                                    isGivenPlaceSelected = isGivenPlaceSelected
                                 )
                             }
                         }

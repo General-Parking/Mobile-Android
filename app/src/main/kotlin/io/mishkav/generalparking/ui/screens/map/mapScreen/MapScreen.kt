@@ -44,36 +44,45 @@ fun MapScreen(
 ) {
     val viewModel: MapViewModel = viewModel()
     val parkingCoordinates by viewModel.parkingCoordinatesResult.collectAsState()
+    val autoNumber by viewModel.autoNumberResult.collectAsState()
+
+    val showError: @Composable () -> Unit = {
+        Box(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularLoader()
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.getParkingCoordinates()
+        // viewModel.setAutoNumber()
     }
 
     parkingCoordinates.also { result ->
         when (result) {
             is ErrorResult -> onError(result.message!!)
             is SuccessResult -> {
-                MapScreenContent(
-                    parkingCoordinates = parkingCoordinates.data ?: emptyMap(),
-                    setParkingAddress = viewModel::setCurrentParkingAddress,
-                    navigateToSchemeScreen = {
-                        navController.navigate(Routes.scheme)
-                    },
-                    navigateToProfileScreen = {
-                        navController.navigate(Routes.profile)
+                when (autoNumber) {
+                    is ErrorResult -> showError()
+                    else -> {
+                        MapScreenContent(
+                            parkingCoordinates = parkingCoordinates.data ?: emptyMap(),
+                            setParkingAddress = viewModel::setCurrentParkingAddress,
+                            navigateToSchemeScreen = {
+                                navController.navigate(Routes.scheme)
+                            },
+                            navigateToProfileScreen = {
+                                navController.navigate(Routes.profile)
+                            }
+                        )
                     }
-                )
-            }
-            is LoadingResult -> {
-                Box(
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularLoader()
                 }
             }
+            is LoadingResult -> { showError() }
         }
     }
 }
