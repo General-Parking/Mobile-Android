@@ -1,6 +1,5 @@
 package io.mishkav.generalparking.ui.screens.map.schemeScreen
 
-import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.rememberTransformableState

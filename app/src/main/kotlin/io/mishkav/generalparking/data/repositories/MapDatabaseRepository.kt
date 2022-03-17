@@ -65,7 +65,6 @@ class MapDatabaseRepository @Inject constructor(
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS", Locale.getDefault())
         val timeReservation = dateFormat.format(Date())
 
-        Log.d("TAG_CHECK", "parking/$address/$floor/places/$placeCoordinates/value")
         //Check
         val checkReservation = firebaseDatabase
             .child("parking/$address/$floor/places/$placeCoordinates/value")
@@ -189,7 +188,6 @@ class MapDatabaseRepository @Inject constructor(
 
         private const val EMPTY_STRING = ""
         private const val SPACE = " "
-
 
         private val CLASS_STRING = String::class.java
         private val CLASS_INT = Int::class.java
