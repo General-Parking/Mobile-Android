@@ -21,7 +21,7 @@ class AuthRepository @Inject constructor(
     }
 
     override fun signOut() {
-        firebaseAuth.currentUser?.delete()
+        firebaseAuth.signOut()
     }
 
     override suspend fun signInWithEmailAndPassword(email: String, password: String) {
