@@ -1,15 +1,14 @@
 package io.mishkav.generalparking.ui.screens.profile
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,25 +18,59 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.ScreenTextfield
 import io.mishkav.generalparking.ui.components.lines.TextfieldUnderLine
+import io.mishkav.generalparking.ui.components.loaders.CircularLoader
+import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
+import io.mishkav.generalparking.ui.screens.auth.authorization.AuthorizationScreenContent
+import io.mishkav.generalparking.ui.screens.main.Routes
 import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
 import io.mishkav.generalparking.ui.theme.Red800
 import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.theme.Typography
+import io.mishkav.generalparking.ui.utils.ErrorResult
+import io.mishkav.generalparking.ui.utils.LoadingResult
+import io.mishkav.generalparking.ui.utils.SuccessResult
 
 @Composable
 fun ProfileScreen(
     navController: NavHostController,
     onError: @Composable (Int) -> Unit
 ) {
-    ProfileScreenContent()
+    val viewModel: ProfileViewModel = viewModel()
+    val signOutResult by viewModel.signOutResult.collectAsState()
+    signOutResult.also { result ->
+        when (result) {
+            is ErrorResult -> onError(result.message!!)
+            is SuccessResult -> {
+                LaunchedEffect(Unit) {
+                    navController.navigate(Routes.authorization)
+                }
+            }
+            is LoadingResult -> {
+                Box(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularLoader()
+                }
+            }
+        }
+    }
+
+    ProfileScreenContent(
+        signOut = viewModel::signOut
+    )
 }
 
 @Composable
 fun ProfileScreenContent(
+    signOut: () -> Unit = { },
 ) {
 
     var textName by rememberSaveable { mutableStateOf("") }
@@ -181,7 +214,7 @@ fun ProfileScreenContent(
                 .weight(1f)
         ) {
             Button(
-                onClick = { },
+                onClick = signOut,
                 shape = Shapes.large,
                 colors = ButtonDefaults.buttonColors(backgroundColor = Red800),
                 modifier = Modifier

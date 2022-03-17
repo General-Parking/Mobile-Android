@@ -93,6 +93,17 @@ fun MapScreenContent(
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
     val coroutineScope = rememberCoroutineScope()
     BottomSheetScaffold(
+        floatingActionButtonPosition = FabPosition.End,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = navigateToProfileScreen,
+                shape = Shapes.medium,
+                backgroundColor = MaterialTheme.colorScheme.background,
+                contentColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(Icons.Filled.Menu, "")
+            }
+        },
         sheetShape = RoundedCornerShape(
             dimensionResource(R.dimen.bottom_shape),
             dimensionResource(R.dimen.bottom_shape),

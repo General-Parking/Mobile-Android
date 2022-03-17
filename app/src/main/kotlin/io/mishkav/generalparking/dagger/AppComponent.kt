@@ -7,6 +7,7 @@ import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
 import io.mishkav.generalparking.ui.screens.main.MainViewModel
 import io.mishkav.generalparking.ui.screens.map.mapScreen.MapViewModel
 import io.mishkav.generalparking.ui.screens.map.schemeScreen.SchemeViewModel
+import io.mishkav.generalparking.ui.screens.profile.ProfileViewModel
 import javax.inject.Singleton
 
 @Singleton
@@ -24,5 +25,6 @@ interface AppComponent {
     fun inject(mainViewModel: MainViewModel)
     fun inject(mapViewModel: MapViewModel)
     fun inject(schemeViewModel: SchemeViewModel)
+    fun inject(profileViewModel: ProfileViewModel)
 }
 
