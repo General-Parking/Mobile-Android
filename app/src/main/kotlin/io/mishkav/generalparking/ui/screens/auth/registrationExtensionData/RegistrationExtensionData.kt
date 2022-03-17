@@ -91,6 +91,18 @@ fun RegistrationExtensionDataContent(
     var textPhone by rememberSaveable { mutableStateOf("") }
 
     val focusManager = LocalFocusManager.current
+    val colors = TextFieldDefaults.textFieldColors(
+        textColor = MaterialTheme.colorScheme.onPrimary,
+        cursorColor = MaterialTheme.colorScheme.primary,
+        disabledLabelColor = MaterialTheme.colorScheme.primary,
+        focusedLabelColor = MaterialTheme.colorScheme.primary,
+        unfocusedLabelColor = MaterialTheme.colorScheme.primary,
+        placeholderColor = MaterialTheme.colorScheme.onPrimary,
+        focusedIndicatorColor = Color.Transparent,
+        disabledIndicatorColor = Color.Transparent,
+        unfocusedIndicatorColor = Color.Transparent,
+        backgroundColor = Color.Transparent,
+    )
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -165,12 +177,7 @@ fun RegistrationExtensionDataContent(
                             ),
                             placeholder = { Text(stringResource(R.string.a)) },
                             textStyle = TextStyle(fontSize = 23.sp, fontWeight = FontWeight.Bold),
-                            colors = TextFieldDefaults.textFieldColors(
-                                focusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                backgroundColor = Color.Transparent,
-                            ),
+                            colors = colors,
                             modifier = Modifier
                                 .width(50.dp)
                                 .fillMaxHeight()
@@ -188,12 +195,7 @@ fun RegistrationExtensionDataContent(
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
                             placeholder = { Text(stringResource(R.string.zeros)) },
                             textStyle = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.Bold),
-                            colors = TextFieldDefaults.textFieldColors(
-                                focusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                backgroundColor = Color.Transparent,
-                            ),
+                            colors = colors,
                             modifier = Modifier
                                 .width(80.dp)
                                 .fillMaxHeight()
@@ -214,12 +216,7 @@ fun RegistrationExtensionDataContent(
                             ),
                             placeholder = { Text(stringResource(R.string.aa)) },
                             textStyle = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
-                            colors = TextFieldDefaults.textFieldColors(
-                                focusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                backgroundColor = Color.Transparent,
-                            ),
+                            colors = colors,
                             modifier = Modifier
                                 .width(70.dp)
                                 .fillMaxHeight()
@@ -249,12 +246,7 @@ fun RegistrationExtensionDataContent(
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
                             placeholder = { Text(stringResource(R.string.zeros)) },
                             textStyle = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.Bold),
-                            colors = TextFieldDefaults.textFieldColors(
-                                focusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                backgroundColor = Color.Transparent,
-                            ),
+                            colors = colors,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(60.dp)

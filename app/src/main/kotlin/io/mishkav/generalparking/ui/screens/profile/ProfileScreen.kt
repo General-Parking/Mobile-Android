@@ -21,11 +21,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
+import io.mishkav.generalparking.domain.entities.User
 import io.mishkav.generalparking.ui.components.ScreenTextfield
 import io.mishkav.generalparking.ui.components.lines.TextfieldUnderLine
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
-import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
-import io.mishkav.generalparking.ui.screens.auth.authorization.AuthorizationScreenContent
 import io.mishkav.generalparking.ui.screens.main.Routes
 import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
 import io.mishkav.generalparking.ui.theme.Red800
@@ -42,6 +41,12 @@ fun ProfileScreen(
 ) {
     val viewModel: ProfileViewModel = viewModel()
     val signOutResult by viewModel.signOutResult.collectAsState()
+    val currentUser by viewModel.currentUser.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.getUserDataFromDatabase()
+    }
+
     signOutResult.also { result ->
         when (result) {
             is ErrorResult -> onError(result.message!!)
@@ -63,21 +68,39 @@ fun ProfileScreen(
         }
     }
 
-    ProfileScreenContent(
-        signOut = viewModel::signOut
-    )
+    currentUser.also { result ->
+        when (result) {
+            is ErrorResult -> onError(result.message!!)
+            is SuccessResult -> {
+                ProfileScreenContent(
+                    signOut = viewModel::signOut,
+                    currentUser = currentUser.data!!
+                )
+            }
+            is LoadingResult -> {
+                Box(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularLoader()
+                }
+            }
+        }
+    }
 }
 
 @Composable
 fun ProfileScreenContent(
     signOut: () -> Unit = { },
+    currentUser: User
 ) {
-
-    var textName by rememberSaveable { mutableStateOf("") }
-    var textPhone by rememberSaveable { mutableStateOf("") }
-    var textEmail by rememberSaveable { mutableStateOf("") }
-    var textAuto by rememberSaveable { mutableStateOf("") }
-    var textNumAuto by rememberSaveable { mutableStateOf("") }
+    var textName by rememberSaveable { mutableStateOf(currentUser.metaUserInfo["name"]!!) }
+    var textPhone by rememberSaveable { mutableStateOf(currentUser.metaUserInfo["phone_number"]!!) }
+    var textEmail by rememberSaveable { mutableStateOf(currentUser.email) }
+    var textAuto by rememberSaveable { mutableStateOf(currentUser.metaUserInfo["car_brand"]!!) }
+    var textNumAuto by rememberSaveable { mutableStateOf(currentUser.numberAuto) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -115,6 +138,12 @@ fun ProfileScreenContent(
                 label = { Text(stringResource(R.string.name)) },
                 textStyle = Typography.h4,
                 colors = TextFieldDefaults.textFieldColors(
+                    textColor = MaterialTheme.colorScheme.onPrimary,
+                    cursorColor = MaterialTheme.colorScheme.primary,
+                    disabledLabelColor = MaterialTheme.colorScheme.primary,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.primary,
+                    placeholderColor = MaterialTheme.colorScheme.onPrimary,
                     focusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
@@ -153,6 +182,7 @@ fun ProfileScreenContent(
                     onValueChange = {
                         textEmail = it
                     },
+                    enabled = false,
                     keyboardType = KeyboardType.Email,
                     placeholder = { Text(stringResource(R.string.profile_default_email)) },
                     modifier = Modifier
@@ -188,22 +218,11 @@ fun ProfileScreenContent(
                     onValueChange = {
                         textNumAuto = it
                     },
+                    enabled = false,
                     keyboardType = KeyboardType.Text,
                     placeholder = { Text(stringResource(R.string.profile_default_num_auto)) },
                     modifier = Modifier
                         .fillMaxWidth()
-                )
-                TextfieldUnderLine()
-            }
-            Column(
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = dimensionResource(R.dimen.profile_field_padding))
-            ) {
-                Text(
-                    text = stringResource(R.string.profile_cards),
-                    style = Typography.subtitle1
                 )
                 TextfieldUnderLine()
             }
@@ -235,6 +254,6 @@ fun ProfileScreenContent(
 @Composable
 fun PreviewProfileScreen() {
     GeneralParkingTheme {
-        ProfileScreenContent()
+        //ProfileScreenContent()
     }
 }
