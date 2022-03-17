@@ -16,7 +16,6 @@ import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.UnselectedSchemeContent
 import io.mishkav.generalparking.ui.components.texts.BottomBody
 import io.mishkav.generalparking.ui.components.texts.BottomTitle
-import io.mishkav.generalparking.ui.screens.map.mapScreen.MapViewModel
 import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
 
 @Composable

@@ -36,6 +36,7 @@ import io.mishkav.generalparking.ui.screens.auth.registration.RegistrationScreen
 import io.mishkav.generalparking.ui.screens.auth.registrationExtensionData.RegistrationExtensionData
 import io.mishkav.generalparking.ui.screens.map.mapScreen.MapScreen
 import io.mishkav.generalparking.ui.screens.map.schemeScreen.SchemeScreen
+import io.mishkav.generalparking.ui.screens.profile.ProfileScreen
 import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
 
 class MainActivity : ComponentActivity() {
@@ -157,6 +158,12 @@ fun MainScreen(
                     onError = onError
                 )
             }
+            composable(Routes.profile) {
+                ProfileScreen(
+                    navController = navController,
+                    onError = onError
+                )
+            }
         }
     }
 }
@@ -169,4 +176,5 @@ object Routes {
     const val registrationExtensionData = "registrationExtensionData"
     const val map = "map"
     const val scheme = "scheme"
+    const val profile = "profile"
 }

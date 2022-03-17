@@ -11,10 +11,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -29,6 +32,7 @@ import kotlinx.coroutines.launch
 import com.google.maps.android.compose.rememberCameraPositionState
 import io.mishkav.generalparking.ui.components.BottomScreen
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
+import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
@@ -54,6 +58,9 @@ fun MapScreen(
                     setParkingAddress = viewModel::setCurrentParkingAddress,
                     navigateToSchemeScreen = {
                         navController.navigate(Routes.scheme)
+                    },
+                    navigateToProfileScreen = {
+                        navController.navigate(Routes.profile)
                     }
                 )
             }
@@ -75,8 +82,9 @@ fun MapScreen(
 @Composable
 fun MapScreenContent(
     parkingCoordinates: Map<Pair<Double, Double>, String> = emptyMap(),
-    setParkingAddress: (address: String) -> Unit = {_ ->},
-    navigateToSchemeScreen: () -> Unit = {}
+    setParkingAddress: (address: String) -> Unit = { _ -> },
+    navigateToSchemeScreen: () -> Unit = {},
+    navigateToProfileScreen: () -> Unit = {}
 ) {
     val moscowLatLng = LatLng(Coordinates.Moscow.latitude, Coordinates.Moscow.longitude)
     val cameraPosition = rememberCameraPositionState {
@@ -84,11 +92,12 @@ fun MapScreenContent(
     }
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
     val coroutineScope = rememberCoroutineScope()
-
     BottomSheetScaffold(
         sheetShape = RoundedCornerShape(
-            dimensionResource(R.dimen.bottom_shape), dimensionResource(R.dimen.bottom_shape),
-            dimensionResource(R.dimen.null_dp), dimensionResource(R.dimen.null_dp)
+            dimensionResource(R.dimen.bottom_shape),
+            dimensionResource(R.dimen.bottom_shape),
+            dimensionResource(R.dimen.null_dp),
+            dimensionResource(R.dimen.null_dp)
         ),
         scaffoldState = bottomSheetScaffoldState,
         sheetBackgroundColor = MaterialTheme.colorScheme.background,
@@ -103,7 +112,7 @@ fun MapScreenContent(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPosition
         ) {
-            for((coordinates, address) in parkingCoordinates) {
+            for ((coordinates, address) in parkingCoordinates) {
                 val parkingLatLng = LatLng(coordinates.first, coordinates.second)
                 val markerClick: (Marker) -> Boolean = {
                     setParkingAddress(address)
