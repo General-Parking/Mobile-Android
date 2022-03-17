@@ -75,7 +75,7 @@ fun MapScreen(
 @Composable
 fun MapScreenContent(
     parkingCoordinates: Map<Pair<Double, Double>, String> = emptyMap(),
-    setParkingAddress: (address: String) -> Unit = {_ ->},
+    setParkingAddress: (address: String) -> Unit = { _ -> },
     navigateToSchemeScreen: () -> Unit = {}
 ) {
     val moscowLatLng = LatLng(Coordinates.Moscow.latitude, Coordinates.Moscow.longitude)
@@ -103,7 +103,7 @@ fun MapScreenContent(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPosition
         ) {
-            for((coordinates, address) in parkingCoordinates) {
+            for ((coordinates, address) in parkingCoordinates) {
                 val parkingLatLng = LatLng(coordinates.first, coordinates.second)
                 val markerClick: (Marker) -> Boolean = {
                     setParkingAddress(address)
@@ -132,7 +132,6 @@ object Coordinates {
         const val latitude = 55.751244
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

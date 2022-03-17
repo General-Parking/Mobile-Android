@@ -5,29 +5,20 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.SwapCalls
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.buttons.IconTextButton
-import io.mishkav.generalparking.ui.components.buttons.SimpleIconTextButton
-import io.mishkav.generalparking.ui.components.texts.BottomTitle
 import io.mishkav.generalparking.ui.theme.Gray500
 import io.mishkav.generalparking.ui.theme.Shapes
 
 @Composable
 fun UnselectedSchemeContent(
-) = Column(
-    modifier = Modifier
-        .padding(
-            vertical = dimensionResource(R.dimen.bottom_top_padding)
-        )
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
