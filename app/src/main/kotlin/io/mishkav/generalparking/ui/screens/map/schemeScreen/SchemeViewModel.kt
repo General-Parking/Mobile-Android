@@ -35,7 +35,7 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
     private val _selectedParkingPlaceCoordinates by lazy { session.selectedParkingPlaceCoordinates }
     private val selectedParkingPlaceCoordinates = MutableStateFlow<String>(ParkingSchemeConsts.EMPTY_STRING)
 
-    val isPlaceParkingSelected = MutableStateFlow(!selectedParkingPlace.value.isEmpty())
+    val isPlaceParkingSelected = MutableStateFlow(selectedParkingPlace.value.isEmpty())
 
     init {
         appComponent.inject(this)

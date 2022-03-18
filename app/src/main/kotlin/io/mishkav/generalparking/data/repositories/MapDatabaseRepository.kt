@@ -75,6 +75,12 @@ class MapDatabaseRepository @Inject constructor(
         if (checkReservation == 1L)
             throw PlaceReservationException()
 
+        //Users car
+        firebaseDatabase
+            .child("users_car")
+            .setValue(hashMapOf(autoNumber to firebaseAuth.currentUser?.uid))
+            .await()
+
         //Users
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/reservation_address")
@@ -105,12 +111,6 @@ class MapDatabaseRepository @Inject constructor(
         firebaseDatabase
             .child("parking/$address/$floor/places/$placeCoordinates/value")
             .setValue(1)
-            .await()
-
-        //Users car
-        firebaseDatabase
-            .child("users_car/$autoNumber")
-            .setValue(firebaseAuth.currentUser?.uid)
             .await()
     }
 

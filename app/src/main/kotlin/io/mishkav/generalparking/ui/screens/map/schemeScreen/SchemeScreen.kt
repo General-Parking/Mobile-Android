@@ -64,6 +64,7 @@ fun SchemeScreen(
 
     //Что-то придумать с floor
     LaunchedEffect(Unit) {
+        viewModel.setIsPlaceParkingSelected(false)
         viewModel.onOpen()
         viewModel.getParkingScheme(-1)
     }
@@ -125,7 +126,6 @@ fun SchemeScreen(
         when (result) {
             is ErrorResult -> onError(result.message!!)
             is SuccessResult -> {
-
                 viewModel.setIsPlaceParkingSelected(false)
             }
             is LoadingResult -> {
