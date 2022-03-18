@@ -135,7 +135,6 @@ fun ProfileScreenContent(
                 onValueChange = {
                     textName = it
                 },
-                label = { Text(stringResource(R.string.name)) },
                 textStyle = Typography.h4,
                 colors = TextFieldDefaults.textFieldColors(
                     textColor = MaterialTheme.colorScheme.onPrimary,
