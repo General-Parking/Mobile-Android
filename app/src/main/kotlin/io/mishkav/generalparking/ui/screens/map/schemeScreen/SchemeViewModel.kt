@@ -1,13 +1,17 @@
 package io.mishkav.generalparking.ui.screens.map.schemeScreen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.mishkav.generalparking.GeneralParkingApp
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.dagger.AppComponent
 import io.mishkav.generalparking.domain.entities.ParkingScheme
+import io.mishkav.generalparking.domain.entities.User
+import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
 import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import io.mishkav.generalparking.state.Session
+import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingPlaceState
 import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeConsts
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
 import io.mishkav.generalparking.ui.utils.loadOrError
@@ -22,6 +26,9 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
     @Inject
     lateinit var session: Session
 
+    @Inject
+    lateinit var authDatabaseRepository: IAuthDatabaseRepository
+
     val parkingSchemeResult = MutableResultFlow<ParkingScheme>()
     val setParkingPlaceReservationResult = MutableResultFlow<Unit>()
     val removeParkingPlaceReservationResult = MutableResultFlow<Unit>()
@@ -35,13 +42,24 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
     private val _selectedParkingPlaceCoordinates by lazy { session.selectedParkingPlaceCoordinates }
     private val selectedParkingPlaceCoordinates = MutableStateFlow<String>(ParkingSchemeConsts.EMPTY_STRING)
 
-    val isPlaceParkingSelected = MutableStateFlow(selectedParkingPlace.value.isEmpty())
+    private val _isReservedTransactionPassed = MutableStateFlow(false)
+    private val _isCurrentUserReservedParkingPlace by lazy { session.isCurrentUserReservedParkingPlace }
+    val isCurrentUserReservedParkingPlace = MutableStateFlow(false)
+
+    val currentUser = MutableResultFlow<User>()
 
     init {
         appComponent.inject(this)
     }
 
     fun onOpen() {
+        Log.d("TAG_CHECK", "_isCurrentUserReservedParkingPlace.value = ${_isCurrentUserReservedParkingPlace.value}")
+        Log.d("TAG_CHECK", "_selectedParkingPlace.value = ${_selectedParkingPlace.value}")
+        Log.d("TAG_CHECK", "_selectedParkingPlaceCoordinates.value = ${_selectedParkingPlaceCoordinates.value}")
+
+        // session.changeSelectedParkingPlace(ParkingSchemeConsts.EMPTY_STRING)
+        // session.changeSelectedParkingPlaceCoordinates(ParkingSchemeConsts.EMPTY_STRING)
+        isCurrentUserReservedParkingPlace.value = _isCurrentUserReservedParkingPlace.value
         selectedParkingPlace.value = _selectedParkingPlace.value
         selectedParkingPlaceCoordinates.value = _selectedParkingPlaceCoordinates.value
     }
@@ -52,9 +70,7 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
         }
     }
 
-    fun isGivenPlaceSelected(namePlace: String): Boolean {
-        return isPlaceParkingSelected.value && namePlace == selectedParkingPlace.value
-    }
+    fun isGivenPlaceSelected(): Boolean = _isReservedTransactionPassed.value
 
     fun setParkingPlace(name: String, coordinates: String) {
         selectedParkingPlace.value = name
@@ -64,7 +80,7 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
     fun getSelectedParkingPlace(): String = selectedParkingPlace.value
 
     fun setIsPlaceParkingSelected(isSelected: Boolean) {
-        isPlaceParkingSelected.value = isSelected
+        isCurrentUserReservedParkingPlace.value = isSelected
     }
 
     // Reservation
@@ -76,10 +92,17 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
             mapDatabaseRepository.setParkingPlaceReservation(
                 address = currentParkingAddress.value,
                 namePlace = selectedParkingPlace.value,
-                floor = floor,
+                floor = floor.toString(),
                 placeCoordinates = selectedParkingPlaceCoordinates.value,
                 autoNumber = autoNumber.value
             )
+
+            session.changeSelectedParkingPlace(selectedParkingPlace.value)
+            session.changeSelectedParkingPlaceCoordinates(selectedParkingPlaceCoordinates.value)
+            session.changeIsCurrentUserReservedParkingPlace(true)
+            onOpen()
+            isCurrentUserReservedParkingPlace.value = true
+            // _isReservedTransactionPassed.value = true
         }
     }
 
@@ -96,14 +119,31 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
 
             session.changeSelectedParkingPlace(ParkingSchemeConsts.EMPTY_STRING)
             session.changeSelectedParkingPlaceCoordinates(ParkingSchemeConsts.EMPTY_STRING)
-            isPlaceParkingSelected.value = false
-            selectedParkingPlace.value = ParkingSchemeConsts.EMPTY_STRING
-            selectedParkingPlaceCoordinates.value = ParkingSchemeConsts.EMPTY_STRING
+            session.changeIsCurrentUserReservedParkingPlace(false)
+            onOpen()
+            _isReservedTransactionPassed.value = true
+            isCurrentUserReservedParkingPlace.value = false
+            // isCurrentUserReservedParkingPlace.value = false
+            // selectedParkingPlace.value = ParkingSchemeConsts.EMPTY_STRING
+            // selectedParkingPlaceCoordinates.value = ParkingSchemeConsts.EMPTY_STRING
+            // session.changeIsCurrentUserReservedParkingPlace(false)
         }
     }
 
     fun setParkingPlaceDataToSession() {
         session.changeSelectedParkingPlace(selectedParkingPlace.value)
         session.changeSelectedParkingPlaceCoordinates(selectedParkingPlaceCoordinates.value)
+    }
+
+    fun getCurrentUser() = viewModelScope.launch {
+        currentUser.loadOrError {
+            authDatabaseRepository.getUserDataFromDatabase()
+        }
+    }
+
+    fun getParkingPlaceState(namePlace: String, value: Int): ParkingPlaceState = when {
+        isCurrentUserReservedParkingPlace.value && namePlace == selectedParkingPlace.value -> ParkingPlaceState.RESERVED_BY_CURRENT_USER
+        namePlace != selectedParkingPlace.value && value == 1 -> ParkingPlaceState.RESERVED_BY_OTHER_USERS
+        else -> ParkingPlaceState.NOT_RESERVED
     }
 }

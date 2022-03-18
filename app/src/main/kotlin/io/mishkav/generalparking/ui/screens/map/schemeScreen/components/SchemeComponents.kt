@@ -1,5 +1,6 @@
 package io.mishkav.generalparking.ui.screens.map.schemeScreen.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -14,8 +15,10 @@ import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,6 +30,9 @@ import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingS
 import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeConsts.EMPTY_STRING
 import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeConsts.PARKING_LOT_HEIGHT
 import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeConsts.PARKING_LOT_WIDTH
+import io.mishkav.generalparking.ui.theme.Gray400
+import io.mishkav.generalparking.ui.theme.Gray500
+import io.mishkav.generalparking.ui.theme.Orange400
 import io.mishkav.generalparking.ui.theme.Typography
 import io.mishkav.generalparking.ui.theme.Yellow400
 
@@ -57,12 +63,42 @@ fun ParkingLotTile(
     coordinates: String,
     onGetSelectedParkingPlace: () -> String = { EMPTY_STRING },
     onClick: (name: String, coordinates: String) -> Unit = { _, _ -> },
-    isGivenPlaceSelected: (name: String) -> Boolean = { _ -> false }
+
+    isGivenPlaceSelected: () -> Boolean = { false },
+
+    getParkingPlaceState: (namePlace: String, value: Int) -> ParkingPlaceState = { _, _ -> ParkingPlaceState.NOT_RESERVED },
 ) = BaseTile {
 
-    val isOccurred = remember {
+    val state = getParkingPlaceState(parkingTile.place.name, parkingTile.place.value)
+    var isReservedTransactionPassed = isGivenPlaceSelected()
+    var isSelected by remember {
         mutableStateOf(false)
     }
+
+    val background by animateColorAsState(
+        when {
+            state == ParkingPlaceState.RESERVED_BY_CURRENT_USER || state == ParkingPlaceState.RESERVED_BY_OTHER_USERS -> {
+                state.color
+            }
+            isSelected -> {
+                if (isReservedTransactionPassed) {
+                    isSelected = false
+                    isReservedTransactionPassed = false
+                    state.color
+                }
+                else
+                    ParkingPlaceState.SELECTED.color
+            }
+            else -> state.color
+        }
+
+        // if (isSelected) {
+        //     ParkingPlaceState.SELECTED.color
+        // }
+        // else
+        //     getParkingPlaceState(parkingTile.place.name, parkingTile.place.value).color
+    )
+
     val width: Dp
     val height: Dp
     when (parkingTile.place.rotation) {
@@ -83,11 +119,11 @@ fun ParkingLotTile(
             .clickable(onClick = {
                 val selectedPlaceName = onGetSelectedParkingPlace()
                 if (selectedPlaceName.isEmpty() || selectedPlaceName == parkingTile.place.name) {
-                    if (isOccurred.value)
+                    if (isSelected)
                         onClick(EMPTY_STRING, EMPTY_STRING)
                     else
                         onClick(parkingTile.place.name, coordinates)
-                    isOccurred.value = !isOccurred.value
+                    isSelected = !isSelected
                 }
             }),
         shape = RoundedCornerShape(8.dp),
@@ -95,7 +131,7 @@ fun ParkingLotTile(
     ) {
         Text(
             modifier = Modifier
-                .background(if (isOccurred.value || isGivenPlaceSelected(parkingTile.place.name)) Color.Green else Yellow400)
+                .background(background)
                 .padding(
                     top = 20.dp
                 )
@@ -105,7 +141,13 @@ fun ParkingLotTile(
             color = MaterialTheme.colorScheme.onPrimary
         )
     }
+}
 
+enum class ParkingPlaceState(val color: Color) {
+    NOT_RESERVED(Yellow400),
+    SELECTED(Orange400),
+    RESERVED_BY_CURRENT_USER(Color.Green),
+    RESERVED_BY_OTHER_USERS(Gray500)
 }
 
 object ParkingSchemeConsts {

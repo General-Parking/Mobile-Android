@@ -45,6 +45,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import io.mishkav.generalparking.ui.components.ReservedSchemeContent
 import io.mishkav.generalparking.ui.components.SelectedSchemeContent
+import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingPlaceState
 import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeConsts
 import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeConsts.BASE_TILE_SIZE
 import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingTile
@@ -60,54 +61,54 @@ fun SchemeScreen(
     val selectedParkingPlace by viewModel.selectedParkingPlace.collectAsState()
     val setParkingPlaceReservation by viewModel.setParkingPlaceReservationResult.collectAsState()
     val removeParkingPlaceReservation by viewModel.removeParkingPlaceReservationResult.collectAsState()
-    val isPlaceParkingSelected by viewModel.isPlaceParkingSelected.collectAsState()
+    val isCurrentUserReservedParkingPlace by viewModel.isCurrentUserReservedParkingPlace.collectAsState()
+
+    val currentUser by viewModel.currentUser.collectAsState()
 
     //Что-то придумать с floor
     LaunchedEffect(Unit) {
-        viewModel.setIsPlaceParkingSelected(false)
+        viewModel.getCurrentUser()
         viewModel.onOpen()
         viewModel.getParkingScheme(-1)
     }
 
-    parkingSchemeResult.also { result ->
-        when (result) {
-            is ErrorResult -> onError(result.message!!)
-            is SuccessResult -> {
-                parkingSchemeResult.data?.let {
-                    SchemeScreenContent(
-                        textAddress = currentParkingAddress,
-                        parkingScheme = it,
-                        selectedParkingPlace = selectedParkingPlace,
-                        isPlaceParkingSelected = isPlaceParkingSelected,
-                        isGivenPlaceSelected = viewModel::isGivenPlaceSelected,
-                        onGetSelectedParkingPlace = viewModel::getSelectedParkingPlace,
-                        onSelectParkingPlace = viewModel::setParkingPlace,
-                        onParkingPlaceReserved = viewModel::setParkingPlaceReservation,
-                        onRemoveParkingPlaceReserved = viewModel::removeParkingPlaceReservation,
-                    )
-                }
+    when {
+        currentUser is ErrorResult || parkingSchemeResult is ErrorResult -> onError(parkingSchemeResult.message!!)
+        currentUser is SuccessResult && parkingSchemeResult is SuccessResult -> {
+            parkingSchemeResult.data?.let {
+                SchemeScreenContent(
+                    textAddress = currentParkingAddress,
+                    parkingScheme = it,
+                    selectedParkingPlace = selectedParkingPlace,
+                    isCurrentUserReservedParkingPlace = isCurrentUserReservedParkingPlace,
+                    isGivenPlaceSelected = viewModel::isGivenPlaceSelected,
+                    onGetSelectedParkingPlace = viewModel::getSelectedParkingPlace,
+                    onSelectParkingPlace = viewModel::setParkingPlace,
+                    onParkingPlaceReserved = viewModel::setParkingPlaceReservation,
+                    onRemoveParkingPlaceReserved = viewModel::removeParkingPlaceReservation,
+
+                    getParkingPlaceState = viewModel::getParkingPlaceState
+                )
             }
-            is LoadingResult -> {
-                Box(
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularLoader()
-                }
+        }
+        currentUser is LoadingResult || parkingSchemeResult is LoadingResult -> {
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularLoader()
             }
         }
     }
 
 
+
     setParkingPlaceReservation.also { result ->
         when (result) {
             is ErrorResult -> onError(result.message!!)
-            is SuccessResult -> {
-                viewModel.setIsPlaceParkingSelected(true)
-                viewModel.setParkingPlaceDataToSession()
-            }
+            is SuccessResult -> {}
             is LoadingResult -> {
                 Box(
                     modifier = Modifier
@@ -125,9 +126,7 @@ fun SchemeScreen(
     removeParkingPlaceReservation.also { result ->
         when (result) {
             is ErrorResult -> onError(result.message!!)
-            is SuccessResult -> {
-                viewModel.setIsPlaceParkingSelected(false)
-            }
+            is SuccessResult -> {}
             is LoadingResult -> {
                 Box(
                     modifier = Modifier
@@ -148,12 +147,14 @@ fun SchemeScreenContent(
     textAddress: String = stringResource(R.string.bottom_title),
     parkingScheme: ParkingScheme,
     selectedParkingPlace: String = ParkingSchemeConsts.EMPTY_STRING,
-    isPlaceParkingSelected: Boolean = false,
-    isGivenPlaceSelected: (name: String) -> Boolean = { _ -> false },
+    isCurrentUserReservedParkingPlace: Boolean = false,
+    isGivenPlaceSelected: () -> Boolean = { false },
     onGetSelectedParkingPlace: () -> String = { ParkingSchemeConsts.EMPTY_STRING },
     onSelectParkingPlace: (name: String, coordinates: String) -> Unit = { _, _ -> },
     onParkingPlaceReserved: (floor: Int) -> Unit = { _ -> },
-    onRemoveParkingPlaceReserved: (floor: Int) -> Unit = { _ -> }
+    onRemoveParkingPlaceReserved: (floor: Int) -> Unit = { _ -> },
+
+    getParkingPlaceState: (namePlace: String, value: Int) -> ParkingPlaceState = { _, _ -> ParkingPlaceState.NOT_RESERVED },
 ) {
     Column(
         modifier = Modifier
@@ -199,7 +200,9 @@ fun SchemeScreenContent(
                     parkingScheme = parkingScheme,
                     onGetSelectedParkingPlace = onGetSelectedParkingPlace,
                     onSelectParkingPlace = onSelectParkingPlace,
-                    isGivenPlaceSelected = isGivenPlaceSelected
+                    isGivenPlaceSelected = isGivenPlaceSelected,
+
+                    getParkingPlaceState = getParkingPlaceState
                 )
             }
         }
@@ -213,18 +216,17 @@ fun SchemeScreenContent(
                     top = dimensionResource(R.dimen.standard_padding)
                 ),
         ) {
-            val height by animateDpAsState(
-                if (selectedParkingPlace.isEmpty()) 90.dp else 250.dp
-
-            )
+            // val height by animateDpAsState(
+            //     if (selectedParkingPlace.isEmpty()) 90.dp else 250.dp
+            // )
 
             Card(
                 elevation = 8.dp,
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
-                    .height(height)
+                    .height(250.dp)
             ) {
-                if (isPlaceParkingSelected)
+                if (isCurrentUserReservedParkingPlace)
                     ReservedSchemeContent(
                         name = selectedParkingPlace,
                         onClick = { onRemoveParkingPlaceReserved(-1) }
@@ -249,7 +251,9 @@ fun DrawScheme(
     parkingScheme: ParkingScheme,
     onGetSelectedParkingPlace: () -> String = { ParkingSchemeConsts.EMPTY_STRING },
     onSelectParkingPlace: (name: String, coordinates: String) -> Unit = { _, _ -> },
-    isGivenPlaceSelected: (name: String) -> Boolean = { _ -> false }
+    isGivenPlaceSelected: () -> Boolean = { false },
+
+    getParkingPlaceState: (namePlace: String, value: Int) -> ParkingPlaceState = { _, _ -> ParkingPlaceState.NOT_RESERVED },
 ) {
     var scale by remember { mutableStateOf(1f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
@@ -284,7 +288,9 @@ fun DrawScheme(
                                     onGetSelectedParkingPlace = onGetSelectedParkingPlace,
                                     coordinates = "${height}_${width}",
                                     onClick = onSelectParkingPlace,
-                                    isGivenPlaceSelected = isGivenPlaceSelected
+                                    isGivenPlaceSelected = isGivenPlaceSelected,
+
+                                    getParkingPlaceState = getParkingPlaceState
                                 )
                             }
                         }
