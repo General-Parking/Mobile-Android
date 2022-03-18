@@ -1,6 +1,5 @@
 package io.mishkav.generalparking.ui.screens.map.schemeScreen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.mishkav.generalparking.GeneralParkingApp
@@ -53,12 +52,6 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
     }
 
     fun onOpen() {
-        Log.d("TAG_CHECK", "_isCurrentUserReservedParkingPlace.value = ${_isCurrentUserReservedParkingPlace.value}")
-        Log.d("TAG_CHECK", "_selectedParkingPlace.value = ${_selectedParkingPlace.value}")
-        Log.d("TAG_CHECK", "_selectedParkingPlaceCoordinates.value = ${_selectedParkingPlaceCoordinates.value}")
-
-        // session.changeSelectedParkingPlace(ParkingSchemeConsts.EMPTY_STRING)
-        // session.changeSelectedParkingPlaceCoordinates(ParkingSchemeConsts.EMPTY_STRING)
         isCurrentUserReservedParkingPlace.value = _isCurrentUserReservedParkingPlace.value
         selectedParkingPlace.value = _selectedParkingPlace.value
         selectedParkingPlaceCoordinates.value = _selectedParkingPlaceCoordinates.value
@@ -70,7 +63,10 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
         }
     }
 
-    fun isGivenPlaceSelected(): Boolean = _isReservedTransactionPassed.value
+    fun isReservedTransactionPassed(): Boolean = _isReservedTransactionPassed.value
+    fun setReservedTransactionPassed(isReservedTransactionPassed: Boolean = false) {
+        _isReservedTransactionPassed.value = isReservedTransactionPassed
+    }
 
     fun setParkingPlace(name: String, coordinates: String) {
         selectedParkingPlace.value = name
@@ -78,10 +74,6 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
     }
 
     fun getSelectedParkingPlace(): String = selectedParkingPlace.value
-
-    fun setIsPlaceParkingSelected(isSelected: Boolean) {
-        isCurrentUserReservedParkingPlace.value = isSelected
-    }
 
     // Reservation
 
@@ -102,7 +94,6 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
             session.changeIsCurrentUserReservedParkingPlace(true)
             onOpen()
             isCurrentUserReservedParkingPlace.value = true
-            // _isReservedTransactionPassed.value = true
         }
     }
 
@@ -123,16 +114,7 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
             onOpen()
             _isReservedTransactionPassed.value = true
             isCurrentUserReservedParkingPlace.value = false
-            // isCurrentUserReservedParkingPlace.value = false
-            // selectedParkingPlace.value = ParkingSchemeConsts.EMPTY_STRING
-            // selectedParkingPlaceCoordinates.value = ParkingSchemeConsts.EMPTY_STRING
-            // session.changeIsCurrentUserReservedParkingPlace(false)
         }
-    }
-
-    fun setParkingPlaceDataToSession() {
-        session.changeSelectedParkingPlace(selectedParkingPlace.value)
-        session.changeSelectedParkingPlaceCoordinates(selectedParkingPlaceCoordinates.value)
     }
 
     fun getCurrentUser() = viewModelScope.launch {

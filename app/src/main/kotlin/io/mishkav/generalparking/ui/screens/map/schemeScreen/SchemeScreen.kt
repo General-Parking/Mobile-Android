@@ -1,6 +1,5 @@
 package io.mishkav.generalparking.ui.screens.map.schemeScreen
 
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
@@ -81,12 +80,13 @@ fun SchemeScreen(
                     parkingScheme = it,
                     selectedParkingPlace = selectedParkingPlace,
                     isCurrentUserReservedParkingPlace = isCurrentUserReservedParkingPlace,
-                    isGivenPlaceSelected = viewModel::isGivenPlaceSelected,
+                    isReservedTransactionPassed = viewModel::isReservedTransactionPassed,
                     onGetSelectedParkingPlace = viewModel::getSelectedParkingPlace,
                     onSelectParkingPlace = viewModel::setParkingPlace,
                     onParkingPlaceReserved = viewModel::setParkingPlaceReservation,
                     onRemoveParkingPlaceReserved = viewModel::removeParkingPlaceReservation,
 
+                    onSetReservedTransactionPassed = viewModel::setReservedTransactionPassed,
                     getParkingPlaceState = viewModel::getParkingPlaceState
                 )
             }
@@ -148,12 +148,13 @@ fun SchemeScreenContent(
     parkingScheme: ParkingScheme,
     selectedParkingPlace: String = ParkingSchemeConsts.EMPTY_STRING,
     isCurrentUserReservedParkingPlace: Boolean = false,
-    isGivenPlaceSelected: () -> Boolean = { false },
+    isReservedTransactionPassed: () -> Boolean = { false },
     onGetSelectedParkingPlace: () -> String = { ParkingSchemeConsts.EMPTY_STRING },
     onSelectParkingPlace: (name: String, coordinates: String) -> Unit = { _, _ -> },
     onParkingPlaceReserved: (floor: Int) -> Unit = { _ -> },
     onRemoveParkingPlaceReserved: (floor: Int) -> Unit = { _ -> },
 
+    onSetReservedTransactionPassed: () -> Unit = {},
     getParkingPlaceState: (namePlace: String, value: Int) -> ParkingPlaceState = { _, _ -> ParkingPlaceState.NOT_RESERVED },
 ) {
     Column(
@@ -200,8 +201,9 @@ fun SchemeScreenContent(
                     parkingScheme = parkingScheme,
                     onGetSelectedParkingPlace = onGetSelectedParkingPlace,
                     onSelectParkingPlace = onSelectParkingPlace,
-                    isGivenPlaceSelected = isGivenPlaceSelected,
+                    isReservedTransactionPassed = isReservedTransactionPassed,
 
+                    onSetReservedTransactionPassed = onSetReservedTransactionPassed,
                     getParkingPlaceState = getParkingPlaceState
                 )
             }
@@ -216,10 +218,6 @@ fun SchemeScreenContent(
                     top = dimensionResource(R.dimen.standard_padding)
                 ),
         ) {
-            // val height by animateDpAsState(
-            //     if (selectedParkingPlace.isEmpty()) 90.dp else 250.dp
-            // )
-
             Card(
                 elevation = 8.dp,
                 shape = RoundedCornerShape(8.dp),
@@ -251,8 +249,9 @@ fun DrawScheme(
     parkingScheme: ParkingScheme,
     onGetSelectedParkingPlace: () -> String = { ParkingSchemeConsts.EMPTY_STRING },
     onSelectParkingPlace: (name: String, coordinates: String) -> Unit = { _, _ -> },
-    isGivenPlaceSelected: () -> Boolean = { false },
 
+    onSetReservedTransactionPassed: () -> Unit = {},
+    isReservedTransactionPassed: () -> Boolean = { false },
     getParkingPlaceState: (namePlace: String, value: Int) -> ParkingPlaceState = { _, _ -> ParkingPlaceState.NOT_RESERVED },
 ) {
     var scale by remember { mutableStateOf(1f) }
@@ -288,8 +287,8 @@ fun DrawScheme(
                                     onGetSelectedParkingPlace = onGetSelectedParkingPlace,
                                     coordinates = "${height}_${width}",
                                     onClick = onSelectParkingPlace,
-                                    isGivenPlaceSelected = isGivenPlaceSelected,
-
+                                    onSetReservedTransactionPassed = onSetReservedTransactionPassed,
+                                    isReservedTransactionPassed = isReservedTransactionPassed,
                                     getParkingPlaceState = getParkingPlaceState
                                 )
                             }

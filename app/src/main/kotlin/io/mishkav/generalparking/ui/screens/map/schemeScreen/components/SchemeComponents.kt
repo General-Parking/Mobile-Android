@@ -1,5 +1,6 @@
 package io.mishkav.generalparking.ui.screens.map.schemeScreen.components
 
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,7 +31,6 @@ import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingS
 import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeConsts.EMPTY_STRING
 import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeConsts.PARKING_LOT_HEIGHT
 import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeConsts.PARKING_LOT_WIDTH
-import io.mishkav.generalparking.ui.theme.Gray400
 import io.mishkav.generalparking.ui.theme.Gray500
 import io.mishkav.generalparking.ui.theme.Orange400
 import io.mishkav.generalparking.ui.theme.Typography
@@ -64,13 +64,13 @@ fun ParkingLotTile(
     onGetSelectedParkingPlace: () -> String = { EMPTY_STRING },
     onClick: (name: String, coordinates: String) -> Unit = { _, _ -> },
 
-    isGivenPlaceSelected: () -> Boolean = { false },
-
+    onSetReservedTransactionPassed: () -> Unit = {},
+    isReservedTransactionPassed: () -> Boolean = { false },
     getParkingPlaceState: (namePlace: String, value: Int) -> ParkingPlaceState = { _, _ -> ParkingPlaceState.NOT_RESERVED },
 ) = BaseTile {
 
-    val state = getParkingPlaceState(parkingTile.place.name, parkingTile.place.value)
-    var isReservedTransactionPassed = isGivenPlaceSelected()
+    var state = getParkingPlaceState(parkingTile.place.name, parkingTile.place.value)
+    var isReservedTransactionPassed = isReservedTransactionPassed()
     var isSelected by remember {
         mutableStateOf(false)
     }
@@ -83,20 +83,16 @@ fun ParkingLotTile(
             isSelected -> {
                 if (isReservedTransactionPassed) {
                     isSelected = false
-                    isReservedTransactionPassed = false
+                    onSetReservedTransactionPassed()
                     state.color
-                }
-                else
+                } else
                     ParkingPlaceState.SELECTED.color
             }
-            else -> state.color
-        }
+            else -> {
+                state.color
+            }
 
-        // if (isSelected) {
-        //     ParkingPlaceState.SELECTED.color
-        // }
-        // else
-        //     getParkingPlaceState(parkingTile.place.name, parkingTile.place.value).color
+        }
     )
 
     val width: Dp
@@ -118,11 +114,16 @@ fun ParkingLotTile(
             .height(height)
             .clickable(onClick = {
                 val selectedPlaceName = onGetSelectedParkingPlace()
-                if (selectedPlaceName.isEmpty() || selectedPlaceName == parkingTile.place.name) {
+                if (
+                    (selectedPlaceName.isEmpty() || selectedPlaceName == parkingTile.place.name) &&
+                    state != ParkingPlaceState.RESERVED_BY_OTHER_USERS
+                ) {
                     if (isSelected)
                         onClick(EMPTY_STRING, EMPTY_STRING)
-                    else
+                    else {
+                        state = ParkingPlaceState.SELECTED
                         onClick(parkingTile.place.name, coordinates)
+                    }
                     isSelected = !isSelected
                 }
             }),
