@@ -1,5 +1,6 @@
 package io.mishkav.generalparking.ui.screens.map.mapScreen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.mishkav.generalparking.GeneralParkingApp
@@ -22,6 +23,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     lateinit var session: Session
 
     val parkingCoordinatesResult = MutableResultFlow<Map<Pair<Double, Double>, String>>()
+    val autoNumberResult =  MutableResultFlow<Unit>()
     val currentParkingAddress by lazy { session.currentParkingAddress }
 
     init {
@@ -30,6 +32,13 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
 
     fun setCurrentParkingAddress(address: String) {
         session.changeCurrentParkingAddress(address)
+    }
+
+    fun setAutoNumber() = viewModelScope.launch {
+        autoNumberResult.loadOrError {
+            val autoNumber = mapDatabaseRepository.getAutoNumber()
+            session.changeAutoNumber(autoNumber)
+        }
     }
 
     fun getParkingCoordinates() = viewModelScope.launch {

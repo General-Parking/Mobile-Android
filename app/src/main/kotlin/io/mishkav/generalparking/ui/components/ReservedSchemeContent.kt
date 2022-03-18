@@ -25,37 +25,19 @@ import io.mishkav.generalparking.ui.theme.Green600
 
 @Composable
 fun ReservedSchemeContent(
-) = Surface(
-    elevation = 15.dp,
-    color = MaterialTheme.colorScheme.background,
-    shape = RoundedCornerShape(
-        dimensionResource(R.dimen.bottom_shape),
-        dimensionResource(R.dimen.bottom_shape),
-        dimensionResource(R.dimen.null_dp),
-        dimensionResource(R.dimen.null_dp)
-    ),
-    modifier = Modifier
-        .drawWithContent {
-            val paddingPx = 20.dp.toPx()
-            clipRect(
-                left = 0f,
-                top = -paddingPx,
-                right = size.width,
-                bottom = size.width
-            ) {
-                this@drawWithContent.drawContent()
-            }
-        }
+    name: String = stringResource(R.string.zeros),
+    onClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
             .padding(
-                vertical = dimensionResource(R.dimen.bottom_top_padding),
-                horizontal = dimensionResource(R.dimen.bottom_padding)
+                top = dimensionResource(R.dimen.bottom_padding),
+                start = dimensionResource(R.dimen.bottom_padding),
+                end = dimensionResource(R.dimen.bottom_padding)
             )
     ) {
         BottomTitle(
-            text = stringResource(R.string.chosen_seat),
+            text = "${stringResource(R.string.chosen_seat)} $name",
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = dimensionResource(R.dimen.standard_padding))
@@ -80,7 +62,7 @@ fun ReservedSchemeContent(
             SimpleIconButton(
                 icon = Icons.Filled.Delete,
                 color = Gray500,
-                onClick = { }
+                onClick = onClick
             )
         }
     }

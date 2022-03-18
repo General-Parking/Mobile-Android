@@ -11,13 +11,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -32,7 +29,6 @@ import kotlinx.coroutines.launch
 import com.google.maps.android.compose.rememberCameraPositionState
 import io.mishkav.generalparking.ui.components.BottomScreen
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
-import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
@@ -44,35 +40,46 @@ fun MapScreen(
 ) {
     val viewModel: MapViewModel = viewModel()
     val parkingCoordinates by viewModel.parkingCoordinatesResult.collectAsState()
+    val autoNumber by viewModel.autoNumberResult.collectAsState()
+
+    val showError: @Composable () -> Unit = {
+        Box(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularLoader()
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.getParkingCoordinates()
+        viewModel.setAutoNumber()
     }
 
     parkingCoordinates.also { result ->
         when (result) {
             is ErrorResult -> onError(result.message!!)
             is SuccessResult -> {
-                MapScreenContent(
-                    parkingCoordinates = parkingCoordinates.data ?: emptyMap(),
-                    setParkingAddress = viewModel::setCurrentParkingAddress,
-                    navigateToSchemeScreen = {
-                        navController.navigate(Routes.scheme)
-                    },
-                    navigateToProfileScreen = {
-                        navController.navigate(Routes.profile)
+                when (autoNumber) {
+                    is ErrorResult -> showError()
+                    else -> {
+                        MapScreenContent(
+                            parkingCoordinates = parkingCoordinates.data ?: emptyMap(),
+                            setParkingAddress = viewModel::setCurrentParkingAddress,
+                            navigateToSchemeScreen = {
+                                navController.navigate(Routes.scheme)
+                            },
+                            navigateToProfileScreen = {
+                                navController.navigate(Routes.profile)
+                            }
+                        )
                     }
-                )
+                }
             }
             is LoadingResult -> {
-                Box(
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularLoader()
-                }
+                showError()
             }
         }
     }

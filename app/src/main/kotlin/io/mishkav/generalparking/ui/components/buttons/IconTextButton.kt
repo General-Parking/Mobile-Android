@@ -12,6 +12,7 @@ import androidx.compose.ui.res.stringResource
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.theme.Typography
+import io.mishkav.generalparking.ui.theme.Yellow400
 import io.mishkav.generalparking.ui.theme.generalParkingLightBackground
 
 @Composable
@@ -24,7 +25,9 @@ fun IconTextButton(
 ) = Button(
     onClick = onClick,
     shape = Shapes.medium,
-    colors = ButtonDefaults.buttonColors(backgroundColor = color),
+    colors = ButtonDefaults.buttonColors(
+        backgroundColor = color,
+    ),
     modifier = modifier
 ) {
     Icon(

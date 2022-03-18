@@ -11,3 +11,13 @@ class EmailNotVerifiedException(
 class NullUserException(
     @StringRes messageRes: Int = R.string.error_auth
 ) : Exception(messageRes.toString())
+
+
+class PlaceReservationException(
+    @StringRes messageRes: Int = R.string.error_place_reserved
+) : Exception(messageRes.toString())
+
+
+class PlaceNotReservatedException(
+    @StringRes messageRes: Int = R.string.error_place_reserved
+) : Exception(messageRes.toString())

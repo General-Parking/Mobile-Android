@@ -10,5 +10,6 @@
     <dimen name="bottom_top_padding">20dp</dimen>
     <dimen name="bottom_shape">16dp</dimen>
     <dimen name="standard_padding">10dp</dimen>
+    <dimen name="half_standard_padding">5dp</dimen>
     <dimen name="null_dp">0dp</dimen>
 </resources>
