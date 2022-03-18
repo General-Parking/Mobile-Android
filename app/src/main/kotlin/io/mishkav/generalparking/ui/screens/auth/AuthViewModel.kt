@@ -1,5 +1,6 @@
 package io.mishkav.generalparking.ui.screens.auth
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.mishkav.generalparking.GeneralParkingApp
@@ -58,6 +59,7 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
         phoneNumber: String
     ) = viewModelScope.launch {
         currentUser.loadOrError {
+            _currentUser.value = authDatabaseRepository.getUserDataFromDatabase()
             _currentUser.value = _currentUser.value.copy(
                 numberAuto = numberAuto,
                 metaUserInfo = getMetaUserInfoInstance(

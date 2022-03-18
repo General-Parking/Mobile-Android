@@ -52,6 +52,7 @@
     <string name="error_registration">Ошибка регистрации, возможно такой аккаунт уже существует</string>
     <string name="error_email_not_verified">Почта не подтверждена. Пожалуйста, проверьте свою почту</string>
     <string name="error_null_user">Нет активного пользователя, необходима авторизация</string>
+    <string name="error_place_reserved">Место уже забронировано, попробуйте выбрать другое</string>
     <string name="go_reserve">Перейти к бронированию</string>
     <string name="space" >" "</string>
     <string name="bottom_title">Улица</string>
@@ -62,8 +63,8 @@
     <string name="free">" — свободные"</string>
     <string name="taken">" — занятые"</string>
     <string name="reserve">Забронировать</string>
-    <string name="chosen_seat">Место 2107</string>
+    <string name="chosen_seat">Место</string>
     <string name="floor_number">-1 этаж</string>
-    <string name="reserved">Забронирвоано</string>
+    <string name="reserved">Забронировано</string>
 
 </resources>
