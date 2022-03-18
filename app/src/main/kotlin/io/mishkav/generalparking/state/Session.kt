@@ -21,7 +21,6 @@ class Session(context: Context) {
     private val _selectedParkingPlaceCoordinates = MutableStateFlow(sharedPreferences.getString(PREF_SELECTED_PARKING_COORDINATES, "").orEmpty())
     val selectedParkingPlaceCoordinates: StateFlow<String> = _selectedParkingPlaceCoordinates
 
-
     fun changeCurrentParkingAddress(address: String) {
         sharedPreferences.edit { putString(PREF_CURRENT_PARKING_ADDRESS, address) }
         _currentParkingAddress.value = address

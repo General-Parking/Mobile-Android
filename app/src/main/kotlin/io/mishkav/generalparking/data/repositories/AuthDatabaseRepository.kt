@@ -8,6 +8,7 @@ import io.mishkav.generalparking.data.utils.UserFields.DefaultFields.DEFAULT_STR
 import io.mishkav.generalparking.data.utils.UserFields.DefaultFields.DEFAULT_INT_FIELD
 import io.mishkav.generalparking.data.utils.UserFields.DefaultFields.DEFAULT_IMAGE_PATH
 import io.mishkav.generalparking.data.utils.UserFields.DefaultFields.DEFAULT_REMAINING_BOOKING_TIME
+import io.mishkav.generalparking.data.utils.getMetaUserInfoInstance
 import io.mishkav.generalparking.data.utils.toMap
 import io.mishkav.generalparking.domain.entities.User
 import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
