@@ -11,7 +11,6 @@ fun User.toMap(): Map<String, *> {
             FIELD_EMAIL to email,
             FIELD_EXIT to exit,
             FIELD_META_USER_INFO to metaUserInfo,
-            FIELD_NAME to name,
             FIELD_NUMBER_AUTO to numberAuto,
             FIELD_PROFILE_IMAGE to profileImage,
             FIELD_REMAINING_BOOKING_TIME to remainingBookingTime,
