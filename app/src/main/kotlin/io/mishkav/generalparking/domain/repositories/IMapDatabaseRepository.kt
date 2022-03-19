@@ -8,7 +8,7 @@ interface IMapDatabaseRepository {
     suspend fun setParkingPlaceReservation(
         address: String,
         namePlace: String,
-        floor: Int,
+        floor: String,
         placeCoordinates: String,
         autoNumber: String
     )

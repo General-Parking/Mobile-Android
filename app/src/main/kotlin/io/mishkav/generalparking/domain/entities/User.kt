@@ -15,7 +15,6 @@ data class User(
     val exit: String,
     @SerializedName("meta_user_info")
     val metaUserInfo: Map<String, String>,
-    val name: String,
     @SerializedName("number_auto")
     val numberAuto: String,
     @SerializedName("profile_image")
@@ -64,7 +63,6 @@ data class User(
                     name = name,
                     phoneNumber = phoneNumber
                 ),
-                name = name,
                 numberAuto = numberAuto,
                 profileImage = profileImage,
                 remainingBookingTime = remainingBookingTime,

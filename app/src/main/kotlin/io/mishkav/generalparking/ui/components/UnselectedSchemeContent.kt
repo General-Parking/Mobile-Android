@@ -62,11 +62,11 @@ fun UnselectedSchemeContent(
                 color = MaterialTheme.colorScheme.onPrimary
             )
         }
-        IconTextButton(
-            icon = Icons.Filled.Add,
-            text = stringResource(R.string.reserve),
-            color = Gray500,
-            onClick = {}
-        )
+        // IconTextButton(
+        //     icon = Icons.Filled.Add,
+        //     text = stringResource(R.string.reserve),
+        //     color = Gray500,
+        //     onClick = {}
+        // )
     }
 }

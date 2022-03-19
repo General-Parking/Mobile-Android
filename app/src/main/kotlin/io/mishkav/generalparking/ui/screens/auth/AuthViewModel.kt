@@ -1,11 +1,12 @@
 package io.mishkav.generalparking.ui.screens.auth
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.mishkav.generalparking.GeneralParkingApp
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.dagger.AppComponent
+import io.mishkav.generalparking.data.utils.UserFields.DefaultFields.DEFAULT_STRING_FIELD
+import io.mishkav.generalparking.data.utils.UserFields.FIELD_NAME
 import io.mishkav.generalparking.data.utils.getMetaUserInfoInstance
 import io.mishkav.generalparking.domain.entities.User
 import io.mishkav.generalparking.domain.repositories.IAuthRepository
@@ -47,7 +48,9 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
             authRepository.createUserWithEmailAndPassword(email, password)
             _currentUser.value = _currentUser.value.copy(
                 email = email,
-                name = name
+                metaUserInfo = getMetaUserInfoInstance(
+                    name = name
+                )
             )
             authDatabaseRepository.insertUserData(_currentUser.value)
         }
@@ -64,7 +67,7 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
                 numberAuto = numberAuto,
                 metaUserInfo = getMetaUserInfoInstance(
                     carBrand = carBrand,
-                    name = _currentUser.value.name,
+                    name = _currentUser.value.metaUserInfo[FIELD_NAME] ?: DEFAULT_STRING_FIELD,
                     phoneNumber = phoneNumber
                 )
             )

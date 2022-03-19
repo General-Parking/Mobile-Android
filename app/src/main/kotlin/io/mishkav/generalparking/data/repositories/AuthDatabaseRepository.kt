@@ -8,7 +8,6 @@ import io.mishkav.generalparking.data.utils.UserFields.DefaultFields.DEFAULT_STR
 import io.mishkav.generalparking.data.utils.UserFields.DefaultFields.DEFAULT_INT_FIELD
 import io.mishkav.generalparking.data.utils.UserFields.DefaultFields.DEFAULT_IMAGE_PATH
 import io.mishkav.generalparking.data.utils.UserFields.DefaultFields.DEFAULT_REMAINING_BOOKING_TIME
-import io.mishkav.generalparking.data.utils.getMetaUserInfoInstance
 import io.mishkav.generalparking.data.utils.toMap
 import io.mishkav.generalparking.domain.entities.User
 import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
@@ -67,7 +66,6 @@ class AuthDatabaseRepository @Inject constructor(
                                 ?: DEFAULT_STRING_FIELD
                             )
                     ),
-                    name = rawUser.child(FIELD_NAME).getValue(CLASS_STRING) ?: DEFAULT_STRING_FIELD,
                     numberAuto = rawUser.child(FIELD_NUMBER_AUTO).getValue(CLASS_STRING) ?: DEFAULT_STRING_FIELD,
                     profileImage = rawUser.child(FIELD_PROFILE_IMAGE).getValue(CLASS_STRING) ?: DEFAULT_IMAGE_PATH,
                     remainingBookingTime = rawUser.child(FIELD_REMAINING_BOOKING_TIME).getValue(CLASS_INT)

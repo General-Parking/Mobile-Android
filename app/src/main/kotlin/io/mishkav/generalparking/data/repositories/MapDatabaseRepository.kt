@@ -1,6 +1,5 @@
 package io.mishkav.generalparking.data.repositories
 
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import io.mishkav.generalparking.data.exceptions.PlaceNotReservatedException
@@ -58,7 +57,7 @@ class MapDatabaseRepository @Inject constructor(
     override suspend fun setParkingPlaceReservation(
         address: String,
         namePlace: String,
-        floor: Int,
+        floor: String,
         placeCoordinates: String, //i_j
         autoNumber: String
     ) {
