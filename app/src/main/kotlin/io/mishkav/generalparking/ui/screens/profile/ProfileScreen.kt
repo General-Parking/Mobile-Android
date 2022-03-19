@@ -159,6 +159,41 @@ fun ProfileScreenContent(
                     .padding(vertical = dimensionResource(R.dimen.profile_field_padding))
             ) {
                 Text(
+                    text = stringResource(R.string.profile_phone),
+                    style = Typography.subtitle1
+                )
+                ScreenTextfield(
+                    value = textPhone,
+                    onValueChange = {
+                        textPhone = it
+                    },
+                    keyboardType = KeyboardType.Phone,
+                    placeholder = { Text(stringResource(R.string.profile_default_phone)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                Text(
+                    text = stringResource(R.string.profile_auto),
+                    style = Typography.subtitle1
+                )
+                ScreenTextfield(
+                    value = textAuto,
+                    onValueChange = {
+                        textAuto = it
+                    },
+                    keyboardType = KeyboardType.Text,
+                    placeholder = { Text(stringResource(R.string.profile_default_auto)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                TextfieldUnderLine()
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = dimensionResource(R.dimen.profile_field_padding))
+            ) {
+                Text(
                     text = stringResource(R.string.profile_email),
                     style = Typography.subtitle1
                 )
@@ -185,41 +220,6 @@ fun ProfileScreenContent(
                     enabled = false,
                     keyboardType = KeyboardType.Text,
                     placeholder = { Text(stringResource(R.string.profile_default_num_auto)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-                TextfieldUnderLine()
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = dimensionResource(R.dimen.profile_field_padding))
-            ) {
-                Text(
-                    text = stringResource(R.string.profile_phone),
-                    style = Typography.subtitle1
-                )
-                ScreenTextfield(
-                    value = textPhone,
-                    onValueChange = {
-                        textPhone = it
-                    },
-                    keyboardType = KeyboardType.Phone,
-                    placeholder = { Text(stringResource(R.string.profile_default_phone)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-                Text(
-                    text = stringResource(R.string.profile_auto),
-                    style = Typography.subtitle1
-                )
-                ScreenTextfield(
-                    value = textAuto,
-                    onValueChange = {
-                        textAuto = it
-                    },
-                    keyboardType = KeyboardType.Text,
-                    placeholder = { Text(stringResource(R.string.profile_default_auto)) },
                     modifier = Modifier
                         .fillMaxWidth()
                 )
