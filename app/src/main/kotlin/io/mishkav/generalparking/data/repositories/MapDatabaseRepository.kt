@@ -36,9 +36,9 @@ class MapDatabaseRepository @Inject constructor(
         val height = rawScheme.child(PATH_TO_HEIGHT).getValue(CLASS_INT)!!
         val places = hashMapOf<String, ParkingPlace>()
         for (place in rawScheme.child(PATH_TO_PLACES).children) {
-            val name = place.child(PATH_TO_PLACE_NAME).getValue(String::class.java)!!
-            val rotation = place.child(PATH_TO_PLACE_ROTATE).getValue(Int::class.java)!!
-            val value = place.child(PATH_TO_PLACE_VALUE).getValue(Int::class.java)!!
+            val name = place.child(PATH_TO_PLACE_NAME).getValue(CLASS_STRING)!!
+            val rotation = place.child(PATH_TO_PLACE_ROTATE).getValue(CLASS_INT)!!
+            val value = place.child(PATH_TO_PLACE_VALUE).getValue(CLASS_INT)!!
 
             places[place.key!!] = ParkingPlace(
                 name = name,
