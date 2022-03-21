@@ -24,6 +24,9 @@ class ProfileViewModel(appComponent: AppComponent = GeneralParkingApp.appCompone
     val currentUser = MutableResultFlow<User>()
     val signOutResult = MutableResultFlow<Unit>()
 
+    init {
+        appComponent.inject(this)
+    }
 
     fun getUserDataFromDatabase() = viewModelScope.launch {
         currentUser.loadOrError {
@@ -35,9 +38,5 @@ class ProfileViewModel(appComponent: AppComponent = GeneralParkingApp.appCompone
         signOutResult.loadOrError(R.string.error_auth) {
             authRepository.signOut()
         }
-    }
-
-    init {
-        appComponent.inject(this)
     }
 }

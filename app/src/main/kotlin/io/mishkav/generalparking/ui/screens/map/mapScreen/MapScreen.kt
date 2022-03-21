@@ -152,8 +152,8 @@ fun MapScreenContent(
                     contentColor = MaterialTheme.colorScheme.primary
                 ),
                 modifier = Modifier
-                    .padding(top = 70.dp, start = 20.dp)
-                    .size(60.dp)
+                    .padding(top = dimensionResource(R.dimen.fab_top), start = dimensionResource(R.dimen.fab_start))
+                    .size(dimensionResource(R.dimen.fab_size))
             ) {
                 Icon(Icons.Filled.Menu, "")
             }

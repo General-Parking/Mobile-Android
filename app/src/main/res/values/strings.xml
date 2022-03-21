@@ -66,5 +66,6 @@
     <string name="chosen_seat">Seat</string>
     <string name="floor_number">-1st floor</string>
     <string name="reserved">Reserved</string>
+    <string name="username">Name</string>
 
 </resources>

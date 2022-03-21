@@ -66,5 +66,6 @@
     <string name="chosen_seat">Место</string>
     <string name="floor_number">-1 этаж</string>
     <string name="reserved">Забронировано</string>
+    <string name="username">Имя</string>
 
 </resources>

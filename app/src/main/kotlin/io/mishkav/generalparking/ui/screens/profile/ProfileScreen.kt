@@ -74,7 +74,11 @@ fun ProfileScreen(
             is SuccessResult -> {
                 ProfileScreenContent(
                     signOut = viewModel::signOut,
-                    currentUser = currentUser.data!!
+                    name = currentUser.data?.metaUserInfo?.get("name")?:stringResource(R.string.username),
+                    phone = currentUser.data?.metaUserInfo?.get("phone_number")?:stringResource(R.string.profile_default_phone),
+                    email = currentUser.data?.email?:stringResource(R.string.profile_email),
+                    auto = currentUser.data?.metaUserInfo?.get("car_brand")?:stringResource(R.string.profile_default_auto),
+                    numAuto = currentUser.data?.numberAuto?:stringResource(R.string.profile_default_num_auto)
                 )
             }
             is LoadingResult -> {
@@ -94,13 +98,17 @@ fun ProfileScreen(
 @Composable
 fun ProfileScreenContent(
     signOut: () -> Unit = { },
-    currentUser: User
+    name: String,
+    phone: String,
+    email: String,
+    auto: String,
+    numAuto: String
 ) {
-    var textName by rememberSaveable { mutableStateOf(currentUser.metaUserInfo["name"]!!) }
-    var textPhone by rememberSaveable { mutableStateOf(currentUser.metaUserInfo["phone_number"]!!) }
-    var textEmail by rememberSaveable { mutableStateOf(currentUser.email) }
-    var textAuto by rememberSaveable { mutableStateOf(currentUser.metaUserInfo["car_brand"]!!) }
-    var textNumAuto by rememberSaveable { mutableStateOf(currentUser.numberAuto) }
+    var textName by rememberSaveable { mutableStateOf(name) }
+    var textPhone by rememberSaveable { mutableStateOf(phone) }
+    var textEmail by rememberSaveable { mutableStateOf(email) }
+    var textAuto by rememberSaveable { mutableStateOf(auto) }
+    var textNumAuto by rememberSaveable { mutableStateOf(numAuto) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -253,6 +261,13 @@ fun ProfileScreenContent(
 @Composable
 fun PreviewProfileScreen() {
     GeneralParkingTheme {
-        //ProfileScreenContent()
+        ProfileScreenContent(
+            signOut = { },
+            name = stringResource(R.string.username),
+            phone = stringResource(R.string.profile_default_phone),
+            email = stringResource(R.string.profile_email),
+            auto = stringResource(R.string.profile_default_auto),
+            numAuto = stringResource(R.string.profile_default_num_auto)
+        )
     }
 }
