@@ -9,12 +9,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -29,6 +31,7 @@ import kotlinx.coroutines.launch
 import com.google.maps.android.compose.rememberCameraPositionState
 import io.mishkav.generalparking.ui.components.BottomScreen
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
+import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
@@ -115,28 +118,44 @@ fun MapScreenContent(
         },
         sheetPeekHeight = dimensionResource(R.dimen.null_dp)
     ) {
-        GoogleMap(
-            modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPosition
-        ) {
-            for ((coordinates, address) in parkingCoordinates) {
-                val parkingLatLng = LatLng(coordinates.first, coordinates.second)
-                val markerClick: (Marker) -> Boolean = {
-                    setParkingAddress(address)
-                    coroutineScope.launch {
-                        if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
-                            bottomSheetScaffoldState.bottomSheetState.expand()
-                        } else {
-                            bottomSheetScaffoldState.bottomSheetState.collapse()
+        Box(Modifier.fillMaxSize()) {
+            GoogleMap(
+                modifier = Modifier,
+                cameraPositionState = cameraPosition
+            ) {
+                for ((coordinates, address) in parkingCoordinates) {
+                    val parkingLatLng = LatLng(coordinates.first, coordinates.second)
+                    val markerClick: (Marker) -> Boolean = {
+                        setParkingAddress(address)
+                        coroutineScope.launch {
+                            if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+                                bottomSheetScaffoldState.bottomSheetState.expand()
+                            } else {
+                                bottomSheetScaffoldState.bottomSheetState.collapse()
+                            }
                         }
+                        false
                     }
-                    false
+                    Marker(
+                        position = parkingLatLng,
+                        icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker),
+                        onClick = markerClick
+                    )
                 }
-                Marker(
-                    position = parkingLatLng,
-                    icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker),
-                    onClick = markerClick
-                )
+            }
+            Button(
+                elevation = ButtonDefaults.elevation(6.dp, 8.dp),
+                onClick = navigateToProfileScreen,
+                shape = Shapes.medium,
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.primary
+                ),
+                modifier = Modifier
+                    .padding(top = dimensionResource(R.dimen.fab_top), start = dimensionResource(R.dimen.fab_start))
+                    .size(dimensionResource(R.dimen.fab_size))
+            ) {
+                Icon(Icons.Filled.Menu, "")
             }
         }
     }

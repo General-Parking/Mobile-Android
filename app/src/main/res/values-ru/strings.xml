@@ -35,8 +35,8 @@
     <string name="profile_email">Email:</string>
     <string name="profile_default_phone">+11111111111</string>
     <string name="profile_default_email">aaaaaa@aaa.aa</string>
-    <string name="profile_auto">Автомобиль:</string>
-    <string name="profile_num_auto">Номер автомобиля:</string>
+    <string name="profile_auto">Автомобиль</string>
+    <string name="profile_num_auto">Номер автомобиля</string>
     <string name="profile_default_auto">Ламборгини</string>
     <string name="profile_default_num_auto">A111AA111</string>
     <string name="profile_cards">Банковские карты:</string>
@@ -47,6 +47,8 @@
 
     <string name="route">Маршрут</string>
     <string name="more">Подробнее</string>
+
+    <string name="profile">Профиль</string>
 
     <string name="error_auth">Ошибка авторизации, попробуйте ещё раз</string>
     <string name="error_registration">Ошибка регистрации, возможно такой аккаунт уже существует</string>
@@ -66,5 +68,6 @@
     <string name="chosen_seat">Место</string>
     <string name="floor_number">-1 этаж</string>
     <string name="reserved">Забронировано</string>
+    <string name="username">Имя</string>
 
 </resources>

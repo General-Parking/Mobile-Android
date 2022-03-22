@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="main_hor_padding">16dp</dimen>
+    <dimen name="main_hor_padding">30dp</dimen>
     <dimen name="main_vert_padding">40dp</dimen>
     <dimen name="profile_field_padding">8dp</dimen>
     <dimen name="exit_button_width">220dp</dimen>
@@ -12,4 +12,7 @@
     <dimen name="standard_padding">10dp</dimen>
     <dimen name="half_standard_padding">5dp</dimen>
     <dimen name="null_dp">0dp</dimen>
+    <dimen name="fab_top">70dp</dimen>
+    <dimen name="fab_start">20dp</dimen>
+    <dimen name="fab_size">60dp</dimen>
 </resources>

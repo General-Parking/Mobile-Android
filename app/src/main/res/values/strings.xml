@@ -34,8 +34,8 @@
     <string name="profile_email">Email:</string>
     <string name="profile_default_phone">+11111111111</string>
     <string name="profile_default_email">aaaaaa@aaa.aa</string>
-    <string name="profile_auto">Car:</string>
-    <string name="profile_num_auto">Car number:</string>
+    <string name="profile_auto">Car</string>
+    <string name="profile_num_auto">Car number</string>
     <string name="profile_default_auto">Lamborghini</string>
     <string name="profile_default_num_auto">A111AA111</string>
     <string name="profile_cards">Bank cards:</string>
@@ -43,6 +43,9 @@
 
     <string name="route">Route</string>
     <string name="more">More</string>
+
+    <string name="profile">Profile</string>
+
 
     <string name="success_sending_email">The letter has been sent successfully, rather to the post office!</string>
     <string name="good_text">Good!</string>
@@ -66,5 +69,6 @@
     <string name="chosen_seat">Seat</string>
     <string name="floor_number">-1st floor</string>
     <string name="reserved">Reserved</string>
+    <string name="username">Name</string>
 
 </resources>
