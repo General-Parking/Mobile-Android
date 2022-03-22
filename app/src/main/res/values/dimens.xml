@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="main_hor_padding">16dp</dimen>
+    <dimen name="main_hor_padding">30dp</dimen>
     <dimen name="main_vert_padding">40dp</dimen>
     <dimen name="profile_field_padding">8dp</dimen>
     <dimen name="exit_button_width">220dp</dimen>
