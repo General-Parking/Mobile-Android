@@ -1,4 +1,4 @@
-package io.mishkav.generalparking.ui.screens.map.schemeScreen
+package io.mishkav.generalparking.ui.screens.scheme
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,8 +10,8 @@ import io.mishkav.generalparking.domain.entities.User
 import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
 import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import io.mishkav.generalparking.state.Session
-import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingPlaceState
-import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeConsts
+import io.mishkav.generalparking.ui.screens.scheme.components.ParkingPlaceState
+import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
 import io.mishkav.generalparking.ui.utils.loadOrError
 import kotlinx.coroutines.flow.MutableStateFlow

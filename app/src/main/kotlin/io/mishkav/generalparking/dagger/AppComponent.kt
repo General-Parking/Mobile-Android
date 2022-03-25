@@ -5,8 +5,8 @@ import dagger.BindsInstance
 import dagger.Component
 import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
 import io.mishkav.generalparking.ui.screens.main.MainViewModel
-import io.mishkav.generalparking.ui.screens.map.mapScreen.MapViewModel
-import io.mishkav.generalparking.ui.screens.map.schemeScreen.SchemeViewModel
+import io.mishkav.generalparking.ui.screens.map.MapViewModel
+import io.mishkav.generalparking.ui.screens.scheme.SchemeViewModel
 import io.mishkav.generalparking.ui.screens.profile.ProfileViewModel
 import javax.inject.Singleton
 

@@ -1,6 +1,5 @@
-package io.mishkav.generalparking.ui.screens.map.schemeScreen.components
+package io.mishkav.generalparking.ui.screens.scheme.components
 
-import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,11 +25,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.mishkav.generalparking.domain.entities.ParkingPlace
-import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeConsts.BASE_TILE_PADDING
-import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeConsts.BASE_TILE_SIZE
-import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeConsts.EMPTY_STRING
-import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeConsts.PARKING_LOT_HEIGHT
-import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeConsts.PARKING_LOT_WIDTH
+import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts.BASE_TILE_PADDING
+import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts.BASE_TILE_SIZE
+import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts.EMPTY_STRING
+import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts.PARKING_LOT_HEIGHT
+import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts.PARKING_LOT_WIDTH
 import io.mishkav.generalparking.ui.theme.Gray500
 import io.mishkav.generalparking.ui.theme.Orange400
 import io.mishkav.generalparking.ui.theme.Typography

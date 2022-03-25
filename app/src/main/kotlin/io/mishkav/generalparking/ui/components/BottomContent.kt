@@ -22,7 +22,7 @@ import io.mishkav.generalparking.ui.components.buttons.BottomTextButton
 import io.mishkav.generalparking.ui.components.buttons.SimpleIconTextButton
 import io.mishkav.generalparking.ui.components.texts.BottomBody
 import io.mishkav.generalparking.ui.components.texts.BottomTitle
-import io.mishkav.generalparking.ui.screens.map.mapScreen.MapViewModel
+import io.mishkav.generalparking.ui.screens.map.MapViewModel
 
 @Composable
 fun BottomScreen(

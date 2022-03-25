@@ -34,8 +34,8 @@ import io.mishkav.generalparking.ui.screens.auth.confirmEmail.ConfirmEmailScreen
 import io.mishkav.generalparking.ui.screens.auth.forgotPassword.ForgotPasswordScreen
 import io.mishkav.generalparking.ui.screens.auth.registration.RegistrationScreen
 import io.mishkav.generalparking.ui.screens.auth.registrationExtensionData.RegistrationExtensionData
-import io.mishkav.generalparking.ui.screens.map.mapScreen.MapScreen
-import io.mishkav.generalparking.ui.screens.map.schemeScreen.SchemeScreen
+import io.mishkav.generalparking.ui.screens.map.MapScreen
+import io.mishkav.generalparking.ui.screens.scheme.SchemeScreen
 import io.mishkav.generalparking.ui.screens.profile.ProfileScreen
 import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
 

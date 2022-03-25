@@ -1,4 +1,4 @@
-package io.mishkav.generalparking.ui.screens.map.mapScreen
+package io.mishkav.generalparking.ui.screens.map
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*

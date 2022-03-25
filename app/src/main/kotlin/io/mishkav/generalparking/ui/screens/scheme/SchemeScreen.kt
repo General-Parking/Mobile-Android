@@ -1,4 +1,4 @@
-package io.mishkav.generalparking.ui.screens.map.schemeScreen
+package io.mishkav.generalparking.ui.screens.scheme
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.rememberTransformableState
@@ -25,8 +25,8 @@ import io.mishkav.generalparking.ui.components.UnselectedSchemeContent
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
 import io.mishkav.generalparking.ui.components.texts.BottomBody
 import io.mishkav.generalparking.ui.components.texts.BottomTitle
-import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.EmptyLotTile
-import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingLotTile
+import io.mishkav.generalparking.ui.screens.scheme.components.EmptyLotTile
+import io.mishkav.generalparking.ui.screens.scheme.components.ParkingLotTile
 import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
@@ -44,10 +44,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import io.mishkav.generalparking.ui.components.ReservedSchemeContent
 import io.mishkav.generalparking.ui.components.SelectedSchemeContent
-import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingPlaceState
-import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeConsts
-import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingSchemeConsts.BASE_TILE_SIZE
-import io.mishkav.generalparking.ui.screens.map.schemeScreen.components.ParkingTile
+import io.mishkav.generalparking.ui.screens.scheme.components.ParkingPlaceState
+import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts
+import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts.BASE_TILE_SIZE
+import io.mishkav.generalparking.ui.screens.scheme.components.ParkingTile
 
 @Composable
 fun SchemeScreen(
