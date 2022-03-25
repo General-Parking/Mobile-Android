@@ -7,7 +7,7 @@ plugins {
 }
 
 ext {
-    accompanistVersion = "0.18.0"
+    accompanistVersion = "0.23.1"
 }
 
 android {

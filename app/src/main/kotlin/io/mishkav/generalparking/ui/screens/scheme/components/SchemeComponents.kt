@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
@@ -49,7 +49,7 @@ private fun BaseTile(
     modifier = Modifier
         .size(BASE_TILE_SIZE)
         .padding(BASE_TILE_PADDING),
-    contentAlignment = Alignment.Center,
+    contentAlignment = Alignment.CenterStart,
     content = content
 )
 
@@ -111,31 +111,29 @@ fun ParkingLotTile(
         modifier = Modifier
             .width(width)
             .height(height)
-            .clickable(onClick = {
-                val selectedPlaceName = onGetSelectedParkingPlace()
-                if (
-                    (selectedPlaceName.isEmpty() || selectedPlaceName == parkingTile.place.name) &&
-                    state != ParkingPlaceState.RESERVED_BY_OTHER_USERS
-                ) {
-                    if (isSelected)
-                        onClick(EMPTY_STRING, EMPTY_STRING)
-                    else {
-                        state = ParkingPlaceState.SELECTED
-                        onClick(parkingTile.place.name, coordinates)
+            .clickable(
+                onClick = {
+                    val selectedPlaceName = onGetSelectedParkingPlace()
+                    if (
+                        (selectedPlaceName.isEmpty() || selectedPlaceName == parkingTile.place.name) &&
+                        state != ParkingPlaceState.RESERVED_BY_OTHER_USERS
+                    ) {
+                        if (isSelected)
+                            onClick(EMPTY_STRING, EMPTY_STRING)
+                        else {
+                            state = ParkingPlaceState.SELECTED
+                            onClick(parkingTile.place.name, coordinates)
+                        }
+                        isSelected = !isSelected
                     }
-                    isSelected = !isSelected
                 }
-            }),
-        shape = RoundedCornerShape(8.dp),
-        elevation = 8.dp
+            )
     ) {
         Text(
             modifier = Modifier
                 .background(background)
-                .padding(
-                    top = 20.dp
-                )
-                .fillMaxSize(),
+                .fillMaxSize()
+                .wrapContentHeight(),
             text = parkingTile.place.name,
             style = Typography.body1,
             color = MaterialTheme.colorScheme.onPrimary
