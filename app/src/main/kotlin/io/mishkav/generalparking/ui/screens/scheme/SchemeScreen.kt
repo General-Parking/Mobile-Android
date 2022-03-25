@@ -22,8 +22,6 @@ import io.mishkav.generalparking.R
 import io.mishkav.generalparking.domain.entities.ParkingScheme
 import io.mishkav.generalparking.ui.components.UnselectedSchemeContent
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
-import io.mishkav.generalparking.ui.components.texts.BottomBody
-import io.mishkav.generalparking.ui.components.texts.BottomTitle
 import io.mishkav.generalparking.ui.screens.scheme.components.EmptyLotTile
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingLotTile
 import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
@@ -33,9 +31,7 @@ import io.mishkav.generalparking.ui.utils.SuccessResult
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,6 +46,7 @@ import io.mishkav.generalparking.ui.screens.scheme.components.ParkingPlaceState
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts.BASE_TILE_SIZE
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingTile
+import io.mishkav.generalparking.ui.screens.scheme.components.SchemeCardView
 
 @Composable
 fun SchemeScreen(
@@ -166,11 +163,18 @@ fun SchemeScreenContent(
 ) {
     TopAppBarWithBackButton(
         title = {
-            Text(
-                text = stringResource(R.string.parking_scheme),
-                color = MaterialTheme.colorScheme.onPrimary,
-                style = MaterialTheme.typography.titleLarge
-            )
+            Column {
+                Text(
+                    text = stringResource(R.string.parking_scheme),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(
+                    text = textAddress,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
         },
         navigateBack = navigateBack
     )
@@ -186,43 +190,9 @@ fun SchemeScreenContent(
         item {
             Spacer(modifier = Modifier.height(12.dp))
 
-            Card(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(8.dp),
+            SchemeCardView(
                 modifier = Modifier
-                    .padding(
-                        horizontal = dimensionResource(R.dimen.scheme_horizontal_in_padding)
-                    )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(
-                            horizontal = dimensionResource(R.dimen.bottom_padding),
-                            vertical = dimensionResource(R.dimen.bottom_padding)
-                        )
-                ) {
-
-                    BottomTitle(
-                        text = textAddress
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    BottomBody(
-                        text = stringResource(R.string.parking_scheme)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-        }
-
-        item {
-            Card(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier
-                    .height(500.dp)
+                    .height(600.dp)
                     .padding(
                         horizontal = dimensionResource(R.dimen.scheme_horizontal_in_padding)
                     )
@@ -242,14 +212,7 @@ fun SchemeScreenContent(
         }
 
         item {
-            Card(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier
-                    .padding(
-                        horizontal = dimensionResource(R.dimen.scheme_horizontal_in_padding)
-                    )
-            ) {
+            SchemeCardView {
                 if (isCurrentUserReservedParkingPlace)
                     ReservedSchemeContent(
                         name = selectedParkingPlace,
