@@ -45,6 +45,7 @@
     <string name="more">More</string>
 
     <string name="profile">Profile</string>
+    <string name="parking_scheme">Parking scheme</string>
 
 
     <string name="success_sending_email">The letter has been sent successfully, rather to the post office!</string>
@@ -61,7 +62,6 @@
     <string name="bottom_title">Street</string>
     <string name="bottom_body">Free 317 seats from 380</string>
     <string name="minute_cost">12 ₽/min</string>
-    <string name="parking_scheme">Parking scheme</string>
     <string name="choose_seat">Choose a free seat:</string>
     <string name="free">" — free"</string>
     <string name="taken">" — taken"</string>
@@ -70,5 +70,6 @@
     <string name="floor_number">-1st floor</string>
     <string name="reserved">Reserved</string>
     <string name="username">Name</string>
+
 
 </resources>

@@ -236,6 +236,7 @@ private fun OutlinedField(
     readOnly = isReadOnly,
     colors = TextFieldDefaults.textFieldColors(
         textColor = MaterialTheme.colorScheme.onPrimary,
+        backgroundColor = MaterialTheme.colorScheme.background,
         cursorColor = MaterialTheme.colorScheme.primary,
         focusedLabelColor = MaterialTheme.colorScheme.primary,
         unfocusedLabelColor = MaterialTheme.colorScheme.primary,

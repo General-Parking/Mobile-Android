@@ -49,6 +49,7 @@
     <string name="more">Подробнее</string>
 
     <string name="profile">Профиль</string>
+    <string name="parking_scheme">Схема паркинга</string>
 
     <string name="error_auth">Ошибка авторизации, попробуйте ещё раз</string>
     <string name="error_registration">Ошибка регистрации, возможно такой аккаунт уже существует</string>
@@ -60,7 +61,6 @@
     <string name="bottom_title">Улица</string>
     <string name="bottom_body">Свободно 317 мест из 380</string>
     <string name="minute_cost">12 ₽/мин</string>
-    <string name="parking_scheme">Схема паркинга</string>
     <string name="choose_seat">Выберите свободное место:</string>
     <string name="free">" — свободные"</string>
     <string name="taken">" — занятые"</string>
