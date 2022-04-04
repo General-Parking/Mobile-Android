@@ -90,7 +90,7 @@ fun MainScreen(
     navController: NavHostController,
     scaffoldState: ScaffoldState,
     paddingValues: PaddingValues,
-    startAgreementActivity: () -> Unit
+        startAgreementActivity: () -> Unit
 ) {
     val onError: @Composable (Int) -> Unit = { message ->
         val strMessage = stringResource(message)

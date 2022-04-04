@@ -33,6 +33,7 @@ import kotlinx.coroutines.launch
 import com.google.maps.android.compose.rememberCameraPositionState
 import io.mishkav.generalparking.ui.components.BottomScreen
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
+import io.mishkav.generalparking.ui.components.OnErrorResult
 import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
@@ -48,17 +49,6 @@ fun MapScreen(
     val parkingCoordinates by viewModel.parkingCoordinatesResult.collectAsState()
     val autoNumber by viewModel.autoNumberResult.collectAsState()
 
-    val showError: @Composable () -> Unit = {
-        Box(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularLoader()
-        }
-    }
-
     LaunchedEffect(Unit) {
         viewModel.getParkingCoordinates()
         viewModel.setAutoNumber()
@@ -66,10 +56,18 @@ fun MapScreen(
 
     parkingCoordinates.also { result ->
         when (result) {
-            is ErrorResult -> onError(result.message!!)
+            is ErrorResult -> {
+                OnErrorResult(
+                    onclick = viewModel::getParkingCoordinates,
+                    message = result.message!!,
+                    navController = navController,
+                    letPopBack = false
+                )
+            }
             is SuccessResult -> {
                 when (autoNumber) {
-                    is ErrorResult -> showError()
+                    is ErrorResult ->
+                        onError(result.message!!)
                     else -> {
                         MapScreenContent(
                             parkingCoordinates = parkingCoordinates.data ?: emptyMap(),
@@ -85,7 +83,14 @@ fun MapScreen(
                 }
             }
             is LoadingResult -> {
-                showError()
+                Box(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularLoader()
+                }
             }
         }
     }

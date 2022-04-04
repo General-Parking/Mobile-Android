@@ -69,5 +69,7 @@
     <string name="floor_number">-1 этаж</string>
     <string name="reserved">Забронировано</string>
     <string name="username">Имя</string>
+    <string name="onerror_body">Возникли проблемы</string>
+    <string name="repeat_request">Повторить запрос</string>
 
 </resources>

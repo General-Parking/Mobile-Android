@@ -24,6 +24,7 @@ import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.data.utils.UserFields
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
+import io.mishkav.generalparking.ui.components.OnErrorResult
 import io.mishkav.generalparking.ui.components.topAppBar.TopAppBarWithBackButton
 import io.mishkav.generalparking.ui.screens.main.Routes
 import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
@@ -49,7 +50,14 @@ fun ProfileScreen(
 
     signOutResult.also { result ->
         when (result) {
-            is ErrorResult -> onError(result.message!!)
+            is ErrorResult -> {
+                OnErrorResult(
+                    onclick = viewModel::signOut,
+                    message = result.message!!,
+                    navController = navController,
+                    letPopBack = true
+                )
+            }
             is SuccessResult -> {
                 LaunchedEffect(Unit) {
                     navController.navigate(Routes.authorization)
@@ -70,7 +78,14 @@ fun ProfileScreen(
 
     currentUser.also { result ->
         when (result) {
-            is ErrorResult -> onError(result.message!!)
+            is ErrorResult -> {
+                OnErrorResult(
+                    onclick = viewModel::getUserDataFromDatabase,
+                    message = result.message!!,
+                    navController = navController,
+                    letPopBack = true
+                )
+            }
             is SuccessResult -> {
                 ProfileScreenContent(
                     name = currentUser.data?.metaUserInfo?.get(UserFields.FIELD_NAME)

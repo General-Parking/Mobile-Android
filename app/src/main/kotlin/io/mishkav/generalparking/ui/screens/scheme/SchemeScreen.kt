@@ -41,6 +41,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import io.mishkav.generalparking.ui.components.ReservedSchemeContent
 import io.mishkav.generalparking.ui.components.SelectedSchemeContent
+import io.mishkav.generalparking.ui.components.OnErrorResult
 import io.mishkav.generalparking.ui.components.topAppBar.TopAppBarWithBackButton
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingPlaceState
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts
@@ -71,7 +72,15 @@ fun SchemeScreen(
     }
 
     when {
-        currentUser is ErrorResult || parkingSchemeResult is ErrorResult -> onError(parkingSchemeResult.message!!)
+        currentUser is ErrorResult || parkingSchemeResult is ErrorResult -> {
+            OnErrorResult(
+                onclick = viewModel::getCurrentUser,
+                message = parkingSchemeResult.message!!,
+                navController = navController,
+                letPopBack = true
+            )
+
+        }
         currentUser is SuccessResult && parkingSchemeResult is SuccessResult -> {
             parkingSchemeResult.data?.let {
                 SchemeScreenContent(
