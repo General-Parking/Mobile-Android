@@ -4,7 +4,7 @@ import io.mishkav.generalparking.domain.entities.ParkingScheme
 
 interface IMapDatabaseRepository {
     suspend fun getParkingCoordinates(): Map<String, String>
-    suspend fun getParkingScheme(address: String, floor: Int): ParkingScheme
+    suspend fun getParkingScheme(address: String): Map<String, ParkingScheme>
     suspend fun setParkingPlaceReservation(
         address: String,
         namePlace: String,

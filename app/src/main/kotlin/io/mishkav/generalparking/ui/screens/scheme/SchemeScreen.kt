@@ -20,7 +20,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.domain.entities.ParkingScheme
-import io.mishkav.generalparking.ui.components.UnselectedSchemeContent
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
 import io.mishkav.generalparking.ui.screens.scheme.components.EmptyLotTile
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingLotTile
@@ -32,21 +31,31 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.TabRow
+import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.pagerTabIndicatorOffset
+import com.google.accompanist.pager.rememberPagerState
 import io.mishkav.generalparking.ui.components.ReservedSchemeContent
 import io.mishkav.generalparking.ui.components.SelectedSchemeContent
+import io.mishkav.generalparking.ui.components.UnselectedSchemeContent
 import io.mishkav.generalparking.ui.components.topAppBar.TopAppBarWithBackButton
+import io.mishkav.generalparking.ui.screens.scheme.components.FloorTab
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingPlaceState
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts.BASE_TILE_SIZE
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingTile
 import io.mishkav.generalparking.ui.screens.scheme.components.SchemeCardView
+import kotlinx.coroutines.launch
 
 @Composable
 fun SchemeScreen(
@@ -67,16 +76,20 @@ fun SchemeScreen(
     LaunchedEffect(Unit) {
         viewModel.getCurrentUser()
         viewModel.onOpen()
-        viewModel.getParkingScheme(-1)
+        viewModel.getParkingScheme()
     }
 
     when {
         currentUser is ErrorResult || parkingSchemeResult is ErrorResult -> onError(parkingSchemeResult.message!!)
         currentUser is SuccessResult && parkingSchemeResult is SuccessResult -> {
+            // for((key, value) in  parkingSchemeResult.data!!) {
+            //     println(key)
+            // }
+
             parkingSchemeResult.data?.let {
                 SchemeScreenContent(
                     textAddress = currentParkingAddress,
-                    parkingScheme = it,
+                    parking = it,
                     selectedParkingPlace = selectedParkingPlace,
                     isCurrentUserReservedParkingPlace = isCurrentUserReservedParkingPlace,
                     isReservedTransactionPassed = viewModel::isReservedTransactionPassed,
@@ -142,10 +155,11 @@ fun SchemeScreen(
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun SchemeScreenContent(
     textAddress: String = stringResource(R.string.bottom_title),
-    parkingScheme: ParkingScheme,
+    parking: Map<String, ParkingScheme>,
     selectedParkingPlace: String = ParkingSchemeConsts.EMPTY_STRING,
     isCurrentUserReservedParkingPlace: Boolean = false,
     isReservedTransactionPassed: () -> Boolean = { false },
@@ -189,23 +203,48 @@ fun SchemeScreenContent(
     ) {
         item {
             Spacer(modifier = Modifier.height(12.dp))
+            val pagerState = rememberPagerState()
+            val scope = rememberCoroutineScope()
 
-            SchemeCardView(
+
+            HorizontalPager(
+                count = parking.keys.size,
+                state = pagerState,
                 modifier = Modifier
                     .height(600.dp)
-                    .padding(
-                        horizontal = dimensionResource(R.dimen.scheme_horizontal_in_padding)
+            ) { floor ->
+                SchemeCardView {
+                    DrawScheme(
+                        parkingScheme = parking[parking.keys.elementAt(floor)]!!,
+                        onGetSelectedParkingPlace = onGetSelectedParkingPlace,
+                        onSelectParkingPlace = onSelectParkingPlace,
+                        isReservedTransactionPassed = isReservedTransactionPassed,
+                        onSetReservedTransactionPassed = onSetReservedTransactionPassed,
+                        getParkingPlaceState = getParkingPlaceState
                     )
-            ) {
-                DrawScheme(
-                    parkingScheme = parkingScheme,
-                    onGetSelectedParkingPlace = onGetSelectedParkingPlace,
-                    onSelectParkingPlace = onSelectParkingPlace,
-                    isReservedTransactionPassed = isReservedTransactionPassed,
+                }
+            }
 
-                    onSetReservedTransactionPassed = onSetReservedTransactionPassed,
-                    getParkingPlaceState = getParkingPlaceState
-                )
+            TabRow(
+                selectedTabIndex = pagerState.currentPage,
+                indicator = { tabPositions ->
+                    TabRowDefaults.Indicator(
+                        Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
+                    )
+                },
+                backgroundColor = MaterialTheme.colorScheme.background
+            ) {
+                parking.keys.forEachIndexed { index, floor ->
+                    FloorTab(
+                        floor = floor,
+                        isCurrent = pagerState.currentPage == index,
+                        onClick = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(index)
+                            }
+                        }
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -213,6 +252,7 @@ fun SchemeScreenContent(
 
         item {
             SchemeCardView {
+                // Переделать на when и MVI
                 if (isCurrentUserReservedParkingPlace)
                     ReservedSchemeContent(
                         name = selectedParkingPlace,
@@ -297,7 +337,7 @@ fun PreviewSchemeScreen() {
 
     GeneralParkingTheme {
         SchemeScreenContent(
-            parkingScheme = ParkingScheme.getInstance()
+            parking = mapOf("0" to ParkingScheme.getInstance())
         )
     }
 }

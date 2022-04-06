@@ -28,7 +28,7 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
     @Inject
     lateinit var authDatabaseRepository: IAuthDatabaseRepository
 
-    val parkingSchemeResult = MutableResultFlow<ParkingScheme>()
+    val parkingSchemeResult = MutableResultFlow<Map<String, ParkingScheme>>()
     val setParkingPlaceReservationResult = MutableResultFlow<Unit>()
     val removeParkingPlaceReservationResult = MutableResultFlow<Unit>()
 
@@ -57,9 +57,9 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
         selectedParkingPlaceCoordinates.value = _selectedParkingPlaceCoordinates.value
     }
 
-    fun getParkingScheme(floor: Int) = viewModelScope.launch {
+    fun getParkingScheme() = viewModelScope.launch {
         parkingSchemeResult.loadOrError {
-            mapDatabaseRepository.getParkingScheme(currentParkingAddress.value, floor)
+            mapDatabaseRepository.getParkingScheme(currentParkingAddress.value)
         }
     }
 
