@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -23,26 +24,14 @@ fun OnErrorResult(
     onclick: () -> Unit,
     message: Int,
     navController: NavHostController,
-    letPopBack: Boolean = true
+    letPopBack: Boolean = true,
+    appBarId: Int = R.string.profile
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.error_animation))
     val progress by animateLottieCompositionAsState(
         composition,
         iterations = LottieConstants.IterateForever,
     )
-
-    if (letPopBack) {
-        TopAppBarWithBackButton(
-            title = {
-                Text(
-                    text = stringResource(R.string.profile),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    style = MaterialTheme.typography.titleLarge
-                )
-            },
-            navigateBack = navController::popBackStack
-        )
-    }
 
     Column(
         modifier = Modifier
@@ -51,6 +40,18 @@ fun OnErrorResult(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        if (letPopBack) {
+            TopAppBarWithBackButton(
+                title = {
+                    Text(
+                        text = stringResource(appBarId),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
+                navigateBack = navController::popBackStack
+            )
+        }
         LottieAnimation(
             composition,
             progress,
@@ -63,18 +64,22 @@ fun OnErrorResult(
             ScreenTitle(
                 text = stringResource(R.string.onerror_body)
             )
+
+            Spacer(Modifier.height(10.dp))
+
             ScreenBody(
-                text = stringResource(message),
-                modifier = Modifier.padding(top = 10.dp)
+                text = stringResource(message)
             )
+
+            Spacer(Modifier.height(40.dp))
+
             TextButton(
                 text = stringResource(R.string.repeat_request),
                 onClick = {
                     onclick()
                 },
                 modifier = Modifier
-                    .width(200.dp)
-                    .padding(top = 40.dp)
+                    .width(dimensionResource(R.dimen.onerror_button_width))
             )
         }
     }

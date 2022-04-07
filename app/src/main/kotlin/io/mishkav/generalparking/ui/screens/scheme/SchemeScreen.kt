@@ -77,7 +77,8 @@ fun SchemeScreen(
                 onclick = viewModel::getCurrentUser,
                 message = parkingSchemeResult.message!!,
                 navController = navController,
-                letPopBack = true
+                letPopBack = true,
+                appBarId = R.string.parking_scheme
             )
 
         }

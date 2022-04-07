@@ -55,7 +55,8 @@ fun ProfileScreen(
                     onclick = viewModel::signOut,
                     message = result.message!!,
                     navController = navController,
-                    letPopBack = true
+                    letPopBack = true,
+                    appBarId = R.string.profile
                 )
             }
             is SuccessResult -> {
@@ -83,7 +84,8 @@ fun ProfileScreen(
                     onclick = viewModel::getUserDataFromDatabase,
                     message = result.message!!,
                     navController = navController,
-                    letPopBack = true
+                    letPopBack = true,
+                    appBarId = R.string.profile
                 )
             }
             is SuccessResult -> {

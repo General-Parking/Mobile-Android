@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -34,6 +35,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import io.mishkav.generalparking.ui.components.BottomScreen
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
 import io.mishkav.generalparking.ui.components.OnErrorResult
+import io.mishkav.generalparking.ui.components.topAppBar.TopAppBarWithBackButton
 import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
@@ -58,7 +60,10 @@ fun MapScreen(
         when (result) {
             is ErrorResult -> {
                 OnErrorResult(
-                    onclick = viewModel::getParkingCoordinates,
+                    onclick = {
+                        viewModel.getParkingCoordinates()
+                        viewModel.setAutoNumber()
+                    },
                     message = result.message!!,
                     navController = navController,
                     letPopBack = false
@@ -165,7 +170,10 @@ fun MapScreenContent(
                     contentColor = MaterialTheme.colorScheme.primary
                 ),
                 modifier = Modifier
-                    .padding(top = dimensionResource(R.dimen.fab_top), start = dimensionResource(R.dimen.fab_start))
+                    .padding(
+                        top = dimensionResource(R.dimen.fab_top),
+                        start = dimensionResource(R.dimen.fab_start)
+                    )
                     .size(dimensionResource(R.dimen.fab_size))
             ) {
                 Icon(Icons.Filled.Menu, "")
