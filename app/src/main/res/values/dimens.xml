@@ -23,5 +23,6 @@
     <dimen name="fab_start">20dp</dimen>
     <dimen name="fab_size">60dp</dimen>
 
-    <dimen name="onerror_button_width">200dp</dimen>
+    <dimen name="on_error_button_width">200dp</dimen>
+    <dimen name="on_error_padding">30dp</dimen>
 </resources>

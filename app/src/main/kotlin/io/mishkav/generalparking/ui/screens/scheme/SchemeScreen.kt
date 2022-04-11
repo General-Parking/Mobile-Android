@@ -20,7 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.domain.entities.ParkingScheme
-import io.mishkav.generalparking.ui.components.UnselectedSchemeContent
+import io.mishkav.generalparking.ui.components.contents.UnselectedSchemeContent
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
 import io.mishkav.generalparking.ui.screens.scheme.components.EmptyLotTile
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingLotTile
@@ -39,9 +39,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
-import io.mishkav.generalparking.ui.components.ReservedSchemeContent
-import io.mishkav.generalparking.ui.components.SelectedSchemeContent
-import io.mishkav.generalparking.ui.components.OnErrorResult
+import io.mishkav.generalparking.ui.components.contents.ReservedSchemeContent
+import io.mishkav.generalparking.ui.components.contents.SelectedSchemeContent
+import io.mishkav.generalparking.ui.components.errors.OnErrorResult
 import io.mishkav.generalparking.ui.components.topAppBar.TopAppBarWithBackButton
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingPlaceState
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts
@@ -72,44 +72,37 @@ fun SchemeScreen(
     }
 
     when {
-        currentUser is ErrorResult || parkingSchemeResult is ErrorResult -> {
-            OnErrorResult(
-                onclick = viewModel::getCurrentUser,
-                message = parkingSchemeResult.message!!,
-                navController = navController,
-                letPopBack = true,
-                appBarId = R.string.parking_scheme
+        currentUser is ErrorResult || parkingSchemeResult is ErrorResult -> OnErrorResult(
+            onClick = viewModel::getCurrentUser,
+            message = parkingSchemeResult.message ?: R.string.on_error_def,
+            navController = navController,
+            isTopAppBarAvailable = true,
+            appBarId = R.string.parking_scheme
+        )
+        currentUser is SuccessResult && parkingSchemeResult is SuccessResult -> parkingSchemeResult.data?.let {
+            SchemeScreenContent(
+                textAddress = currentParkingAddress,
+                parkingScheme = it,
+                selectedParkingPlace = selectedParkingPlace,
+                isCurrentUserReservedParkingPlace = isCurrentUserReservedParkingPlace,
+                isReservedTransactionPassed = viewModel::isReservedTransactionPassed,
+                onGetSelectedParkingPlace = viewModel::getSelectedParkingPlace,
+                onSelectParkingPlace = viewModel::setParkingPlace,
+                onParkingPlaceReserved = viewModel::setParkingPlaceReservation,
+                onRemoveParkingPlaceReserved = viewModel::removeParkingPlaceReservation,
+                navigateBack = navController::popBackStack,
+
+                onSetReservedTransactionPassed = viewModel::setReservedTransactionPassed,
+                getParkingPlaceState = viewModel::getParkingPlaceState
             )
-
         }
-        currentUser is SuccessResult && parkingSchemeResult is SuccessResult -> {
-            parkingSchemeResult.data?.let {
-                SchemeScreenContent(
-                    textAddress = currentParkingAddress,
-                    parkingScheme = it,
-                    selectedParkingPlace = selectedParkingPlace,
-                    isCurrentUserReservedParkingPlace = isCurrentUserReservedParkingPlace,
-                    isReservedTransactionPassed = viewModel::isReservedTransactionPassed,
-                    onGetSelectedParkingPlace = viewModel::getSelectedParkingPlace,
-                    onSelectParkingPlace = viewModel::setParkingPlace,
-                    onParkingPlaceReserved = viewModel::setParkingPlaceReservation,
-                    onRemoveParkingPlaceReserved = viewModel::removeParkingPlaceReservation,
-                    navigateBack = navController::popBackStack,
-
-                    onSetReservedTransactionPassed = viewModel::setReservedTransactionPassed,
-                    getParkingPlaceState = viewModel::getParkingPlaceState
-                )
-            }
-        }
-        currentUser is LoadingResult || parkingSchemeResult is LoadingResult -> {
-            Box(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularLoader()
-            }
+        currentUser is LoadingResult || parkingSchemeResult is LoadingResult -> Box(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularLoader()
         }
     }
 

@@ -1,4 +1,4 @@
-package io.mishkav.generalparking.ui.components
+package io.mishkav.generalparking.ui.components.errors
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -21,10 +21,10 @@ import io.mishkav.generalparking.ui.components.topAppBar.TopAppBarWithBackButton
 
 @Composable
 fun OnErrorResult(
-    onclick: () -> Unit,
+    onClick: () -> Unit,
     message: Int,
     navController: NavHostController,
-    letPopBack: Boolean = true,
+    isTopAppBarAvailable: Boolean = true,
     appBarId: Int = R.string.profile
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.error_animation))
@@ -40,7 +40,7 @@ fun OnErrorResult(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        if (letPopBack) {
+        if (isTopAppBarAvailable) {
             TopAppBarWithBackButton(
                 title = {
                     Text(
@@ -62,13 +62,17 @@ fun OnErrorResult(
             modifier = Modifier.weight(1f)
         ) {
             ScreenTitle(
-                text = stringResource(R.string.onerror_body)
+                text = stringResource(R.string.on_error_body),
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(R.dimen.on_error_padding))
             )
 
             Spacer(Modifier.height(10.dp))
 
             ScreenBody(
-                text = stringResource(message)
+                text = stringResource(message),
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(R.dimen.on_error_padding))
             )
 
             Spacer(Modifier.height(40.dp))
@@ -76,11 +80,12 @@ fun OnErrorResult(
             TextButton(
                 text = stringResource(R.string.repeat_request),
                 onClick = {
-                    onclick()
+                    onClick()
                 },
                 modifier = Modifier
-                    .width(dimensionResource(R.dimen.onerror_button_width))
+                    .width(dimensionResource(R.dimen.on_error_button_width))
             )
         }
     }
 }
+

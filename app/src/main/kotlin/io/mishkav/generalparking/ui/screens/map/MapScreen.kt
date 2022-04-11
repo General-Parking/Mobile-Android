@@ -17,7 +17,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -32,10 +31,9 @@ import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.screens.main.Routes
 import kotlinx.coroutines.launch
 import com.google.maps.android.compose.rememberCameraPositionState
-import io.mishkav.generalparking.ui.components.BottomScreen
+import io.mishkav.generalparking.ui.components.contents.BottomScreen
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
-import io.mishkav.generalparking.ui.components.OnErrorResult
-import io.mishkav.generalparking.ui.components.topAppBar.TopAppBarWithBackButton
+import io.mishkav.generalparking.ui.components.errors.OnErrorResult
 import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
@@ -58,44 +56,37 @@ fun MapScreen(
 
     parkingCoordinates.also { result ->
         when (result) {
-            is ErrorResult -> {
-                OnErrorResult(
-                    onclick = {
-                        viewModel.getParkingCoordinates()
-                        viewModel.setAutoNumber()
-                    },
-                    message = result.message!!,
-                    navController = navController,
-                    letPopBack = false
-                )
-            }
-            is SuccessResult -> {
-                when (autoNumber) {
-                    is ErrorResult ->
-                        onError(result.message!!)
-                    else -> {
-                        MapScreenContent(
-                            parkingCoordinates = parkingCoordinates.data ?: emptyMap(),
-                            setParkingAddress = viewModel::setCurrentParkingAddress,
-                            navigateToSchemeScreen = {
-                                navController.navigate(Routes.scheme)
-                            },
-                            navigateToProfileScreen = {
-                                navController.navigate(Routes.profile)
-                            }
-                        )
-                    }
+            is ErrorResult -> OnErrorResult(
+                onClick = {
+                    viewModel.getParkingCoordinates()
+                    viewModel.setAutoNumber()
+                },
+                message = result.message ?: R.string.on_error_def,
+                navController = navController,
+                isTopAppBarAvailable = false
+            )
+            is SuccessResult -> when (autoNumber) {
+                is ErrorResult -> onError(result.message!!)
+                else -> {
+                    MapScreenContent(
+                        parkingCoordinates = parkingCoordinates.data ?: emptyMap(),
+                        setParkingAddress = viewModel::setCurrentParkingAddress,
+                        navigateToSchemeScreen = {
+                            navController.navigate(Routes.scheme)
+                        },
+                        navigateToProfileScreen = {
+                            navController.navigate(Routes.profile)
+                        }
+                    )
                 }
             }
-            is LoadingResult -> {
-                Box(
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularLoader()
-                }
+            is LoadingResult -> Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularLoader()
             }
         }
     }
