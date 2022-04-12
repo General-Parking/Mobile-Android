@@ -21,11 +21,11 @@ import io.mishkav.generalparking.ui.components.topAppBar.TopAppBarWithBackButton
 
 @Composable
 fun OnErrorResult(
-    onClick: () -> Unit,
     message: Int,
     navController: NavHostController,
     isTopAppBarAvailable: Boolean = true,
-    appBarId: Int = R.string.profile
+    appBarId: Int = R.string.profile,
+    onClick: () -> Unit
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.error_animation))
     val progress by animateLottieCompositionAsState(

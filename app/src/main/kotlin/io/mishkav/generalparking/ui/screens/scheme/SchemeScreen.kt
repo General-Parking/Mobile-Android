@@ -64,16 +64,18 @@ fun SchemeScreen(
 
     val currentUser by viewModel.currentUser.collectAsState()
 
-    //Что-то придумать с floor
-    LaunchedEffect(Unit) {
+    fun onOpen() {
         viewModel.getCurrentUser()
         viewModel.onOpen()
         viewModel.getParkingScheme(-1)
     }
 
+    //Что-то придумать с floor
+    LaunchedEffect(Unit) { onOpen() }
+
     when {
         currentUser is ErrorResult || parkingSchemeResult is ErrorResult -> OnErrorResult(
-            onClick = viewModel::getCurrentUser,
+            onClick = ::onOpen,
             message = parkingSchemeResult.message ?: R.string.on_error_def,
             navController = navController,
             isTopAppBarAvailable = true,

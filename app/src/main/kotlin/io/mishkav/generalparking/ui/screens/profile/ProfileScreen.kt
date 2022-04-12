@@ -43,14 +43,16 @@ fun ProfileScreen(
     val signOutResult by viewModel.signOutResult.collectAsState()
     val currentUser by viewModel.currentUser.collectAsState()
 
-    LaunchedEffect(Unit) {
+    fun onOpen() {
         viewModel.getUserDataFromDatabase()
     }
+
+    LaunchedEffect(Unit) { onOpen() }
 
     signOutResult.also { result ->
         when (result) {
             is ErrorResult -> OnErrorResult(
-                onClick = viewModel::signOut,
+                onClick = ::onOpen,
                 message = result.message ?: R.string.on_error_def,
                 navController = navController,
                 isTopAppBarAvailable = true,
