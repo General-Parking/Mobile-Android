@@ -27,6 +27,11 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
         appComponent.inject(this)
     }
 
+    fun onOpen() {
+        getParkingCoordinates()
+        setAutoNumber()
+    }
+
     fun setCurrentParkingAddress(address: String) {
         session.changeCurrentParkingAddress(address)
     }

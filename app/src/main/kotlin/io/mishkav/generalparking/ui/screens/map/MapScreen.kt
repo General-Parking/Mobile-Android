@@ -49,17 +49,12 @@ fun MapScreen(
     val parkingCoordinates by viewModel.parkingCoordinatesResult.collectAsState()
     val autoNumber by viewModel.autoNumberResult.collectAsState()
 
-    fun onOpen() {
-        viewModel.getParkingCoordinates()
-        viewModel.setAutoNumber()
-    }
-
-    LaunchedEffect(Unit) { onOpen() }
+    LaunchedEffect(Unit) { viewModel.onOpen() }
 
     parkingCoordinates.also { result ->
         when (result) {
             is ErrorResult -> OnErrorResult(
-                onClick = ::onOpen,
+                onClick = viewModel::onOpen,
                 message = result.message ?: R.string.on_error_def,
                 navController = navController,
                 isTopAppBarAvailable = false
