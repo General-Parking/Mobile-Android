@@ -1,8 +1,8 @@
 package io.mishkav.generalparking.ui.screens.scheme
 
+import androidx.compose.animation.Animatable
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.rememberTransformableState
-import androidx.compose.foundation.gestures.transformable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.MaterialTheme
@@ -30,7 +30,9 @@ import io.mishkav.generalparking.ui.utils.SuccessResult
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.Text
@@ -39,8 +41,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.consumeAllChanges
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.IntOffset
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
@@ -49,13 +54,15 @@ import io.mishkav.generalparking.ui.components.ReservedSchemeContent
 import io.mishkav.generalparking.ui.components.SelectedSchemeContent
 import io.mishkav.generalparking.ui.components.UnselectedSchemeContent
 import io.mishkav.generalparking.ui.components.topAppBar.TopAppBarWithBackButton
-import io.mishkav.generalparking.ui.screens.scheme.components.FloorTab
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingPlaceState
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts
-import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts.BASE_TILE_SIZE
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingTile
 import io.mishkav.generalparking.ui.screens.scheme.components.SchemeCardView
+import io.mishkav.generalparking.ui.theme.Gray400
+import io.mishkav.generalparking.ui.theme.Typography
+import io.mishkav.generalparking.ui.theme.Yellow400
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 @Composable
 fun SchemeScreen(
@@ -72,7 +79,6 @@ fun SchemeScreen(
 
     val currentUser by viewModel.currentUser.collectAsState()
 
-    //Что-то придумать с floor
     LaunchedEffect(Unit) {
         viewModel.getCurrentUser()
         viewModel.onOpen()
@@ -82,10 +88,6 @@ fun SchemeScreen(
     when {
         currentUser is ErrorResult || parkingSchemeResult is ErrorResult -> onError(parkingSchemeResult.message!!)
         currentUser is SuccessResult && parkingSchemeResult is SuccessResult -> {
-            // for((key, value) in  parkingSchemeResult.data!!) {
-            //     println(key)
-            // }
-
             parkingSchemeResult.data?.let {
                 SchemeScreenContent(
                     textAddress = currentParkingAddress,
@@ -225,19 +227,54 @@ fun SchemeScreenContent(
                 }
             }
 
+            var selectedOption1 by remember {
+                mutableStateOf(parking.keys.first())
+            }
+
             TabRow(
                 selectedTabIndex = pagerState.currentPage,
+                backgroundColor = Yellow400,
+                modifier = Modifier
+                    .padding(all = 20.dp)
+                    .background(Color.Transparent)
+                    .clip(RoundedCornerShape(30.dp)),
                 indicator = { tabPositions ->
                     TabRowDefaults.Indicator(
-                        Modifier.pagerTabIndicatorOffset(pagerState, tabPositions)
+                        Modifier
+                            .pagerTabIndicatorOffset(pagerState, tabPositions)
+                            .width(0.dp)
+                            .height(0.dp)
                     )
-                },
-                backgroundColor = MaterialTheme.colorScheme.background
+                }
             ) {
                 parking.keys.forEachIndexed { index, floor ->
-                    FloorTab(
-                        floor = floor,
-                        isCurrent = pagerState.currentPage == index,
+                    val tabColor = remember {
+                        Animatable(Gray400)
+                    }
+
+                    LaunchedEffect(pagerState.currentPage == index) {
+                        tabColor.animateTo(
+                            if (pagerState.currentPage == index)
+                                Color.White
+                            else
+                                Yellow400
+                        )
+                    }
+
+                    Tab(
+                        text = {
+                            Text(
+                                text = floor,
+                                style = Typography.body1,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                            )
+                        },
+                        selected = pagerState.currentPage == index,
+                        modifier = Modifier
+                            .background(
+                                color = tabColor.value,
+                                shape = RoundedCornerShape(30.dp)
+                            ),
                         onClick = {
                             scope.launch {
                                 pagerState.animateScrollToPage(index)
@@ -285,26 +322,21 @@ fun DrawScheme(
     isReservedTransactionPassed: () -> Boolean = { false },
     getParkingPlaceState: (namePlace: String, value: Int) -> ParkingPlaceState = { _, _ -> ParkingPlaceState.NOT_RESERVED },
 ) {
-    var scale by remember { mutableStateOf(1f) }
-    var offset by remember { mutableStateOf(Offset.Zero) }
-    val state = rememberTransformableState { zoomChange, offsetChange, rotationChange ->
-        scale *= zoomChange
-        offset += offsetChange
-    }
+    var offsetX by remember { mutableStateOf(0f) }
+    var offsetY by remember { mutableStateOf(0f) }
 
     Box(
         modifier = Modifier
             .horizontalScroll(rememberScrollState())
             .verticalScroll(rememberScrollState())
-            .graphicsLayer(
-                scaleX = scale,
-                scaleY = scale,
-                translationX = offset.x,
-                translationY = offset.y
-            )
-            .transformable(state = state)
-            .width(((parkingScheme.width) * BASE_TILE_SIZE.value).dp)
-            .height(((parkingScheme.height) * BASE_TILE_SIZE.value).dp)
+            .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
+            .pointerInput(Unit) {
+                detectDragGestures { change, dragAmount ->
+                    change.consumeAllChanges()
+                    offsetX += dragAmount.x
+                    offsetY += dragAmount.y
+                }
+            }
     ) {
         Column {
             for (height in 1..parkingScheme.height + 1) {
