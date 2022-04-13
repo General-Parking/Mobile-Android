@@ -52,9 +52,11 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
     }
 
     fun onOpen() {
+        getCurrentUser()
         isCurrentUserReservedParkingPlace.value = _isCurrentUserReservedParkingPlace.value
         selectedParkingPlace.value = _selectedParkingPlace.value
         selectedParkingPlaceCoordinates.value = _selectedParkingPlaceCoordinates.value
+        getParkingScheme(-1)
     }
 
     fun getParkingScheme(floor: Int) = viewModelScope.launch {

@@ -31,8 +31,9 @@ import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.screens.main.Routes
 import kotlinx.coroutines.launch
 import com.google.maps.android.compose.rememberCameraPositionState
-import io.mishkav.generalparking.ui.components.BottomScreen
+import io.mishkav.generalparking.ui.components.contents.BottomScreen
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
+import io.mishkav.generalparking.ui.components.errors.OnErrorResult
 import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
@@ -48,44 +49,38 @@ fun MapScreen(
     val parkingCoordinates by viewModel.parkingCoordinatesResult.collectAsState()
     val autoNumber by viewModel.autoNumberResult.collectAsState()
 
-    val showError: @Composable () -> Unit = {
-        Box(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularLoader()
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.getParkingCoordinates()
-        viewModel.setAutoNumber()
-    }
+    LaunchedEffect(Unit) { viewModel.onOpen() }
 
     parkingCoordinates.also { result ->
         when (result) {
-            is ErrorResult -> onError(result.message!!)
-            is SuccessResult -> {
-                when (autoNumber) {
-                    is ErrorResult -> showError()
-                    else -> {
-                        MapScreenContent(
-                            parkingCoordinates = parkingCoordinates.data ?: emptyMap(),
-                            setParkingAddress = viewModel::setCurrentParkingAddress,
-                            navigateToSchemeScreen = {
-                                navController.navigate(Routes.scheme)
-                            },
-                            navigateToProfileScreen = {
-                                navController.navigate(Routes.profile)
-                            }
-                        )
-                    }
+            is ErrorResult -> OnErrorResult(
+                onClick = viewModel::onOpen,
+                message = result.message ?: R.string.on_error_def,
+                navController = navController,
+                isTopAppBarAvailable = false
+            )
+            is SuccessResult -> when (autoNumber) {
+                is ErrorResult -> onError(result.message!!)
+                else -> {
+                    MapScreenContent(
+                        parkingCoordinates = parkingCoordinates.data ?: emptyMap(),
+                        setParkingAddress = viewModel::setCurrentParkingAddress,
+                        navigateToSchemeScreen = {
+                            navController.navigate(Routes.scheme)
+                        },
+                        navigateToProfileScreen = {
+                            navController.navigate(Routes.profile)
+                        }
+                    )
                 }
             }
-            is LoadingResult -> {
-                showError()
+            is LoadingResult -> Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularLoader()
             }
         }
     }
@@ -160,7 +155,10 @@ fun MapScreenContent(
                     contentColor = MaterialTheme.colorScheme.primary
                 ),
                 modifier = Modifier
-                    .padding(top = dimensionResource(R.dimen.fab_top), start = dimensionResource(R.dimen.fab_start))
+                    .padding(
+                        top = dimensionResource(R.dimen.fab_top),
+                        start = dimensionResource(R.dimen.fab_start)
+                    )
                     .size(dimensionResource(R.dimen.fab_size))
             ) {
                 Icon(Icons.Filled.Menu, "")

@@ -28,6 +28,10 @@ class ProfileViewModel(appComponent: AppComponent = GeneralParkingApp.appCompone
         appComponent.inject(this)
     }
 
+    fun onOpen() {
+        getUserDataFromDatabase()
+    }
+
     fun getUserDataFromDatabase() = viewModelScope.launch {
         currentUser.loadOrError {
             authDatabaseRepository.getUserDataFromDatabase()

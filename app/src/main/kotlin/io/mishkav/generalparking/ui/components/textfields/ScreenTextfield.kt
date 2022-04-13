@@ -1,4 +1,4 @@
-package io.mishkav.generalparking.ui.components
+package io.mishkav.generalparking.ui.components.textfields
 
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.LocalTextStyle
