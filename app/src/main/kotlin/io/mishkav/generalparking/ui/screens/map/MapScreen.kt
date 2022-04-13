@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -31,9 +32,11 @@ import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.screens.main.Routes
 import kotlinx.coroutines.launch
 import com.google.maps.android.compose.rememberCameraPositionState
-import io.mishkav.generalparking.ui.components.contents.BottomScreen
+import io.mishkav.generalparking.ui.components.contents.*
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
 import io.mishkav.generalparking.ui.components.errors.OnErrorResult
+import io.mishkav.generalparking.ui.screens.scheme.SchemeViewModel
+import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts
 import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
@@ -49,12 +52,22 @@ fun MapScreen(
     val parkingCoordinates by viewModel.parkingCoordinatesResult.collectAsState()
     val autoNumber by viewModel.autoNumberResult.collectAsState()
 
-    LaunchedEffect(Unit) { viewModel.onOpen() }
+    val schemeViewModel: SchemeViewModel = viewModel()
+    val isCurrentUserReservedParkingPlace by schemeViewModel.isCurrentUserReservedParkingPlace.collectAsState()
+    val selectedParkingPlace by schemeViewModel.selectedParkingPlace.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.onOpen()
+        schemeViewModel.onOpenMap()
+    }
 
     parkingCoordinates.also { result ->
         when (result) {
             is ErrorResult -> OnErrorResult(
-                onClick = viewModel::onOpen,
+                onClick = {
+                    viewModel.onOpen()
+                    schemeViewModel.onOpenMap()
+                },
                 message = result.message ?: R.string.on_error_def,
                 navController = navController,
                 isTopAppBarAvailable = false
@@ -64,6 +77,8 @@ fun MapScreen(
                 else -> {
                     MapScreenContent(
                         parkingCoordinates = parkingCoordinates.data ?: emptyMap(),
+                        selectedParkingPlace = selectedParkingPlace,
+                        isCurrentUserReservedParkingPlace = isCurrentUserReservedParkingPlace,
                         setParkingAddress = viewModel::setCurrentParkingAddress,
                         navigateToSchemeScreen = {
                             navController.navigate(Routes.scheme)
@@ -90,6 +105,8 @@ fun MapScreen(
 @Composable
 fun MapScreenContent(
     parkingCoordinates: Map<Pair<Double, Double>, String> = emptyMap(),
+    selectedParkingPlace: String = ParkingSchemeConsts.EMPTY_STRING,
+    isCurrentUserReservedParkingPlace: Boolean = false,
     setParkingAddress: (address: String) -> Unit = { _ -> },
     navigateToSchemeScreen: () -> Unit = {},
     navigateToProfileScreen: () -> Unit = {}
@@ -109,12 +126,23 @@ fun MapScreenContent(
             dimensionResource(R.dimen.null_dp),
             dimensionResource(R.dimen.null_dp)
         ),
+        sheetElevation = dimensionResource(R.dimen.null_dp),
         scaffoldState = bottomSheetScaffoldState,
-        sheetBackgroundColor = MaterialTheme.colorScheme.background,
+        sheetBackgroundColor = when {
+            isCurrentUserReservedParkingPlace -> Color.Transparent
+            else -> MaterialTheme.colorScheme.background
+                                    },
         sheetContent = {
-            BottomScreen(
-                navigateToSchemeScreen = navigateToSchemeScreen
-            )
+            if (isCurrentUserReservedParkingPlace)
+                BottomTimerScreen(
+                    name = selectedParkingPlace,
+                    navigateToSchemeScreen = navigateToSchemeScreen
+                )
+            else {
+                BottomScreen(
+                    navigateToSchemeScreen = navigateToSchemeScreen
+                )
+            }
         },
         sheetPeekHeight = dimensionResource(R.dimen.null_dp)
     ) {

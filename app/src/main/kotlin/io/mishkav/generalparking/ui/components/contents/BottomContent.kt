@@ -64,7 +64,7 @@ fun BottomScreenContent(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 10.dp)
+            .padding(vertical = dimensionResource(R.dimen.standard_padding))
             .horizontalScroll(rememberScrollState())
     ) {
         SimpleIconTextButton(
