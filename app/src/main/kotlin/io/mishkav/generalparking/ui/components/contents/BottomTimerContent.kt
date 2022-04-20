@@ -1,11 +1,14 @@
 package io.mishkav.generalparking.ui.components.contents
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -31,10 +34,12 @@ import io.mishkav.generalparking.ui.components.buttons.SimpleIconTextButton
 import io.mishkav.generalparking.ui.components.texts.BottomBody
 import io.mishkav.generalparking.ui.components.texts.BottomTitle
 import io.mishkav.generalparking.ui.screens.map.MapViewModel
-import io.mishkav.generalparking.ui.theme.Gray500
-import io.mishkav.generalparking.ui.theme.Green600
-import io.mishkav.generalparking.ui.theme.Typography
+import io.mishkav.generalparking.ui.theme.*
 import kotlinx.coroutines.delay
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.Period
+import kotlin.math.abs
 
 @Composable
 fun BottomTimerScreen(
@@ -43,12 +48,12 @@ fun BottomTimerScreen(
 ) {
     val viewModel: MapViewModel = viewModel()
     val currentParkingAddress by viewModel.currentParkingAddress.collectAsState()
-    val reservedTime = 1800000 // in Millis
+    val period = 60 // in Minutes
 
     BottomTimerScreenContent(
         name = name,
         textAddress = currentParkingAddress,
-        reservedTime = reservedTime,
+        period = period,
         navigateToSchemeScreen = navigateToSchemeScreen
     )
 }
@@ -58,7 +63,7 @@ fun BottomTimerScreenContent(
     name: String = stringResource(R.string.zeros),
     textAddress: String = stringResource(R.string.bottom_title),
     textCost: String = stringResource(R.string.minute_cost),
-    reservedTime: Int = 1800000,
+    period: Int = 60,
     navigateToSchemeScreen: () -> Unit = {},
     modifier: Modifier = Modifier
 ) = Column(
@@ -76,7 +81,7 @@ fun BottomTimerScreenContent(
             .height(dimensionResource(R.dimen.timer_height))
     ) {
         TimerBar(
-            reservedTime = reservedTime
+            period = period
         )
     }
     Box(
@@ -157,20 +162,31 @@ fun BottomTimerScreenContent(
 
 @Composable
 fun TimerBar(
-    reservedTime: Int
+    period: Int
 ) {
+    //reservedTime is taken from DB
+    var reservedTime = LocalDateTime.of(2022,4,20,23,30)
+
+    reservedTime = reservedTime.plusMinutes(period.toLong())
+    var diffMin = Duration.between(LocalDateTime.now(), reservedTime).toMinutesPart()
+    var diffSec = abs(Duration.between(LocalDateTime.now(), reservedTime).toSecondsPart())
+
     var enabled by remember { mutableStateOf(true) }
-    var progress by remember { mutableStateOf(1f) }
-    var currTime by remember { mutableStateOf(reservedTime) }
+    var progress by remember { mutableStateOf((diffMin*60+diffSec).toFloat().div(period*60)) }
+    var currTime by remember { mutableStateOf("$diffMin:$diffSec") }
+
     val animatedProgress by animateFloatAsState(
         targetValue = progress
     )
 
     LaunchedEffect(enabled) {
-        while ((progress > 0) && enabled) {
-            progress -= 0.001f
-            currTime -= 1000
-            delay((reservedTime/1000).toLong())
+        while ((progress > 0) && enabled || diffMin>-60) {
+            diffMin = Duration.between(LocalDateTime.now(), reservedTime).toMinutesPart()
+            diffSec = abs(Duration.between(LocalDateTime.now(), reservedTime).toSecondsPart())
+            currTime = "$diffMin:$diffSec"
+            if (enabled)
+                progress = (diffMin*60+diffSec).toFloat().div(period*60)
+            delay((1000).toLong())
         }
     }
 
@@ -191,23 +207,31 @@ fun TimerBar(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = dimensionResource(R.dimen.standard_padding))
+            .padding(horizontal = dimensionResource(R.dimen.bottom_padding))
     ) {
         Text(
-            text = "Удержание брони:",
+            text = stringResource(R.string.reservation_retention),
             color = MaterialTheme.colorScheme.onPrimary,
             style = Typography.button
         )
-        Text(
-            text = "?",
-            color = MaterialTheme.colorScheme.onPrimary,
-            style = Typography.body1
-        )
-        Text(
-            text = "$currTime",
-            color = MaterialTheme.colorScheme.onPrimary,
-            style = Typography.body1
-        )
+        Box(
+            modifier = Modifier
+                .clip(
+                    RoundedCornerShape(
+                        dimensionResource(R.dimen.bottom_shape),
+                    )
+                )
+                .background(Gray200)
+        ) {
+            Text(
+                text = currTime,
+                color = generalParkingDarkBackground,
+                style = Typography.body1,
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(R.dimen.standard_padding))
+            )
+
+        }
     }
 }
 
