@@ -102,8 +102,6 @@ fun SchemeScreen(
         }
     }
 
-
-
     setParkingPlaceReservation.also { result ->
         when (result) {
             is ErrorResult -> onError(result.message!!)

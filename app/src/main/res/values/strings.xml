@@ -74,6 +74,7 @@
     <string name="repeat_request">Repeat request</string>
     <string name="on_error_def">An unexpected error occurred</string>
     <string name="reservation_retention">Reservation retention:</string>
+    <string name="paid_retention">Paid retention:</string>
 
 
 </resources>

@@ -3,6 +3,7 @@ package io.mishkav.generalparking.ui.components.contents
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -53,7 +55,7 @@ fun BottomTimerScreen(
     val viewModel: MapViewModel = viewModel()
     val currentParkingAddress by viewModel.currentParkingAddress.collectAsState()
     val timeReservationResult by viewModel.timeReservationResult.collectAsState()
-    val period = 60 // in Minutes
+    val bookingTimeResult by viewModel.bookingTimeResult.collectAsState()
 
     timeReservationResult.also { result ->
         when (result) {
@@ -63,12 +65,12 @@ fun BottomTimerScreen(
                 },
                 message = result.message ?: R.string.on_error_def,
                 navController = navController,
-                isTopAppBarAvailable = false
+                isTopAppBarAvailable = true
             )
             is SuccessResult -> BottomTimerScreenContent(
                 name = name,
                 textAddress = currentParkingAddress,
-                period = period,
+                period = bookingTimeResult.data ?: 60,
                 navigateToSchemeScreen = navigateToSchemeScreen,
                 timeReservationResult = timeReservationResult.data!!
             )
@@ -83,17 +85,42 @@ fun BottomTimerScreen(
         }
     }
 
+    bookingTimeResult.also { result ->
+        when (result) {
+            is ErrorResult -> OnErrorResult(
+                onClick = {
+                    viewModel.onOpen()
+                },
+                message = result.message ?: R.string.on_error_def,
+                navController = navController,
+                isTopAppBarAvailable = true
+            )
+            is SuccessResult -> {}
+            is LoadingResult -> {
+                Box(
+                    modifier = Modifier
+                        .alpha(0.5f)
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularLoader()
+                }
+            }
+        }
+    }
+
 }
 
 @Composable
 fun BottomTimerScreenContent(
+    modifier: Modifier = Modifier,
     name: String = stringResource(R.string.zeros),
     textAddress: String = stringResource(R.string.bottom_title),
     textCost: String = stringResource(R.string.minute_cost),
-    period: Int = 60,
+    period: Long,
     timeReservationResult: String,
-    navigateToSchemeScreen: () -> Unit = {},
-    modifier: Modifier = Modifier
+    navigateToSchemeScreen: () -> Unit = {}
 ) = Column(
     modifier = Modifier
         .fillMaxWidth()
@@ -191,19 +218,28 @@ fun BottomTimerScreenContent(
 
 @Composable
 fun TimerBar(
-    period: Int,
-    timeReservationResult: String
+    period: Long,
+    timeReservationResult: String,
+    darkTheme: Boolean = isSystemInDarkTheme()
 ) {
     //var timeReservation = LocalDateTime.of(2022,4,20,14,30)
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
     var timeReservation = LocalDateTime.parse(timeReservationResult, formatter)
 
-    timeReservation = timeReservation.plusMinutes(period.toLong())
-    var diffMin = Duration.between(LocalDateTime.now(), timeReservation).toMinutesPart()
+    timeReservation = timeReservation.plusMinutes(period)
+    var diffMin = abs(Duration.between(LocalDateTime.now(), timeReservation).toMinutesPart())
     var diffSec = abs(Duration.between(LocalDateTime.now(), timeReservation).toSecondsPart())
 
     var enabled by remember { mutableStateOf(true) }
-    var progress by remember { mutableStateOf((diffMin*60+diffSec).toFloat().div(period*60)) }
+    var progress by remember {
+        mutableStateOf(
+            (diffMin * 60 + diffSec).toFloat().div(period.toInt() * 60)
+        )
+    }
+    if (Duration.between(LocalDateTime.now(), timeReservation).isNegative) {
+        enabled = false
+        progress = 0f
+    }
     var currTime by remember { mutableStateOf(String.format("%02d:%02d", diffMin, diffSec)) }
 
     val animatedProgress by animateFloatAsState(
@@ -211,17 +247,17 @@ fun TimerBar(
     )
 
     LaunchedEffect(enabled) {
-        while ((progress > 0) && enabled || diffMin>-60) {
-            diffMin = Duration.between(LocalDateTime.now(), timeReservation).toMinutesPart()
+        while (!(Duration.between(LocalDateTime.now(), timeReservation).isNegative) && enabled || (Duration.between(LocalDateTime.now(), timeReservation).toMinutesPart() > -60)) {
+            diffMin = abs(Duration.between(LocalDateTime.now(), timeReservation).toMinutesPart())
             diffSec = abs(Duration.between(LocalDateTime.now(), timeReservation).toSecondsPart())
             currTime = String.format("%02d:%02d", diffMin, diffSec)
             if (enabled)
-                progress = (diffMin*60+diffSec).toFloat().div(period*60)
+                progress = (diffMin * 60 + diffSec).toFloat().div(period.toInt() * 60)
             delay((1000).toLong())
         }
     }
 
-    if (progress <= 0f) {
+    if (Duration.between(LocalDateTime.now(), timeReservation).isNegative) {
         enabled = false
     }
 
@@ -229,7 +265,11 @@ fun TimerBar(
         modifier = Modifier
             .fillMaxSize(),
         progress = animatedProgress,
-        backgroundColor = MaterialTheme.colorScheme.background,
+        backgroundColor = when {
+            !enabled && darkTheme -> Orange400
+            !enabled && !darkTheme -> Gray400
+            else -> MaterialTheme.colorScheme.background
+        },
         color = Green600
     )
 
@@ -241,8 +281,14 @@ fun TimerBar(
             .padding(horizontal = dimensionResource(R.dimen.bottom_padding))
     ) {
         Text(
-            text = stringResource(R.string.reservation_retention),
-            color = MaterialTheme.colorScheme.onPrimary,
+            text = when {
+                enabled -> stringResource(R.string.reservation_retention)
+                else -> stringResource(R.string.paid_retention)
+            },
+            color = when {
+                enabled -> MaterialTheme.colorScheme.onPrimary
+                else -> generalParkingLightBackground
+            },
             style = Typography.button
         )
         Box(
@@ -271,6 +317,7 @@ fun TimerBar(
 fun PreviewBottomTimerScreen() {
     BottomTimerScreenContent(
         navigateToSchemeScreen = {},
-        timeReservationResult = ""
+        timeReservationResult = "",
+        period = 60
     )
 }
