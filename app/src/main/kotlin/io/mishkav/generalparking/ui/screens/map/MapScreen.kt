@@ -79,6 +79,7 @@ fun MapScreen(
                         parkingCoordinates = parkingCoordinates.data ?: emptyMap(),
                         selectedParkingPlace = selectedParkingPlace,
                         isCurrentUserReservedParkingPlace = isCurrentUserReservedParkingPlace,
+                        navController = navController,
                         setParkingAddress = viewModel::setCurrentParkingAddress,
                         navigateToSchemeScreen = {
                             navController.navigate(Routes.scheme)
@@ -107,6 +108,7 @@ fun MapScreenContent(
     parkingCoordinates: Map<Pair<Double, Double>, String> = emptyMap(),
     selectedParkingPlace: String = ParkingSchemeConsts.EMPTY_STRING,
     isCurrentUserReservedParkingPlace: Boolean = false,
+    navController: NavHostController,
     setParkingAddress: (address: String) -> Unit = { _ -> },
     navigateToSchemeScreen: () -> Unit = {},
     navigateToProfileScreen: () -> Unit = {}
@@ -136,6 +138,7 @@ fun MapScreenContent(
             if (isCurrentUserReservedParkingPlace)
                 BottomTimerScreen(
                     name = selectedParkingPlace,
+                    navController = navController,
                     navigateToSchemeScreen = navigateToSchemeScreen
                 )
             else {

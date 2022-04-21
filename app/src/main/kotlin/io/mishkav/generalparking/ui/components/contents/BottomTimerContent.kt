@@ -1,14 +1,11 @@
 package io.mishkav.generalparking.ui.components.contents
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -27,35 +24,65 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.buttons.IconTextButton
 import io.mishkav.generalparking.ui.components.buttons.SimpleIconButton
 import io.mishkav.generalparking.ui.components.buttons.SimpleIconTextButton
+import io.mishkav.generalparking.ui.components.errors.OnErrorResult
+import io.mishkav.generalparking.ui.components.loaders.CircularLoader
 import io.mishkav.generalparking.ui.components.texts.BottomBody
 import io.mishkav.generalparking.ui.components.texts.BottomTitle
 import io.mishkav.generalparking.ui.screens.map.MapViewModel
 import io.mishkav.generalparking.ui.theme.*
+import io.mishkav.generalparking.ui.utils.ErrorResult
+import io.mishkav.generalparking.ui.utils.LoadingResult
+import io.mishkav.generalparking.ui.utils.SuccessResult
 import kotlinx.coroutines.delay
 import java.time.Duration
 import java.time.LocalDateTime
-import java.time.Period
+import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
 @Composable
 fun BottomTimerScreen(
     name: String,
+    navController: NavHostController,
     navigateToSchemeScreen: () -> Unit
 ) {
     val viewModel: MapViewModel = viewModel()
     val currentParkingAddress by viewModel.currentParkingAddress.collectAsState()
+    val timeReservationResult by viewModel.timeReservationResult.collectAsState()
     val period = 60 // in Minutes
 
-    BottomTimerScreenContent(
-        name = name,
-        textAddress = currentParkingAddress,
-        period = period,
-        navigateToSchemeScreen = navigateToSchemeScreen
-    )
+    timeReservationResult.also { result ->
+        when (result) {
+            is ErrorResult -> OnErrorResult(
+                onClick = {
+                    viewModel.onOpen()
+                },
+                message = result.message ?: R.string.on_error_def,
+                navController = navController,
+                isTopAppBarAvailable = false
+            )
+            is SuccessResult -> BottomTimerScreenContent(
+                name = name,
+                textAddress = currentParkingAddress,
+                period = period,
+                navigateToSchemeScreen = navigateToSchemeScreen,
+                timeReservationResult = timeReservationResult.data!!
+            )
+            is LoadingResult -> Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularLoader()
+            }
+        }
+    }
+
 }
 
 @Composable
@@ -64,6 +91,7 @@ fun BottomTimerScreenContent(
     textAddress: String = stringResource(R.string.bottom_title),
     textCost: String = stringResource(R.string.minute_cost),
     period: Int = 60,
+    timeReservationResult: String,
     navigateToSchemeScreen: () -> Unit = {},
     modifier: Modifier = Modifier
 ) = Column(
@@ -81,7 +109,8 @@ fun BottomTimerScreenContent(
             .height(dimensionResource(R.dimen.timer_height))
     ) {
         TimerBar(
-            period = period
+            period = period,
+            timeReservationResult = timeReservationResult
         )
     }
     Box(
@@ -162,18 +191,20 @@ fun BottomTimerScreenContent(
 
 @Composable
 fun TimerBar(
-    period: Int
+    period: Int,
+    timeReservationResult: String
 ) {
-    //reservedTime is taken from DB
-    var reservedTime = LocalDateTime.of(2022,4,20,23,30)
+    //var timeReservation = LocalDateTime.of(2022,4,20,14,30)
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
+    var timeReservation = LocalDateTime.parse(timeReservationResult, formatter)
 
-    reservedTime = reservedTime.plusMinutes(period.toLong())
-    var diffMin = Duration.between(LocalDateTime.now(), reservedTime).toMinutesPart()
-    var diffSec = abs(Duration.between(LocalDateTime.now(), reservedTime).toSecondsPart())
+    timeReservation = timeReservation.plusMinutes(period.toLong())
+    var diffMin = Duration.between(LocalDateTime.now(), timeReservation).toMinutesPart()
+    var diffSec = abs(Duration.between(LocalDateTime.now(), timeReservation).toSecondsPart())
 
     var enabled by remember { mutableStateOf(true) }
     var progress by remember { mutableStateOf((diffMin*60+diffSec).toFloat().div(period*60)) }
-    var currTime by remember { mutableStateOf("$diffMin:$diffSec") }
+    var currTime by remember { mutableStateOf(String.format("%02d:%02d", diffMin, diffSec)) }
 
     val animatedProgress by animateFloatAsState(
         targetValue = progress
@@ -181,9 +212,9 @@ fun TimerBar(
 
     LaunchedEffect(enabled) {
         while ((progress > 0) && enabled || diffMin>-60) {
-            diffMin = Duration.between(LocalDateTime.now(), reservedTime).toMinutesPart()
-            diffSec = abs(Duration.between(LocalDateTime.now(), reservedTime).toSecondsPart())
-            currTime = "$diffMin:$diffSec"
+            diffMin = Duration.between(LocalDateTime.now(), timeReservation).toMinutesPart()
+            diffSec = abs(Duration.between(LocalDateTime.now(), timeReservation).toSecondsPart())
+            currTime = String.format("%02d:%02d", diffMin, diffSec)
             if (enabled)
                 progress = (diffMin*60+diffSec).toFloat().div(period*60)
             delay((1000).toLong())
@@ -238,5 +269,8 @@ fun TimerBar(
 @Preview(showBackground = true)
 @Composable
 fun PreviewBottomTimerScreen() {
-    BottomTimerScreenContent(navigateToSchemeScreen = {})
+    BottomTimerScreenContent(
+        navigateToSchemeScreen = {},
+        timeReservationResult = ""
+    )
 }

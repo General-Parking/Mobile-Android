@@ -176,6 +176,14 @@ class MapDatabaseRepository @Inject constructor(
             .getValue() as String
     }
 
+    override suspend fun getTimeReservation(): String {
+        return firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/time_reservation")
+            .get()
+            .await()
+            .getValue() as String
+    }
+
     companion object {
         private const val PATH_TO_PARKING_COORDINATES = "parking/coordinates_address"
         private const val PATH_TO_WIDTH = "m"

@@ -19,4 +19,5 @@ interface IMapDatabaseRepository {
         placeCoordinates: String
     )
     suspend fun getAutoNumber(): String
+    suspend fun getTimeReservation(): String
 }
