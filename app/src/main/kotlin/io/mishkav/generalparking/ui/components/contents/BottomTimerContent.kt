@@ -227,6 +227,7 @@ fun TimerBar(
     var timeReservation = LocalDateTime.parse(timeReservationResult, formatter)
 
     timeReservation = timeReservation.plusMinutes(period)
+    var diffH = abs(Duration.between(LocalDateTime.now(), timeReservation).toHoursPart())
     var diffMin = abs(Duration.between(LocalDateTime.now(), timeReservation).toMinutesPart())
     var diffSec = abs(Duration.between(LocalDateTime.now(), timeReservation).toSecondsPart())
 
@@ -240,7 +241,12 @@ fun TimerBar(
         enabled = false
         progress = 0f
     }
-    var currTime by remember { mutableStateOf(String.format("%02d:%02d", diffMin, diffSec)) }
+    var currTime by remember { mutableStateOf(
+        when (diffH) {
+            0 -> String.format("%02d:%02d", diffMin, diffSec)
+            else -> String.format("%02d:%02d:%02d", diffH, diffMin, diffSec)
+        }
+    ) }
 
     val animatedProgress by animateFloatAsState(
         targetValue = progress
@@ -248,9 +254,13 @@ fun TimerBar(
 
     LaunchedEffect(enabled) {
         while (!(Duration.between(LocalDateTime.now(), timeReservation).isNegative) && enabled || (Duration.between(LocalDateTime.now(), timeReservation).toMinutesPart() > -60)) {
+            diffH = abs(Duration.between(LocalDateTime.now(), timeReservation).toHoursPart())
             diffMin = abs(Duration.between(LocalDateTime.now(), timeReservation).toMinutesPart())
             diffSec = abs(Duration.between(LocalDateTime.now(), timeReservation).toSecondsPart())
-            currTime = String.format("%02d:%02d", diffMin, diffSec)
+            currTime = when (diffH) {
+                0 -> String.format("%02d:%02d", diffMin, diffSec)
+                else -> String.format("%02d:%02d:%02d", diffH, diffMin, diffSec)
+            }
             if (enabled)
                 progress = (diffMin * 60 + diffSec).toFloat().div(period.toInt() * 60)
             delay((1000).toLong())
