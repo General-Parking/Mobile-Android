@@ -56,6 +56,7 @@ fun BottomTimerScreen(
     val currentParkingAddress by viewModel.currentParkingAddress.collectAsState()
     val timeReservationResult by viewModel.timeReservationResult.collectAsState()
     val bookingTimeResult by viewModel.bookingTimeResult.collectAsState()
+    val timeArriveResult by viewModel.timeArriveResult.collectAsState()
 
     timeReservationResult.also { result ->
         when (result) {
@@ -71,6 +72,7 @@ fun BottomTimerScreen(
                 name = name,
                 textAddress = currentParkingAddress,
                 period = bookingTimeResult.data ?: 60,
+                timeArriveResult = timeArriveResult.data!!,
                 navigateToSchemeScreen = navigateToSchemeScreen,
                 timeReservationResult = timeReservationResult.data!!
             )
@@ -110,6 +112,31 @@ fun BottomTimerScreen(
         }
     }
 
+    timeArriveResult.also { result ->
+        when (result) {
+            is ErrorResult -> OnErrorResult(
+                onClick = {
+                    viewModel.onOpen()
+                },
+                message = result.message ?: R.string.on_error_def,
+                navController = navController,
+                isTopAppBarAvailable = true
+            )
+            is SuccessResult -> {}
+            is LoadingResult -> {
+                Box(
+                    modifier = Modifier
+                        .alpha(0.5f)
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularLoader()
+                }
+            }
+        }
+    }
+
 }
 
 @Composable
@@ -119,6 +146,7 @@ fun BottomTimerScreenContent(
     textAddress: String = stringResource(R.string.bottom_title),
     textCost: String = stringResource(R.string.minute_cost),
     period: Long,
+    timeArriveResult: String,
     timeReservationResult: String,
     navigateToSchemeScreen: () -> Unit = {}
 ) = Column(
@@ -163,6 +191,10 @@ fun BottomTimerScreenContent(
         ) {
             BottomTitle(
                 text = textAddress
+            )
+
+            BottomTitle(
+                text = timeArriveResult
             )
 
             BottomBody(
@@ -328,6 +360,7 @@ fun PreviewBottomTimerScreen() {
     BottomTimerScreenContent(
         navigateToSchemeScreen = {},
         timeReservationResult = "",
+        timeArriveResult = "",
         period = 60
     )
 }

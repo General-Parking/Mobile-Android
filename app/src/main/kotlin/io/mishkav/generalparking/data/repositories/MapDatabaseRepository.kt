@@ -1,7 +1,14 @@
 package io.mishkav.generalparking.data.repositories
 
+import android.content.ContentValues.TAG
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import io.mishkav.generalparking.data.exceptions.PlaceNotReservatedException
 import io.mishkav.generalparking.data.exceptions.PlaceReservationException
 import io.mishkav.generalparking.domain.entities.ParkingPlace
@@ -12,6 +19,11 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.suspendCancellableCoroutine
+import timber.log.Timber
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class MapDatabaseRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
@@ -190,6 +202,30 @@ class MapDatabaseRepository @Inject constructor(
             .get()
             .await()
             .getValue() as Long
+    }
+
+    class TimeArrive {
+        var time by mutableStateOf("")
+    }
+
+    override suspend fun getTimeArrive(): String {
+        val timeArrive = TimeArrive()
+
+        timeArrive.time = suspendCancellableCoroutine { continuation ->
+            firebaseDatabase
+                .child("users/${firebaseAuth.currentUser?.uid}/time_arrive")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        continuation.resume(dataSnapshot.getValue() as String)
+                        Timber.tag(TAG).i(timeArrive.time)
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Timber.tag(TAG).w(error.toException(), "loadPost:onCancelled")
+                    }
+                })
+        }
+        return timeArrive.time
     }
 
     companion object {

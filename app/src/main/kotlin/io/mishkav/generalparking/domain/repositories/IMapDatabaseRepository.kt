@@ -21,4 +21,5 @@ interface IMapDatabaseRepository {
     suspend fun getAutoNumber(): String
     suspend fun getTimeReservation(): String
     suspend fun getBookingTime(): Long
+    suspend fun getTimeArrive(): String
 }

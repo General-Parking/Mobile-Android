@@ -23,6 +23,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     val autoNumberResult =  MutableResultFlow<Unit>()
     val timeReservationResult =  MutableResultFlow<String>()
     val bookingTimeResult =  MutableResultFlow<Long>()
+    val timeArriveResult =  MutableResultFlow<String>()
     val currentParkingAddress by lazy { session.currentParkingAddress }
 
     init {
@@ -34,6 +35,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
         setAutoNumber()
         getTimeReservation()
         getBookingTime()
+        getTimeArrive()
     }
 
     fun setCurrentParkingAddress(address: String) {
@@ -56,6 +58,12 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     fun getBookingTime() = viewModelScope.launch {
         bookingTimeResult.loadOrError {
             mapDatabaseRepository.getBookingTime()
+        }
+    }
+
+    fun getTimeArrive() = viewModelScope.launch {
+        timeArriveResult.loadOrError {
+            mapDatabaseRepository.getTimeArrive()
         }
     }
 
