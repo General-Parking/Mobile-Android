@@ -21,6 +21,7 @@ fun IconTextButton(
     icon: ImageVector,
     text: String,
     color: Color,
+    tint: Color = generalParkingLightBackground,
     onClick: () -> Unit
 ) = Button(
     onClick = onClick,
@@ -33,11 +34,11 @@ fun IconTextButton(
     Icon(
         imageVector = icon,
         contentDescription = stringResource(R.string.space),
-        tint = generalParkingLightBackground
+        tint = tint
     )
     Text(
         text = text,
-        color = generalParkingLightBackground,
+        color = tint,
         style = Typography.button
     )
 

@@ -1,7 +1,6 @@
 package io.mishkav.generalparking.data.repositories
 
 import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import com.google.firebase.auth.FirebaseAuth
@@ -20,12 +19,16 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 import androidx.compose.runtime.setValue
+import io.mishkav.generalparking.state.Session
 import timber.log.Timber
 
 class MapDatabaseRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val firebaseDatabase: DatabaseReference
 ) : IMapDatabaseRepository {
+
+    @Inject
+    lateinit var session: Session
 
     override suspend fun getParkingCoordinates(): Map<String, String> {
         return firebaseDatabase
@@ -208,19 +211,56 @@ class MapDatabaseRepository @Inject constructor(
     override suspend fun getTimeArrive(): String {
         val timeArrive = TimeArrive()
 
-            firebaseDatabase
-                .child("users/${firebaseAuth.currentUser?.uid}/time_arrive")
-                .addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        timeArrive.time = dataSnapshot.getValue() as String
-                        Timber.tag(TAG).i(timeArrive.time)
-                    }
+        firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/time_arrive")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    timeArrive.time = dataSnapshot.getValue() as String
+                    Timber.tag(TAG).i(timeArrive.time)
+                    if (timeArrive.time != "")
+                        session.changeUserState("arrived")
+                    else
+                        session.changeUserState("")
+                }
 
-                    override fun onCancelled(error: DatabaseError) {
-                        Timber.tag(TAG).w(error.toException(), "loadPost:onCancelled")
-                    }
-                })
+                override fun onCancelled(error: DatabaseError) {
+                    Timber.tag(TAG).w(error.toException(), "loadPost:onCancelled")
+                }
+            })
         return timeArrive.time
+    }
+
+    class IsArrived {
+        var time by mutableStateOf("")
+    }
+
+    override suspend fun getIsArrived(): String {
+        val isArrived = IsArrived()
+
+        firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/arrive")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    isArrived.time = dataSnapshot.getValue() as String
+                    Timber.tag(TAG).i(isArrived.time)
+                    if (isArrived.time != "")
+                        session.changeIsArrived("arrived")
+                    else
+                        session.changeIsArrived("")
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Timber.tag(TAG).w(error.toException(), "loadPost:onCancelled")
+                }
+            })
+        return isArrived.time
+    }
+
+    override suspend fun resetIsArrived() {
+        firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/arrive")
+            .setValue(EMPTY_STRING)
+            .await()
     }
 
     companion object {

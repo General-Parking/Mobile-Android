@@ -24,6 +24,12 @@ class Session(context: Context) {
     private val _isCurrentUserReservedParkingPlace = MutableStateFlow(sharedPreferences.getBoolean(PREF_IS_CURRENT_USER_RESERVED_PLACE, false))
     val isCurrentUserReservedParkingPlace: StateFlow<Boolean> = _isCurrentUserReservedParkingPlace
 
+    private val _userState = MutableStateFlow(sharedPreferences.getString(PREF_USER_STATE, "").orEmpty())
+    val userState: StateFlow<String> = _userState
+
+    private val _isArrived = MutableStateFlow(sharedPreferences.getString(PREF_IS_ARRIVED, "").orEmpty())
+    val isArrived: StateFlow<String> = _isArrived
+
     fun changeCurrentParkingAddress(address: String) {
         sharedPreferences.edit { putString(PREF_CURRENT_PARKING_ADDRESS, address) }
         _currentParkingAddress.value = address
@@ -50,12 +56,24 @@ class Session(context: Context) {
         _isCurrentUserReservedParkingPlace.value = isReserved
     }
 
+    fun changeUserState(state: String) {
+        sharedPreferences.edit { putString(PREF_USER_STATE, state) }
+        _userState.value = state
+    }
+
+    fun changeIsArrived(isArrived: String) {
+        sharedPreferences.edit { putString(PREF_USER_STATE, isArrived) }
+        _isArrived.value = isArrived
+    }
+
     companion object {
         const val PREF_CURRENT_PARKING_ADDRESS = "currentParkingAddress"
         const val PREF_AUTO_NUMBER = "autoNumber"
         const val PREF_SELECTED_PARKING_PLACE = "selectedParkingPlace"
         const val PREF_SELECTED_PARKING_COORDINATES = "selectedParkingPlaceCoordinates"
         const val PREF_IS_CURRENT_USER_RESERVED_PLACE = "isCurrentUserReservedParkingPlace"
+        const val PREF_USER_STATE = "userState"
+        const val PREF_IS_ARRIVED = "isArrived"
 
         const val AGREEMENT_URI = "https://www.genparking.com/пользовательское-соглашение"
         const val PREF_NAME = "session"

@@ -3,8 +3,6 @@ package io.mishkav.generalparking.ui.screens.map
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -13,11 +11,10 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -35,6 +32,8 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import io.mishkav.generalparking.ui.components.contents.*
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
 import io.mishkav.generalparking.ui.components.errors.OnErrorResult
+import io.mishkav.generalparking.ui.components.texts.ScreenBody
+import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.screens.scheme.SchemeViewModel
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts
 import io.mishkav.generalparking.ui.theme.Shapes
@@ -51,9 +50,12 @@ fun MapScreen(
     val viewModel: MapViewModel = viewModel()
     val parkingCoordinates by viewModel.parkingCoordinatesResult.collectAsState()
     val autoNumber by viewModel.autoNumberResult.collectAsState()
+    val userState by viewModel.userState.collectAsState()
+
+    val isArrived by viewModel.isArrived.collectAsState()
+    val isArrivedResult by viewModel.isArrivedResult.collectAsState()
 
     val schemeViewModel: SchemeViewModel = viewModel()
-    val isCurrentUserReservedParkingPlace by schemeViewModel.isCurrentUserReservedParkingPlace.collectAsState()
     val selectedParkingPlace by schemeViewModel.selectedParkingPlace.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -78,7 +80,7 @@ fun MapScreen(
                     MapScreenContent(
                         parkingCoordinates = parkingCoordinates.data ?: emptyMap(),
                         selectedParkingPlace = selectedParkingPlace,
-                        isCurrentUserReservedParkingPlace = isCurrentUserReservedParkingPlace,
+                        userState = userState,
                         navController = navController,
                         setParkingAddress = viewModel::setCurrentParkingAddress,
                         navigateToSchemeScreen = {
@@ -100,6 +102,61 @@ fun MapScreen(
             }
         }
     }
+
+    isArrivedResult.also { result ->
+        when (result) {
+            is ErrorResult -> OnErrorResult(
+                onClick = {
+                    viewModel.onOpen()
+                },
+                message = result.message ?: R.string.on_error_def,
+                navController = navController,
+                isTopAppBarAvailable = false
+            )
+            is SuccessResult ->
+                if (isArrived == "arrived")
+                    AlertDialog(
+                        onDismissRequest = {},
+                        text = {
+                            Column {
+                                ScreenTitle(
+                                    text = stringResource(R.string.arrive_title)
+                                )
+                                ScreenBody(
+                                    text = stringResource(R.string.arrive_body)
+                                )
+                            }
+                        },
+                        backgroundColor = MaterialTheme.colorScheme.background,
+                        buttons = {
+                            Row(
+                                modifier = Modifier.padding(all = 8.dp),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Button(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onClick = {
+                                        viewModel.resetIsArrived()
+                                        navController.navigate(Routes.map)
+                                    }
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.continue_text)
+                                    )
+                                }
+                            }
+                        }
+                    )
+            is LoadingResult -> Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularLoader()
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -107,7 +164,7 @@ fun MapScreen(
 fun MapScreenContent(
     parkingCoordinates: Map<Pair<Double, Double>, String> = emptyMap(),
     selectedParkingPlace: String = ParkingSchemeConsts.EMPTY_STRING,
-    isCurrentUserReservedParkingPlace: Boolean = false,
+    userState: String = "",
     navController: NavHostController,
     setParkingAddress: (address: String) -> Unit = { _ -> },
     navigateToSchemeScreen: () -> Unit = {},
@@ -130,21 +187,27 @@ fun MapScreenContent(
         ),
         sheetElevation = dimensionResource(R.dimen.null_dp),
         scaffoldState = bottomSheetScaffoldState,
-        sheetBackgroundColor = when {
-            isCurrentUserReservedParkingPlace -> Color.Transparent
+        sheetBackgroundColor = when (userState) {
+            "reserved" -> Color.Transparent
             else -> MaterialTheme.colorScheme.background
-                                    },
+        },
         sheetContent = {
-            if (isCurrentUserReservedParkingPlace)
-                BottomTimerScreen(
+            when (userState) {
+                "reserved" -> BottomTimerScreen(
                     name = selectedParkingPlace,
                     navController = navController,
                     navigateToSchemeScreen = navigateToSchemeScreen
                 )
-            else {
-                BottomScreen(
+                "arrived" -> BottomOnParkingScreen(
+                    name = selectedParkingPlace,
+                    navController = navController,
                     navigateToSchemeScreen = navigateToSchemeScreen
                 )
+                else -> {
+                    BottomScreen(
+                        navigateToSchemeScreen = navigateToSchemeScreen
+                    )
+                }
             }
         },
         sheetPeekHeight = dimensionResource(R.dimen.null_dp)

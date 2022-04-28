@@ -100,6 +100,7 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
             session.changeSelectedParkingPlaceCoordinates(selectedParkingPlaceCoordinates.value)
             session.changeIsCurrentUserReservedParkingPlace(true)
             onOpen()
+            session.changeUserState("reserved")
             isCurrentUserReservedParkingPlace.value = true
         }
     }
@@ -115,6 +116,7 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
                 placeCoordinates = selectedParkingPlaceCoordinates.value
             )
 
+            session.changeUserState("")
             session.changeSelectedParkingPlace(ParkingSchemeConsts.EMPTY_STRING)
             session.changeSelectedParkingPlaceCoordinates(ParkingSchemeConsts.EMPTY_STRING)
             session.changeIsCurrentUserReservedParkingPlace(false)

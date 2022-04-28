@@ -75,6 +75,10 @@
     <string name="on_error_def">An unexpected error occurred</string>
     <string name="reservation_retention">Reservation retention:</string>
     <string name="paid_retention">Paid retention:</string>
+    <string name="arrive_title">Welcome!</string>
+    <string name="arrive_body">You have arrived at General Parking</string>
+    <string name="scheme">Scheme</string>
+    <string name="time_on_parking">Time on parking:</string>
 
 
 </resources>

@@ -74,5 +74,9 @@
     <string name="on_error_def">Произошла непредвиденная ошибка</string>
     <string name="reservation_retention">Удержание брони:</string>
     <string name="paid_retention">Платное удержание:</string>
+    <string name="arrive_title">Добро пожаловать!</string>
+    <string name="arrive_body">Вы приехали на парковку General Parking</string>
+    <string name="scheme">Схема</string>
+    <string name="time_on_parking">Время на паркинге:</string>
 
 </resources>

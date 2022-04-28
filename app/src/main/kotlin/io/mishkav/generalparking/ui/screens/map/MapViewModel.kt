@@ -20,11 +20,14 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     lateinit var session: Session
 
     val parkingCoordinatesResult = MutableResultFlow<Map<Pair<Double, Double>, String>>()
-    val autoNumberResult =  MutableResultFlow<Unit>()
-    val timeReservationResult =  MutableResultFlow<String>()
-    val bookingTimeResult =  MutableResultFlow<Long>()
-    val timeArriveResult =  MutableResultFlow<String>()
+    val autoNumberResult = MutableResultFlow<Unit>()
+    val timeReservationResult = MutableResultFlow<String>()
+    val bookingTimeResult = MutableResultFlow<Long>()
+    val timeArriveResult = MutableResultFlow<String>()
+    val isArrivedResult = MutableResultFlow<String>()
     val currentParkingAddress by lazy { session.currentParkingAddress }
+    val userState by lazy { session.userState }
+    val isArrived by lazy { session.isArrived }
 
     init {
         appComponent.inject(this)
@@ -33,9 +36,10 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     fun onOpen() {
         getParkingCoordinates()
         setAutoNumber()
-        getTimeReservation()
         getBookingTime()
         getTimeArrive()
+        getIsArrived()
+        getTimeReservation()
     }
 
     fun setCurrentParkingAddress(address: String) {
@@ -53,6 +57,8 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
         timeReservationResult.loadOrError {
             mapDatabaseRepository.getTimeReservation()
         }
+        if (timeReservationResult.value.data == "")
+            session.changeUserState("")
     }
 
     fun getBookingTime() = viewModelScope.launch {
@@ -65,6 +71,18 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
         timeArriveResult.loadOrError {
             mapDatabaseRepository.getTimeArrive()
         }
+        if (timeArriveResult.value.data == "")
+            session.changeUserState("")
+    }
+
+    fun getIsArrived() = viewModelScope.launch {
+        isArrivedResult.loadOrError {
+            mapDatabaseRepository.getIsArrived()
+        }
+    }
+
+    fun resetIsArrived() = viewModelScope.launch {
+        mapDatabaseRepository.resetIsArrived()
     }
 
     fun getParkingCoordinates() = viewModelScope.launch {
