@@ -20,10 +20,7 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.suspendCancellableCoroutine
 import timber.log.Timber
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class MapDatabaseRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
@@ -211,12 +208,11 @@ class MapDatabaseRepository @Inject constructor(
     override suspend fun getTimeArrive(): String {
         val timeArrive = TimeArrive()
 
-        timeArrive.time = suspendCancellableCoroutine { continuation ->
             firebaseDatabase
                 .child("users/${firebaseAuth.currentUser?.uid}/time_arrive")
                 .addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        continuation.resume(dataSnapshot.getValue() as String)
+                        timeArrive.time = dataSnapshot.getValue() as String
                         Timber.tag(TAG).i(timeArrive.time)
                     }
 
@@ -224,7 +220,6 @@ class MapDatabaseRepository @Inject constructor(
                         Timber.tag(TAG).w(error.toException(), "loadPost:onCancelled")
                     }
                 })
-        }
         return timeArrive.time
     }
 
