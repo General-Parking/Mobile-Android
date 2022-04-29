@@ -31,7 +31,7 @@ import io.mishkav.generalparking.ui.components.topAppBar.TopAppBarWithBackButton
 import io.mishkav.generalparking.ui.components.zoomable.Zoomable
 import io.mishkav.generalparking.ui.components.zoomable.rememberZoomableState
 import io.mishkav.generalparking.ui.screens.scheme.components.EmptyLotTile
-import io.mishkav.generalparking.ui.screens.scheme.components.NotSelectedState
+import io.mishkav.generalparking.ui.screens.scheme.components.NotSelectedPlaceState
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingLotTile
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingPlaceStateColor
 import io.mishkav.generalparking.ui.screens.scheme.components.SchemeState
@@ -155,22 +155,32 @@ fun SchemeScreenContent(
         parkingState = parkingState,
         onParkingPlaceClick = onParkingPlaceClick
     )
+
+    // TODO Доделать выезжающий bottom bar (чтобы был swipe) - https://github.com/egorikftp/compose-animated-bottomsheet
+    // when (parkingState) {
+    //     is NotSelectedPlaceState -> UnselectedSchemeContent()
+    //     is SelectedPlace -> SelectedSchemeContent(
+    //         name = parkingState.name
+    //     )
+    // }
 }
 
 private fun getBackgroundColor(
     state: SchemeState,
-    coordinates: String
-): Color = if (state.coordinates == coordinates)
-    state.colorState.color
-else
-    ParkingPlaceStateColor.NOT_SELECTED.color
+    coordinates: String,
+    placeSelected: Int
+): Color =  when{
+    state.coordinates == coordinates -> state.colorState.color
+    placeSelected == 1 -> ParkingPlaceStateColor.RESERVED_BY_OTHER_USERS.color
+    else -> ParkingPlaceStateColor.NOT_SELECTED.color
+}
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalPagerApi::class)
 @Composable
 fun DrawScheme(
     parkingScheme: ParkingScheme,
     parkingState: SchemeState,
-    onParkingPlaceClick: (state: SchemeState) -> Unit = { _ -> },
+    onParkingPlaceClick: (state: SchemeState) -> Unit = { _ -> }
 ) {
     LazyColumn {
         item {
@@ -196,15 +206,18 @@ fun DrawScheme(
                                 val currentPlace = parkingScheme.places[coordinates]
                                 when (currentPlace) {
                                     null -> EmptyLotTile(
-                                        modifier = Modifier.weight(1f)
+                                        modifier = Modifier
+                                            // .aspectRatio(1f)
+                                            .weight(1f)
                                     )
                                     else -> ParkingLotTile(
                                         modifier = Modifier
+                                            // .aspectRatio(1f)
                                             .weight(1f)
                                             .padding(1.dp),
                                         parkingPlace = currentPlace,
                                         coordinates = "${height}_${width}",
-                                        background = getBackgroundColor(parkingState, coordinates),
+                                        background = getBackgroundColor(parkingState, coordinates, currentPlace.value),
                                         onClick = onParkingPlaceClick
                                     )
                                 }
@@ -224,7 +237,7 @@ fun PreviewSchemeScreen() {
     GeneralParkingTheme {
         SchemeScreenContent(
             parking = mapOf("0" to ParkingScheme.getInstance()),
-            parkingState = NotSelectedState()
+            parkingState = NotSelectedPlaceState()
         )
     }
 }

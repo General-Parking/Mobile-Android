@@ -34,7 +34,7 @@ class Session(context: Context) {
         _autoNumber.value = autoNumber
     }
 
-    // Set reserved place
+    // Set reserved name
     fun changeSelectedParkingPlace(namePlace: String) {
         sharedPreferences.edit { putString(PREF_SELECTED_PARKING_PLACE, namePlace) }
         _selectedParkingPlace.value = namePlace

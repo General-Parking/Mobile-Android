@@ -10,9 +10,9 @@ import io.mishkav.generalparking.domain.entities.User
 import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
 import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import io.mishkav.generalparking.state.Session
-import io.mishkav.generalparking.ui.screens.scheme.components.NotSelectedState
+import io.mishkav.generalparking.ui.screens.scheme.components.NotSelectedPlaceState
 import io.mishkav.generalparking.ui.screens.scheme.components.SchemeState
-import io.mishkav.generalparking.ui.screens.scheme.components.SelectedPlace
+import io.mishkav.generalparking.ui.screens.scheme.components.SelectedPlaceState
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
 import io.mishkav.generalparking.ui.utils.loadOrError
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,17 +47,17 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
     val isCurrentUserReservedParkingPlace = MutableStateFlow(false)
 
     val currentUser = MutableResultFlow<User>()
-
-    //
-
-    val parkingSchemeState: MutableStateFlow<SchemeState> = MutableStateFlow(NotSelectedState())
+    val parkingSchemeState: MutableStateFlow<SchemeState> = MutableStateFlow(NotSelectedPlaceState())
 
     init {
         appComponent.inject(this)
     }
 
     fun setParkingSchemeState(state: SchemeState) {
-        parkingSchemeState.value = state
+        if (parkingSchemeState.value.coordinates == state.coordinates && state is SelectedPlaceState)
+            parkingSchemeState.value = NotSelectedPlaceState()
+        else
+            parkingSchemeState.value = state
     }
 
     fun onOpen() {

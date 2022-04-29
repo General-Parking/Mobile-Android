@@ -39,17 +39,28 @@ fun ParkingLotTile(
     modifier: Modifier = Modifier,
     parkingPlace: ParkingPlace,
     background: Color,
-
     coordinates: String,
     onClick: (state: SchemeState) -> Unit = { _ -> }
 ) = BaseTile(
     modifier = modifier
 ) {
+    // TODO Card -> Box Если хотим использовать aspectRotation
     Card(
         modifier = Modifier
+            // .fillMaxHeight(if (parkingPlace.rotation == 0) 0.5f else 1f)
+            // .fillMaxWidth(if (parkingPlace.rotation == 0) 1f else 0.5f)
             .fillMaxSize()
             .clickable {
-                onClick(SelectedPlace(parkingPlace.name, coordinates))
+                if (background != ParkingPlaceStateColor.RESERVED_BY_OTHER_USERS.color &&
+                    background != ParkingPlaceStateColor.RESERVED_BY_CURRENT_USER.color
+                ) {
+                    onClick(
+                        SelectedPlaceState(
+                            name = parkingPlace.name,
+                            coordinates = coordinates
+                        )
+                    )
+                }
             }
     ) {
         AutoSizeText(
@@ -73,18 +84,28 @@ enum class ParkingPlaceStateColor(val color: Color) {
 
 sealed class SchemeState(
     val colorState: ParkingPlaceStateColor,
-    val place: String = "",
+    val name: String = "",
     val coordinates: String = "",
 )
 
-class NotSelectedState : SchemeState(
+class NotSelectedPlaceState : SchemeState(
     colorState = ParkingPlaceStateColor.NOT_SELECTED
 )
-class SelectedPlace(
-    place: String,
+
+class SelectedPlaceState(
+    name: String,
     coordinates: String
 ) : SchemeState(
     colorState = ParkingPlaceStateColor.SELECTED,
-    place = place,
+    name = name,
+    coordinates = coordinates
+)
+
+class ReservedUserState(
+    name: String,
+    coordinates: String
+) : SchemeState(
+    colorState = ParkingPlaceStateColor.RESERVED_BY_CURRENT_USER,
+    name = name,
     coordinates = coordinates
 )
