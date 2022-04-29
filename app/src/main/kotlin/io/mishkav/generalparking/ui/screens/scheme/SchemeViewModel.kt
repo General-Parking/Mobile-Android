@@ -10,8 +10,9 @@ import io.mishkav.generalparking.domain.entities.User
 import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
 import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import io.mishkav.generalparking.state.Session
-import io.mishkav.generalparking.ui.screens.scheme.components.ParkingPlaceState
-import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts
+import io.mishkav.generalparking.ui.screens.scheme.components.NotSelectedState
+import io.mishkav.generalparking.ui.screens.scheme.components.SchemeState
+import io.mishkav.generalparking.ui.screens.scheme.components.SelectedPlace
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
 import io.mishkav.generalparking.ui.utils.loadOrError
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,10 +37,10 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
     private val autoNumber by lazy { session.autoNumber }
 
     private val _selectedParkingPlace by lazy { session.selectedParkingPlace }
-    val selectedParkingPlace = MutableStateFlow<String>(ParkingSchemeConsts.EMPTY_STRING)
+    val selectedParkingPlace = MutableStateFlow<String>("")
 
     private val _selectedParkingPlaceCoordinates by lazy { session.selectedParkingPlaceCoordinates }
-    private val selectedParkingPlaceCoordinates = MutableStateFlow<String>(ParkingSchemeConsts.EMPTY_STRING)
+    private val selectedParkingPlaceCoordinates = MutableStateFlow<String>("")
 
     private val _isReservedTransactionPassed = MutableStateFlow(false)
     private val _isCurrentUserReservedParkingPlace by lazy { session.isCurrentUserReservedParkingPlace }
@@ -47,8 +48,16 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
 
     val currentUser = MutableResultFlow<User>()
 
+    //
+
+    val parkingSchemeState: MutableStateFlow<SchemeState> = MutableStateFlow(NotSelectedState())
+
     init {
         appComponent.inject(this)
+    }
+
+    fun setParkingSchemeState(state: SchemeState) {
+        parkingSchemeState.value = state
     }
 
     fun onOpen() {
@@ -62,18 +71,6 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
             mapDatabaseRepository.getParkingScheme(currentParkingAddress.value)
         }
     }
-
-    fun isReservedTransactionPassed(): Boolean = _isReservedTransactionPassed.value
-    fun setReservedTransactionPassed(isReservedTransactionPassed: Boolean = false) {
-        _isReservedTransactionPassed.value = isReservedTransactionPassed
-    }
-
-    fun setParkingPlace(name: String, coordinates: String) {
-        selectedParkingPlace.value = name
-        selectedParkingPlaceCoordinates.value = coordinates
-    }
-
-    fun getSelectedParkingPlace(): String = selectedParkingPlace.value
 
     // Reservation
 
@@ -108,8 +105,8 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
                 placeCoordinates = selectedParkingPlaceCoordinates.value
             )
 
-            session.changeSelectedParkingPlace(ParkingSchemeConsts.EMPTY_STRING)
-            session.changeSelectedParkingPlaceCoordinates(ParkingSchemeConsts.EMPTY_STRING)
+            session.changeSelectedParkingPlace("")
+            session.changeSelectedParkingPlaceCoordinates("")
             session.changeIsCurrentUserReservedParkingPlace(false)
             onOpen()
             _isReservedTransactionPassed.value = true
@@ -121,11 +118,5 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
         currentUser.loadOrError {
             authDatabaseRepository.getUserDataFromDatabase()
         }
-    }
-
-    fun getParkingPlaceState(namePlace: String, value: Int): ParkingPlaceState = when {
-        isCurrentUserReservedParkingPlace.value && namePlace == selectedParkingPlace.value -> ParkingPlaceState.RESERVED_BY_CURRENT_USER
-        namePlace != selectedParkingPlace.value && value == 1 -> ParkingPlaceState.RESERVED_BY_OTHER_USERS
-        else -> ParkingPlaceState.NOT_RESERVED
     }
 }
