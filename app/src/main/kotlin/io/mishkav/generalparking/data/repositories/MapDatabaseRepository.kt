@@ -208,7 +208,11 @@ class MapDatabaseRepository @Inject constructor(
         var time by mutableStateOf("")
     }
 
-    override suspend fun getTimeArrive(): String {
+    interface TimeCallback {
+        fun onCallback(value: String)
+    }
+
+    override suspend fun getTimeArrive(myCallback:TimeCallback): String {
         val timeArrive = TimeArrive()
 
         firebaseDatabase
@@ -217,10 +221,10 @@ class MapDatabaseRepository @Inject constructor(
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     timeArrive.time = dataSnapshot.getValue() as String
                     Timber.tag(TAG).i(timeArrive.time)
+
+                    myCallback.onCallback(timeArrive.time)
                     if (timeArrive.time != "")
                         session.changeUserState("arrived")
-                    else
-                        session.changeUserState("")
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -230,12 +234,8 @@ class MapDatabaseRepository @Inject constructor(
         return timeArrive.time
     }
 
-    class IsArrived {
-        var time by mutableStateOf("")
-    }
-
     override suspend fun getIsArrived(): String {
-        val isArrived = IsArrived()
+        val isArrived = TimeArrive()
 
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/arrive")
@@ -259,6 +259,35 @@ class MapDatabaseRepository @Inject constructor(
     override suspend fun resetIsArrived() {
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/arrive")
+            .setValue(EMPTY_STRING)
+            .await()
+    }
+
+    override suspend fun getIsExit(): String {
+        val isExit = TimeArrive()
+
+        firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/exit")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    isExit.time = dataSnapshot.getValue() as String
+                    Timber.tag(TAG).i(isExit.time)
+                    if (isExit.time != "")
+                        session.changeIsExit("exit")
+                    else
+                        session.changeIsExit("")
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Timber.tag(TAG).w(error.toException(), "loadPost:onCancelled")
+                }
+            })
+        return isExit.time
+    }
+
+    override suspend fun resetIsExit() {
+        firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/exit")
             .setValue(EMPTY_STRING)
             .await()
     }

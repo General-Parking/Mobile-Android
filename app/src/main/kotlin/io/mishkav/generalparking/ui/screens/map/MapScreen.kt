@@ -34,6 +34,7 @@ import io.mishkav.generalparking.ui.components.loaders.CircularLoader
 import io.mishkav.generalparking.ui.components.errors.OnErrorResult
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
+import io.mishkav.generalparking.ui.components.buttons.TextButton
 import io.mishkav.generalparking.ui.screens.scheme.SchemeViewModel
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts
 import io.mishkav.generalparking.ui.theme.Shapes
@@ -54,6 +55,8 @@ fun MapScreen(
 
     val isArrived by viewModel.isArrived.collectAsState()
     val isArrivedResult by viewModel.isArrivedResult.collectAsState()
+    val isExit by viewModel.isExit.collectAsState()
+    val isExitResult by viewModel.isExitResult.collectAsState()
 
     val schemeViewModel: SchemeViewModel = viewModel()
     val selectedParkingPlace by schemeViewModel.selectedParkingPlace.collectAsState()
@@ -133,17 +136,63 @@ fun MapScreen(
                                 modifier = Modifier.padding(all = 8.dp),
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                Button(
+                                TextButton(
                                     modifier = Modifier.fillMaxWidth(),
+                                    text = stringResource(R.string.continue_text),
                                     onClick = {
                                         viewModel.resetIsArrived()
                                         navController.navigate(Routes.map)
                                     }
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.continue_text)
-                                    )
-                                }
+                                )
+                            }
+                        }
+                    )
+            is LoadingResult -> Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularLoader()
+            }
+        }
+    }
+
+    isExitResult.also { result ->
+        when (result) {
+            is ErrorResult -> OnErrorResult(
+                onClick = {
+                    viewModel.onOpen()
+                },
+                message = result.message ?: R.string.on_error_def,
+                navController = navController,
+                isTopAppBarAvailable = false
+            )
+            is SuccessResult ->
+                if (isExit == "exit")
+                    AlertDialog(
+                        onDismissRequest = {},
+                        text = {
+                            Column {
+                                ScreenTitle(
+                                    text = stringResource(R.string.see_you_again)
+                                )
+                            }
+                        },
+                        backgroundColor = MaterialTheme.colorScheme.background,
+                        buttons = {
+                            Row(
+                                modifier = Modifier.padding(all = 8.dp),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                TextButton(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = stringResource(R.string.finish),
+                                    onClick = {
+                                        viewModel.resetIsExit()
+                                        navController.navigate(Routes.map)
+                                    }
+                                )
                             }
                         }
                     )

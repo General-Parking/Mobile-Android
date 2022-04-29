@@ -1,9 +1,11 @@
 package io.mishkav.generalparking.state
 
+import android.content.ContentValues
 import android.content.Context
 import androidx.core.content.edit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import timber.log.Timber
 
 class Session(context: Context) {
 
@@ -29,6 +31,9 @@ class Session(context: Context) {
 
     private val _isArrived = MutableStateFlow(sharedPreferences.getString(PREF_IS_ARRIVED, "").orEmpty())
     val isArrived: StateFlow<String> = _isArrived
+
+    private val _isExit = MutableStateFlow(sharedPreferences.getString(PREF_IS_EXIT, "").orEmpty())
+    val isExit: StateFlow<String> = _isExit
 
     fun changeCurrentParkingAddress(address: String) {
         sharedPreferences.edit { putString(PREF_CURRENT_PARKING_ADDRESS, address) }
@@ -59,11 +64,18 @@ class Session(context: Context) {
     fun changeUserState(state: String) {
         sharedPreferences.edit { putString(PREF_USER_STATE, state) }
         _userState.value = state
+
+        Timber.tag(ContentValues.TAG).i(state)
     }
 
     fun changeIsArrived(isArrived: String) {
-        sharedPreferences.edit { putString(PREF_USER_STATE, isArrived) }
+        sharedPreferences.edit { putString(PREF_IS_ARRIVED, isArrived) }
         _isArrived.value = isArrived
+    }
+
+    fun changeIsExit(isExit: String) {
+        sharedPreferences.edit { putString(PREF_IS_EXIT, isExit) }
+        _isExit.value = isExit
     }
 
     companion object {
@@ -74,6 +86,7 @@ class Session(context: Context) {
         const val PREF_IS_CURRENT_USER_RESERVED_PLACE = "isCurrentUserReservedParkingPlace"
         const val PREF_USER_STATE = "userState"
         const val PREF_IS_ARRIVED = "isArrived"
+        const val PREF_IS_EXIT = "isExit"
 
         const val AGREEMENT_URI = "https://www.genparking.com/пользовательское-соглашение"
         const val PREF_NAME = "session"

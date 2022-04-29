@@ -48,6 +48,7 @@ fun BottomOnParkingScreen(
     val viewModel: MapViewModel = viewModel()
     val currentParkingAddress by viewModel.currentParkingAddress.collectAsState()
     val timeArriveResult by viewModel.timeArriveResult.collectAsState()
+    val timeArrive by viewModel.timeArrive
 
     timeArriveResult.also { result ->
         when (result) {
@@ -63,7 +64,7 @@ fun BottomOnParkingScreen(
                 name = name,
                 textAddress = currentParkingAddress,
                 navigateToSchemeScreen = navigateToSchemeScreen,
-                timeArriveResult = timeArriveResult.data!!
+                timeArriveResult = timeArrive
             )
             is LoadingResult -> Box(
                 modifier = Modifier

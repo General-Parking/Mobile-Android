@@ -78,5 +78,7 @@
     <string name="arrive_body">Вы приехали на парковку General Parking</string>
     <string name="scheme">Схема</string>
     <string name="time_on_parking">Время на паркинге:</string>
+    <string name="see_you_again">До новых встреч!</string>
+    <string name="finish">Завершить</string>
 
 </resources>
