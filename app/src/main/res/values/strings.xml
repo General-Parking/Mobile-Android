@@ -70,6 +70,9 @@
     <string name="floor_number">-1st floor</string>
     <string name="reserved">Reserved</string>
     <string name="username">Name</string>
+    <string name="on_error_body">We have some troubles…</string>
+    <string name="repeat_request">Repeat request</string>
+    <string name="on_error_def">An unexpected error occurred</string>
 
 
 </resources>

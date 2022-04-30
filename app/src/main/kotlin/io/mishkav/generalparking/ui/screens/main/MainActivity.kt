@@ -160,8 +160,7 @@ fun MainScreen(
             }
             composable(Routes.profile) {
                 ProfileScreen(
-                    navController = navController,
-                    onError = onError
+                    navController = navController
                 )
             }
         }

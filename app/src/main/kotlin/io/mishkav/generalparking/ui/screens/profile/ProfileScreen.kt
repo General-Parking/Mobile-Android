@@ -24,6 +24,7 @@ import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.data.utils.UserFields
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
+import io.mishkav.generalparking.ui.components.errors.OnErrorResult
 import io.mishkav.generalparking.ui.components.topAppBar.TopAppBarWithBackButton
 import io.mishkav.generalparking.ui.screens.main.Routes
 import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
@@ -36,64 +37,65 @@ import io.mishkav.generalparking.ui.utils.SuccessResult
 
 @Composable
 fun ProfileScreen(
-    navController: NavHostController,
-    onError: @Composable (Int) -> Unit
+    navController: NavHostController
 ) {
     val viewModel: ProfileViewModel = viewModel()
     val signOutResult by viewModel.signOutResult.collectAsState()
     val currentUser by viewModel.currentUser.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.getUserDataFromDatabase()
-    }
+    LaunchedEffect(Unit) { viewModel.onOpen() }
 
     signOutResult.also { result ->
         when (result) {
-            is ErrorResult -> onError(result.message!!)
-            is SuccessResult -> {
-                LaunchedEffect(Unit) {
-                    navController.navigate(Routes.authorization)
-                }
+            is ErrorResult -> OnErrorResult(
+                onClick = viewModel::onOpen,
+                message = result.message ?: R.string.on_error_def,
+                navController = navController,
+                isTopAppBarAvailable = true,
+                appBarId = R.string.profile
+            )
+            is SuccessResult -> LaunchedEffect(Unit) {
+                navController.navigate(Routes.authorization)
             }
-            is LoadingResult -> {
-                Box(
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularLoader()
-                }
+            is LoadingResult -> Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularLoader()
             }
         }
     }
 
     currentUser.also { result ->
         when (result) {
-            is ErrorResult -> onError(result.message!!)
-            is SuccessResult -> {
-                ProfileScreenContent(
-                    name = currentUser.data?.metaUserInfo?.get(UserFields.FIELD_NAME)
-                        ?: stringResource(R.string.username),
-                    phone = currentUser.data?.metaUserInfo?.get(UserFields.FIELD_PHONE_NUMBER)
-                        ?: stringResource(R.string.profile_default_phone),
-                    email = currentUser.data?.email ?: stringResource(R.string.profile_email),
-                    auto = currentUser.data?.metaUserInfo?.get(UserFields.FIELD_CAR_BRAND)
-                        ?: stringResource(R.string.profile_default_auto),
-                    numAuto = currentUser.data?.numberAuto ?: stringResource(R.string.profile_default_num_auto),
-                    signOut = viewModel::signOut,
-                    navigateBack = navController::popBackStack
-                )
-            }
-            is LoadingResult -> {
-                Box(
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularLoader()
-                }
+            is ErrorResult -> OnErrorResult(
+                onClick = viewModel::onOpen,
+                message = result.message ?: R.string.on_error_def,
+                navController = navController,
+                isTopAppBarAvailable = true,
+                appBarId = R.string.profile
+            )
+            is SuccessResult -> ProfileScreenContent(
+                name = currentUser.data?.metaUserInfo?.get(UserFields.FIELD_NAME)
+                    ?: stringResource(R.string.username),
+                phone = currentUser.data?.metaUserInfo?.get(UserFields.FIELD_PHONE_NUMBER)
+                    ?: stringResource(R.string.profile_default_phone),
+                email = currentUser.data?.email ?: stringResource(R.string.profile_email),
+                auto = currentUser.data?.metaUserInfo?.get(UserFields.FIELD_CAR_BRAND)
+                    ?: stringResource(R.string.profile_default_auto),
+                numAuto = currentUser.data?.numberAuto ?: stringResource(R.string.profile_default_num_auto),
+                signOut = viewModel::signOut,
+                navigateBack = navController::popBackStack
+            )
+            is LoadingResult -> Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularLoader()
             }
         }
     }

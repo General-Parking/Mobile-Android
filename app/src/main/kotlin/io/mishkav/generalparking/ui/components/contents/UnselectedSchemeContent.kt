@@ -1,4 +1,4 @@
-package io.mishkav.generalparking.ui.components
+package io.mishkav.generalparking.ui.components.contents
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
