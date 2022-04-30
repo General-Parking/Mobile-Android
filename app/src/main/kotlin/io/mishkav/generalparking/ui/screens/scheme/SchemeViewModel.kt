@@ -106,7 +106,9 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
                 floor = floor,
                 placeCoordinates = parkingSchemeState.value.coordinates
             )
-
+            parkingSchemeResult.value.data?.get(floor.toString())?.places?.get(parkingSchemeState.value.coordinates)?.let {
+                it.value = 0
+            }
             parkingSchemeState.value = NotSelectedPlaceState()
             session.changeSelectedParkingPlaceName(EMPTY_STRING)
             session.changeSelectedParkingPlaceCoordinates(EMPTY_STRING)

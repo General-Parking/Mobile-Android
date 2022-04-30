@@ -21,5 +21,5 @@ data class ParkingScheme(
 data class ParkingPlace(
     val name: String,
     val rotation: Int,
-    val value: Int
+    var value: Int
 )

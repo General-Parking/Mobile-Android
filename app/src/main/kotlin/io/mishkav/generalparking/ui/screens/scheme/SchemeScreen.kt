@@ -50,9 +50,9 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
-import io.mishkav.generalparking.ui.components.ReservedSchemeContent
-import io.mishkav.generalparking.ui.components.SelectedSchemeContent
-import io.mishkav.generalparking.ui.components.UnselectedSchemeContent
+import io.mishkav.generalparking.ui.components.contents.ReservedSchemeContent
+import io.mishkav.generalparking.ui.components.contents.SelectedSchemeContent
+import io.mishkav.generalparking.ui.components.contents.UnselectedSchemeContent
 import io.mishkav.generalparking.ui.components.topAppBar.TopAppBarWithBackButton
 import io.mishkav.generalparking.ui.components.zoomable.Zoomable
 import io.mishkav.generalparking.ui.components.zoomable.rememberZoomableState
@@ -349,10 +349,11 @@ private fun FloorTabView(
 
 private fun getBackgroundColor(
     state: SchemeState,
+    name: String,
     coordinates: String,
     placeSelected: Int
 ): Color = when {
-    state.coordinates == coordinates -> state.colorState.color
+    state.coordinates == coordinates && state.name == name -> state.colorState.color
     placeSelected == 1 -> ParkingPlaceStateColor.RESERVED_BY_OTHER_USERS.color
     else -> ParkingPlaceStateColor.NOT_SELECTED.color
 }
@@ -403,7 +404,12 @@ fun DrawScheme(
                                             .padding(1.dp),
                                         parkingPlace = currentPlace,
                                         coordinates = "${height}_${width}",
-                                        background = getBackgroundColor(parkingState, coordinates, currentPlace.value),
+                                        background = getBackgroundColor(
+                                            parkingState,
+                                            currentPlace.name,
+                                            coordinates,
+                                            currentPlace.value
+                                        ),
                                         onClick = onParkingPlaceClick
                                     )
                                 }
