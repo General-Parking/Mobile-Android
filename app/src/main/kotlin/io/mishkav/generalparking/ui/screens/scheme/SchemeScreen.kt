@@ -1,8 +1,13 @@
 package io.mishkav.generalparking.ui.screens.scheme
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -23,10 +28,21 @@ import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
 import androidx.compose.material.Text
+import androidx.compose.material.rememberBottomSheetScaffoldState
+import androidx.compose.material.rememberBottomSheetState
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.egoriku.animatedbottomsheet.bottomsheet.collapsed.SheetCollapsed
+import com.egoriku.animatedbottomsheet.bottomsheet.expanded.SheetExpanded
 import com.google.accompanist.pager.ExperimentalPagerApi
+import io.mishkav.generalparking.ui.components.SelectedSchemeContent
+import io.mishkav.generalparking.ui.components.UnselectedSchemeContent
 import io.mishkav.generalparking.ui.components.topAppBar.TopAppBarWithBackButton
 import io.mishkav.generalparking.ui.components.zoomable.Zoomable
 import io.mishkav.generalparking.ui.components.zoomable.rememberZoomableState
@@ -35,6 +51,9 @@ import io.mishkav.generalparking.ui.screens.scheme.components.NotSelectedPlaceSt
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingLotTile
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingPlaceStateColor
 import io.mishkav.generalparking.ui.screens.scheme.components.SchemeState
+import io.mishkav.generalparking.ui.screens.scheme.components.SelectedPlaceState
+import io.mishkav.generalparking.ui.screens.scheme.components.bottomsheet.extension.currentFraction
+import kotlinx.coroutines.launch
 
 @Composable
 fun SchemeScreen(
@@ -119,8 +138,7 @@ fun SchemeScreen(
     }
 }
 
-
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun SchemeScreenContent(
     textAddress: String = stringResource(R.string.bottom_title),
@@ -128,41 +146,102 @@ fun SchemeScreenContent(
     parkingState: SchemeState,
     onParkingPlaceClick: (state: SchemeState) -> Unit = { _ -> },
     navigateBack: () -> Unit = {},
-) = Column(
-    modifier = Modifier.fillMaxSize(),
-    horizontalAlignment = Alignment.CenterHorizontally
 ) {
-    TopAppBarWithBackButton(
-        title = {
-            Column {
-                Text(
-                    text = stringResource(R.string.parking_scheme),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Text(
-                    text = textAddress,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    style = MaterialTheme.typography.bodyLarge
-                )
+    val scope = rememberCoroutineScope()
+
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberBottomSheetState(BottomSheetValue.Collapsed)
+    )
+
+    val sheetToggle: () -> Unit = {
+        scope.launch {
+            if (scaffoldState.bottomSheetState.isCollapsed) {
+                scaffoldState.bottomSheetState.expand()
+            } else {
+                scaffoldState.bottomSheetState.collapse()
+            }
+        }
+    }
+    val sheetToggleExpanded: () -> Unit = {
+        scope.launch {
+            scaffoldState.bottomSheetState.expand()
+        }
+    }
+    val sheetToggleCollapse: () -> Unit = {
+        scope.launch {
+            scaffoldState.bottomSheetState.collapse()
+        }
+    }
+
+    val sheetPeekHeight = 72.dp
+    val emptyOnClick: () -> Unit = {}
+    val onClick: (state: SchemeState) -> Unit = { state ->
+        when {
+            parkingState is NotSelectedPlaceState && scaffoldState.bottomSheetState.isCollapsed -> sheetToggleExpanded()
+            parkingState is SelectedPlaceState && parkingState.coordinates != state.coordinates -> sheetToggleExpanded()
+            parkingState is SelectedPlaceState && parkingState.coordinates == state.coordinates -> sheetToggleCollapse()
+        }
+        onParkingPlaceClick(state)
+    }
+
+    BottomSheetScaffold(
+        modifier = Modifier.fillMaxSize(),
+        scaffoldState = scaffoldState,
+        sheetShape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp),
+        sheetBackgroundColor = Color.Transparent,
+        topBar = {
+            TopAppBarWithBackButton(
+                title = {
+                    Column {
+                        Text(
+                            text = stringResource(R.string.parking_scheme),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Text(
+                            text = textAddress,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                },
+                navigateBack = navigateBack
+            )
+        },
+        sheetContent = {
+            SheetCollapsed(
+                currentFraction = scaffoldState.currentFraction,
+            ) {
+                IconButton(
+                    onClick = if (scaffoldState.bottomSheetState.isCollapsed) sheetToggle else emptyOnClick,
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary)
+                        .padding(start = 16.dp, end = 16.dp)
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_info),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+            SheetExpanded {
+                when (parkingState) {
+                    is NotSelectedPlaceState -> UnselectedSchemeContent()
+                    is SelectedPlaceState -> SelectedSchemeContent(name = parkingState.name)
+                }
             }
         },
-        navigateBack = navigateBack
-    )
-
-    DrawScheme(
-        parkingScheme = parking[parking.keys.elementAt(1)]!!,
-        parkingState = parkingState,
-        onParkingPlaceClick = onParkingPlaceClick
-    )
-
-    // TODO Доделать выезжающий bottom bar (чтобы был swipe) - https://github.com/egorikftp/compose-animated-bottomsheet
-    // when (parkingState) {
-    //     is NotSelectedPlaceState -> UnselectedSchemeContent()
-    //     is SelectedPlace -> SelectedSchemeContent(
-    //         name = parkingState.name
-    //     )
-    // }
+        sheetElevation = 0.dp,
+        sheetPeekHeight = sheetPeekHeight
+    ) {
+        DrawScheme(
+            parkingScheme = parking[parking.keys.elementAt(1)]!!,
+            parkingState = parkingState,
+            onParkingPlaceClick = onClick,
+        )
+    }
 }
 
 private fun getBackgroundColor(
@@ -182,7 +261,11 @@ fun DrawScheme(
     parkingState: SchemeState,
     onParkingPlaceClick: (state: SchemeState) -> Unit = { _ -> }
 ) {
-    LazyColumn {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         item {
             val zoomableState = rememberZoomableState(1f)
             Zoomable(
