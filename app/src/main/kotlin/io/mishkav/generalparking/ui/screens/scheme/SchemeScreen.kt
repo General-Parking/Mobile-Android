@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import com.egoriku.animatedbottomsheet.bottomsheet.collapsed.SheetCollapsed
 import com.egoriku.animatedbottomsheet.bottomsheet.expanded.SheetExpanded
 import com.google.accompanist.pager.ExperimentalPagerApi
+import io.mishkav.generalparking.ui.components.ReservedSchemeContent
 import io.mishkav.generalparking.ui.components.SelectedSchemeContent
 import io.mishkav.generalparking.ui.components.UnselectedSchemeContent
 import io.mishkav.generalparking.ui.components.topAppBar.TopAppBarWithBackButton
@@ -50,6 +51,7 @@ import io.mishkav.generalparking.ui.screens.scheme.components.EmptyLotTile
 import io.mishkav.generalparking.ui.screens.scheme.components.NotSelectedPlaceState
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingLotTile
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingPlaceStateColor
+import io.mishkav.generalparking.ui.screens.scheme.components.ReservedPlaceState
 import io.mishkav.generalparking.ui.screens.scheme.components.SchemeState
 import io.mishkav.generalparking.ui.screens.scheme.components.SelectedPlaceState
 import io.mishkav.generalparking.ui.screens.scheme.components.bottomsheet.extension.currentFraction
@@ -69,8 +71,8 @@ fun SchemeScreen(
     val currentUser by viewModel.currentUser.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.getCurrentUser()
         viewModel.onOpen()
+        viewModel.getCurrentUser()
         viewModel.getParkingScheme()
     }
 
@@ -83,6 +85,8 @@ fun SchemeScreen(
                     parking = it,
                     parkingState = parkingState,
                     onParkingPlaceClick = viewModel::setParkingSchemeState,
+                    onReserveButtonClick = viewModel::setParkingPlaceReservation,
+                    onRemoveReservationButtonClick = viewModel::removeParkingPlaceReservation,
                     navigateBack = navController::popBackStack,
                 )
             }
@@ -145,10 +149,11 @@ fun SchemeScreenContent(
     parking: Map<String, ParkingScheme>,
     parkingState: SchemeState,
     onParkingPlaceClick: (state: SchemeState) -> Unit = { _ -> },
+    onReserveButtonClick: (floor: Int) -> Unit = { _ -> },
+    onRemoveReservationButtonClick: (floor: Int) -> Unit = { _ -> },
     navigateBack: () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
-
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberBottomSheetState(BottomSheetValue.Collapsed)
     )
@@ -229,7 +234,14 @@ fun SchemeScreenContent(
             SheetExpanded {
                 when (parkingState) {
                     is NotSelectedPlaceState -> UnselectedSchemeContent()
-                    is SelectedPlaceState -> SelectedSchemeContent(name = parkingState.name)
+                    is SelectedPlaceState -> SelectedSchemeContent(
+                        name = parkingState.name,
+                        onClick = { onReserveButtonClick(-1) }
+                    )
+                    is ReservedPlaceState -> ReservedSchemeContent(
+                        name = parkingState.name,
+                        onClick = { onRemoveReservationButtonClick(-1) }
+                    )
                 }
             }
         },

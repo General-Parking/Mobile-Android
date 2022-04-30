@@ -101,7 +101,7 @@ class SelectedPlaceState(
     coordinates = coordinates
 )
 
-class ReservedUserState(
+class ReservedPlaceState(
     name: String,
     coordinates: String
 ) : SchemeState(
