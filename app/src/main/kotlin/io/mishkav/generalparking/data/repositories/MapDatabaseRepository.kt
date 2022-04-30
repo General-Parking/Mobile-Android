@@ -30,6 +30,15 @@ class MapDatabaseRepository @Inject constructor(
     @Inject
     lateinit var session: Session
 
+
+    class TimeMutable {
+        var time by mutableStateOf("")
+    }
+
+    interface TimeCallback {
+        fun onCallback(value: String)
+    }
+
     override suspend fun getParkingCoordinates(): Map<String, String> {
         return firebaseDatabase
             .child(PATH_TO_PARKING_COORDINATES)
@@ -188,12 +197,28 @@ class MapDatabaseRepository @Inject constructor(
             .getValue() as String
     }
 
-    override suspend fun getTimeReservation(): String {
-        return firebaseDatabase
+    override suspend fun getTimeReservation(myCallback:TimeCallback): String {
+        val timeReservation = TimeMutable()
+
+        firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/time_reservation")
-            .get()
-            .await()
-            .getValue() as String
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    timeReservation.time = dataSnapshot.getValue() as String
+                    Timber.tag(TAG).i(timeReservation.time)
+
+                    myCallback.onCallback(timeReservation.time)
+                    if (timeReservation.time != EMPTY_STRING)
+                        session.changeUserState("reserved")
+                    else
+                        session.changeUserState(EMPTY_STRING)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Timber.tag(TAG).w(error.toException(), "loadPost:onCancelled")
+                }
+            })
+        return timeReservation.time
     }
 
     override suspend fun getBookingTime(): Long {
@@ -204,16 +229,8 @@ class MapDatabaseRepository @Inject constructor(
             .getValue() as Long
     }
 
-    class TimeArrive {
-        var time by mutableStateOf("")
-    }
-
-    interface TimeCallback {
-        fun onCallback(value: String)
-    }
-
     override suspend fun getTimeArrive(myCallback:TimeCallback): String {
-        val timeArrive = TimeArrive()
+        val timeArrive = TimeMutable()
 
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/time_arrive")
@@ -223,7 +240,7 @@ class MapDatabaseRepository @Inject constructor(
                     Timber.tag(TAG).i(timeArrive.time)
 
                     myCallback.onCallback(timeArrive.time)
-                    if (timeArrive.time != "")
+                    if (timeArrive.time != EMPTY_STRING)
                         session.changeUserState("arrived")
                 }
 
@@ -235,7 +252,7 @@ class MapDatabaseRepository @Inject constructor(
     }
 
     override suspend fun getIsArrived(): String {
-        val isArrived = TimeArrive()
+        val isArrived = TimeMutable()
 
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/arrive")
@@ -246,7 +263,7 @@ class MapDatabaseRepository @Inject constructor(
                     if (isArrived.time != "")
                         session.changeIsArrived("arrived")
                     else
-                        session.changeIsArrived("")
+                        session.changeIsArrived(EMPTY_STRING)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -264,7 +281,7 @@ class MapDatabaseRepository @Inject constructor(
     }
 
     override suspend fun getIsExit(): String {
-        val isExit = TimeArrive()
+        val isExit = TimeMutable()
 
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/exit")
@@ -275,7 +292,7 @@ class MapDatabaseRepository @Inject constructor(
                     if (isExit.time != "")
                         session.changeIsExit("exit")
                     else
-                        session.changeIsExit("")
+                        session.changeIsExit(EMPTY_STRING)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -288,6 +305,18 @@ class MapDatabaseRepository @Inject constructor(
     override suspend fun resetIsExit() {
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/exit")
+            .setValue(EMPTY_STRING)
+            .await()
+        firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/time_arrive")
+            .setValue(EMPTY_STRING)
+            .await()
+        firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/time_exit")
+            .setValue(EMPTY_STRING)
+            .await()
+        firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/time_reservation")
             .setValue(EMPTY_STRING)
             .await()
     }

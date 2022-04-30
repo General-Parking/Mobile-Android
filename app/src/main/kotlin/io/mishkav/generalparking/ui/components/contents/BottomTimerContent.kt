@@ -56,6 +56,7 @@ fun BottomTimerScreen(
     val currentParkingAddress by viewModel.currentParkingAddress.collectAsState()
     val timeReservationResult by viewModel.timeReservationResult.collectAsState()
     val bookingTimeResult by viewModel.bookingTimeResult.collectAsState()
+    val timeReservation by viewModel.timeReservation
 
     timeReservationResult.also { result ->
         when (result) {
@@ -72,7 +73,7 @@ fun BottomTimerScreen(
                 textAddress = currentParkingAddress,
                 period = bookingTimeResult.data ?: 60,
                 navigateToSchemeScreen = navigateToSchemeScreen,
-                timeReservationResult = timeReservationResult.data!!
+                timeReservationResult = timeReservation
             )
             is LoadingResult -> Box(
                 modifier = Modifier

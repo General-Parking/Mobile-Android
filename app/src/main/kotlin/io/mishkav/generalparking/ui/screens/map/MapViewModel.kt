@@ -24,6 +24,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     val parkingCoordinatesResult = MutableResultFlow<Map<Pair<Double, Double>, String>>()
     val autoNumberResult = MutableResultFlow<Unit>()
     val timeReservationResult = MutableResultFlow<String>()
+    var timeReservation = mutableStateOf("")
     val bookingTimeResult = MutableResultFlow<Long>()
     val timeArriveResult = MutableResultFlow<String>()
     var timeArrive = mutableStateOf("")
@@ -44,6 +45,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
         getBookingTime()
         getTimeArrive()
         getIsArrived()
+        getIsExit()
         getTimeReservation()
     }
 
@@ -60,7 +62,11 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
 
     fun getTimeReservation() = viewModelScope.launch {
         timeReservationResult.loadOrError {
-            mapDatabaseRepository.getTimeReservation()
+            mapDatabaseRepository.getTimeReservation(object: MapDatabaseRepository.TimeCallback {
+                override fun onCallback(value:String) {
+                    timeReservation.value = value
+                }
+            })
         }
         if (timeReservationResult.value.data == "")
             session.changeUserState("")

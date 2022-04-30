@@ -20,7 +20,7 @@ interface IMapDatabaseRepository {
         placeCoordinates: String
     )
     suspend fun getAutoNumber(): String
-    suspend fun getTimeReservation(): String
+    suspend fun getTimeReservation(myCallback: MapDatabaseRepository.TimeCallback): String
     suspend fun getBookingTime(): Long
     suspend fun getTimeArrive(myCallback: MapDatabaseRepository.TimeCallback): String
     suspend fun getIsArrived(): String

@@ -190,6 +190,7 @@ fun MapScreen(
                                     text = stringResource(R.string.finish),
                                     onClick = {
                                         viewModel.resetIsExit()
+                                        schemeViewModel.removeParkingPlaceReservation(-1)
                                         navController.navigate(Routes.map)
                                     }
                                 )
