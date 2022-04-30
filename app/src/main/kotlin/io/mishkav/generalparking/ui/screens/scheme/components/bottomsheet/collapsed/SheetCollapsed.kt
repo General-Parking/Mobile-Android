@@ -29,7 +29,7 @@ fun SheetCollapsed(
                 .background(Color.Transparent)
                 .graphicsLayer(alpha = 1f - currentFraction),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.End
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             content()
         }
