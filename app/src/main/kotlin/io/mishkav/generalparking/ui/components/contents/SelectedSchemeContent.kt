@@ -22,9 +22,8 @@ fun SelectedSchemeContent(
     Column(
         modifier = Modifier
             .padding(
-                top = dimensionResource(R.dimen.bottom_padding),
-                start = dimensionResource(R.dimen.bottom_padding),
-                end = dimensionResource(R.dimen.bottom_padding)
+                vertical = dimensionResource(R.dimen.bottom_padding),
+                horizontal = dimensionResource(R.dimen.bottom_padding)
             )
             .fillMaxSize()
     ) {
@@ -50,12 +49,6 @@ fun SelectedSchemeContent(
                 color = MaterialTheme.colorScheme.primary,
                 onClick = onClick
             )
-            // Spacer(Modifier.width(dimensionResource(R.dimen.half_standard_padding)))
-            // SimpleIconButton(
-            //     icon = Icons.Filled.Close,
-            //     color = Gray500,
-            //     onClick = { }
-            // )
         }
     }
 }

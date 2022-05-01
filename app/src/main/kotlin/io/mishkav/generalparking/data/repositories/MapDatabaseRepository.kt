@@ -26,32 +26,38 @@ class MapDatabaseRepository @Inject constructor(
             .getValue() as Map<String, String>
     }
 
-    override suspend fun getParkingScheme(address: String, floor: Int): ParkingScheme {
+    override suspend fun getParkingScheme(address: String): Map<String, ParkingScheme> {
         val rawScheme = firebaseDatabase
-            .child("parking/$address/$floor")
+            .child("parking/$address")
             .get()
             .await()
+        val parking: MutableMap<String, ParkingScheme> = mutableMapOf()
 
-        val width = rawScheme.child(PATH_TO_WIDTH).getValue(CLASS_INT)!!
-        val height = rawScheme.child(PATH_TO_HEIGHT).getValue(CLASS_INT)!!
-        val places = hashMapOf<String, ParkingPlace>()
-        for (place in rawScheme.child(PATH_TO_PLACES).children) {
-            val name = place.child(PATH_TO_PLACE_NAME).getValue(CLASS_STRING)!!
-            val rotation = place.child(PATH_TO_PLACE_ROTATE).getValue(CLASS_INT)!!
-            val value = place.child(PATH_TO_PLACE_VALUE).getValue(CLASS_INT)!!
+        for (floor in rawScheme.children.sortedByDescending { it.key?.toInt() }) {
+            val width = rawScheme.child(floor.key!!).child(PATH_TO_WIDTH).getValue(CLASS_INT)!!
+            val height = rawScheme.child(floor.key!!).child(PATH_TO_HEIGHT).getValue(CLASS_INT)!!
+            val places = hashMapOf<String, ParkingPlace>()
+            for (place in rawScheme.child(floor.key!!).child(PATH_TO_PLACES).children) {
+                val name = place.child(PATH_TO_PLACE_NAME).getValue(CLASS_STRING)!!
+                val rotation = place.child(PATH_TO_PLACE_ROTATE).getValue(CLASS_INT)!!
+                val value = place.child(PATH_TO_PLACE_VALUE).getValue(CLASS_INT)!!
 
-            places[place.key!!] = ParkingPlace(
-                name = name,
-                rotation = rotation,
-                value = value
+                places[place.key!!] = ParkingPlace(
+                    name = name,
+                    rotation = rotation,
+                    value = value
+                )
+            }
+            parking.put(
+                floor.key!!,
+                ParkingScheme(
+                    width = width,
+                    height = height,
+                    places = places
+                )
             )
         }
-
-        return ParkingScheme(
-            width = width,
-            height = height,
-            places = places
-        )
+        return parking
     }
 
     override suspend fun setParkingPlaceReservation(
