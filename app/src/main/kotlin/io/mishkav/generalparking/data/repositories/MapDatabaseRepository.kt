@@ -208,9 +208,7 @@ class MapDatabaseRepository @Inject constructor(
                     Timber.tag(TAG).i(timeReservation.time)
 
                     myCallback.onCallback(timeReservation.time)
-                    if (timeReservation.time != EMPTY_STRING)
-                        session.changeUserState("reserved")
-                    else
+                    if (timeReservation.time == EMPTY_STRING)
                         session.changeUserState(EMPTY_STRING)
                 }
 
@@ -240,8 +238,8 @@ class MapDatabaseRepository @Inject constructor(
                     Timber.tag(TAG).i(timeArrive.time)
 
                     myCallback.onCallback(timeArrive.time)
-                    if (timeArrive.time != EMPTY_STRING)
-                        session.changeUserState("arrived")
+//                    if (timeArrive.time != EMPTY_STRING)
+//                        session.changeUserState("arrived")
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -319,6 +317,14 @@ class MapDatabaseRepository @Inject constructor(
             .child("users/${firebaseAuth.currentUser?.uid}/time_reservation")
             .setValue(EMPTY_STRING)
             .await()
+    }
+
+    override suspend fun getTimeExit(): String {
+        return firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/time_exit")
+            .get()
+            .await()
+            .getValue() as String
     }
 
     companion object {

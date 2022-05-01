@@ -36,6 +36,7 @@ import io.mishkav.generalparking.ui.utils.SuccessResult
 import kotlinx.coroutines.delay
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
@@ -153,9 +154,9 @@ fun OnParkingBar(
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
     val timeArrive = LocalDateTime.parse(timeArriveResult, formatter)
     //val timeArrive = LocalDateTime.of(2022,4,20,14,30)
-    var diffH = abs(Duration.between(LocalDateTime.now(), timeArrive).toHoursPart())
-    var diffMin = abs(Duration.between(LocalDateTime.now(), timeArrive).toMinutesPart())
-    var diffSec = abs(Duration.between(LocalDateTime.now(), timeArrive).toSecondsPart())
+    var diffH = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeArrive).toHoursPart())
+    var diffMin = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeArrive).toMinutesPart())
+    var diffSec = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeArrive).toSecondsPart())
 
     var currTime by remember {
         mutableStateOf(
@@ -168,9 +169,9 @@ fun OnParkingBar(
 
     LaunchedEffect(Unit) {
         while (true) {
-            diffH = abs(Duration.between(LocalDateTime.now(), timeArrive).toHoursPart())
-            diffMin = abs(Duration.between(LocalDateTime.now(), timeArrive).toMinutesPart())
-            diffSec = abs(Duration.between(LocalDateTime.now(), timeArrive).toSecondsPart())
+            diffH = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeArrive).toHoursPart())
+            diffMin = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeArrive).toMinutesPart())
+            diffSec = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeArrive).toSecondsPart())
             currTime = when (diffH) {
                 0 -> String.format("%02d:%02d", diffMin, diffSec)
                 else -> String.format("%02d:%02d:%02d", diffH, diffMin, diffSec)

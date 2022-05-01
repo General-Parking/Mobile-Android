@@ -43,6 +43,7 @@ import io.mishkav.generalparking.ui.utils.SuccessResult
 import kotlinx.coroutines.delay
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
@@ -227,9 +228,9 @@ fun TimerBar(
     var timeReservation = LocalDateTime.parse(timeReservationResult, formatter)
 
     timeReservation = timeReservation.plusMinutes(period)
-    var diffH = abs(Duration.between(LocalDateTime.now(), timeReservation).toHoursPart())
-    var diffMin = abs(Duration.between(LocalDateTime.now(), timeReservation).toMinutesPart())
-    var diffSec = abs(Duration.between(LocalDateTime.now(), timeReservation).toSecondsPart())
+    var diffH = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeReservation).toHoursPart())
+    var diffMin = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeReservation).toMinutesPart())
+    var diffSec = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeReservation).toSecondsPart())
 
     var enabled by remember { mutableStateOf(true) }
     var progress by remember {
@@ -237,7 +238,7 @@ fun TimerBar(
             (diffMin * 60 + diffSec).toFloat().div(period.toInt() * 60)
         )
     }
-    if (Duration.between(LocalDateTime.now(), timeReservation).isNegative) {
+    if (Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeReservation).isNegative) {
         enabled = false
         progress = 0f
     }
@@ -255,13 +256,13 @@ fun TimerBar(
     )
 
     LaunchedEffect(enabled) {
-        while (!(Duration.between(LocalDateTime.now(),timeReservation).isNegative) &&
-            enabled || (Duration.between(LocalDateTime.now(), timeReservation)
+        while (!(Duration.between(LocalDateTime.now(ZoneOffset.UTC),timeReservation).isNegative) &&
+            enabled || (Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeReservation)
                 .toMinutesPart() > -60)
         ) {
-            diffH = abs(Duration.between(LocalDateTime.now(), timeReservation).toHoursPart())
-            diffMin = abs(Duration.between(LocalDateTime.now(), timeReservation).toMinutesPart())
-            diffSec = abs(Duration.between(LocalDateTime.now(), timeReservation).toSecondsPart())
+            diffH = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeReservation).toHoursPart())
+            diffMin = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeReservation).toMinutesPart())
+            diffSec = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeReservation).toSecondsPart())
             currTime = when (diffH) {
                 0 -> String.format("%02d:%02d", diffMin, diffSec)
                 else -> String.format("%02d:%02d:%02d", diffH, diffMin, diffSec)
@@ -272,7 +273,7 @@ fun TimerBar(
         }
     }
 
-    if (Duration.between(LocalDateTime.now(), timeReservation).isNegative) {
+    if (Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeReservation).isNegative) {
         enabled = false
     }
 

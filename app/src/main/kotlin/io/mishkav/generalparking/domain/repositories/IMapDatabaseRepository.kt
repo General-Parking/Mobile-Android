@@ -27,4 +27,5 @@ interface IMapDatabaseRepository {
     suspend fun resetIsArrived()
     suspend fun getIsExit(): String
     suspend fun resetIsExit()
+    suspend fun getTimeExit(): String
 }

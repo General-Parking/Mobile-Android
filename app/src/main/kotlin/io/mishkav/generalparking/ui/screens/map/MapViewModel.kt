@@ -47,6 +47,12 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
         getIsArrived()
         getIsExit()
         getTimeReservation()
+        if (timeReservation.value == "")
+            session.changeUserState("")
+        else if (timeReservation.value != "" && timeArrive.value == "")
+            session.changeUserState("reserved")
+        else if (timeArrive.value != "")
+            session.changeUserState("arrived")
     }
 
     fun setCurrentParkingAddress(address: String) {
@@ -68,12 +74,6 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
                 }
             })
         }
-        if (timeReservationResult.value.data == "")
-            session.changeUserState("")
-        else if (timeReservationResult.value.data != "" && timeArrive.value == "")
-            session.changeUserState("reserved")
-        else if (timeArrive.value != "")
-            session.changeUserState("arrived")
     }
 
     fun getBookingTime() = viewModelScope.launch {
