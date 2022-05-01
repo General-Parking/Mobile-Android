@@ -59,8 +59,8 @@
     <string name="go_reserve">Перейти к бронированию</string>
     <string name="space" >" "</string>
     <string name="bottom_title">Улица</string>
-    <string name="bottom_body">Свободно 317 мест из 380</string>
-    <string name="minute_cost">12 ₽/мин</string>
+    <string name="bottom_body">Свободно %d мест из %d</string>
+    <string name="minute_cost">%.2f ₽/мин</string>
     <string name="choose_seat">Выберите свободное место:</string>
     <string name="free">" — свободные"</string>
     <string name="taken">" — занятые"</string>

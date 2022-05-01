@@ -23,3 +23,9 @@ data class ParkingPlace(
     val rotation: Int,
     var value: Int
 )
+
+data class ParkingShortInfo(
+    val freePlaces: Int,
+    val priceOfParking: Float,
+    val totalPlaces: Int
+)

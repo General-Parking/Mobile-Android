@@ -30,9 +30,14 @@ fun BottomScreen(
 ) {
     val viewModel: MapViewModel = viewModel()
     val currentParkingAddress by viewModel.currentParkingAddress.collectAsState()
+    val parkingShortInfoResult by viewModel.parkingShortInfoResult.collectAsState()
 
+    val currentParkingInfo = parkingShortInfoResult.data?.get(currentParkingAddress)
     BottomScreenContent(
         textAddress = currentParkingAddress,
+        freePlaces = currentParkingInfo?.freePlaces ?: 0,
+        totalPlaces = currentParkingInfo?.totalPlaces ?: 0,
+        priceParking = currentParkingInfo?.priceOfParking ?: 0f,
         navigateToSchemeScreen = navigateToSchemeScreen
     )
 }
@@ -40,8 +45,9 @@ fun BottomScreen(
 @Composable
 fun BottomScreenContent(
     textAddress: String = stringResource(R.string.bottom_title),
-    textBody: String = stringResource(R.string.bottom_body),
-    textCost: String = stringResource(R.string.minute_cost),
+    freePlaces: Int = 0,
+    totalPlaces: Int = 0,
+    priceParking: Float = 0f,
     navigateToSchemeScreen: () -> Unit = {},
     modifier: Modifier = Modifier
 ) = Column(
@@ -56,7 +62,7 @@ fun BottomScreenContent(
     )
 
     BottomBody(
-        text = textBody
+        text = stringResource(R.string.bottom_body).format(freePlaces, totalPlaces)
     )
 
     Row (
@@ -75,7 +81,7 @@ fun BottomScreenContent(
         )
         Spacer(Modifier.weight(1f))
         Text(
-            text = textCost,
+            text = stringResource(R.string.minute_cost).format(priceParking),
             color = MaterialTheme.colorScheme.onPrimary
         )
         SimpleIconTextButton(

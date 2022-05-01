@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.mishkav.generalparking.GeneralParkingApp
 import io.mishkav.generalparking.dagger.AppComponent
+import io.mishkav.generalparking.domain.entities.ParkingShortInfo
 import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import io.mishkav.generalparking.state.Session
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
@@ -20,6 +21,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     lateinit var session: Session
 
     val parkingCoordinatesResult = MutableResultFlow<Map<Pair<Double, Double>, String>>()
+    val parkingShortInfoResult = MutableResultFlow<Map<String, ParkingShortInfo>>()
     val autoNumberResult =  MutableResultFlow<Unit>()
     val currentParkingAddress by lazy { session.currentParkingAddress }
 
@@ -29,6 +31,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
 
     fun onOpen() {
         getParkingCoordinates()
+        getParkingShortInfo()
         setAutoNumber()
     }
 
@@ -46,7 +49,6 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     fun getParkingCoordinates() = viewModelScope.launch {
         parkingCoordinatesResult.loadOrError {
             val rawCoordinates = mapDatabaseRepository.getParkingCoordinates()
-
             val coordinatesMap = mutableMapOf<Pair<Double, Double>, String>()
 
             for ((key, value) in rawCoordinates) {
@@ -59,6 +61,12 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
             }
 
             coordinatesMap
+        }
+    }
+
+    fun getParkingShortInfo() = viewModelScope.launch {
+        parkingShortInfoResult.loadOrError {
+            mapDatabaseRepository.getParkingShortInfo()
         }
     }
 }
