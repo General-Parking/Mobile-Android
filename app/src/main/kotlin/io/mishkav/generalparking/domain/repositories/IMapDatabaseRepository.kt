@@ -1,6 +1,7 @@
 package io.mishkav.generalparking.domain.repositories
 
 import io.mishkav.generalparking.domain.entities.ParkingScheme
+import io.mishkav.generalparking.domain.entities.ParkingShortInfo
 
 interface IMapDatabaseRepository {
     suspend fun getParkingCoordinates(): Map<String, String>
@@ -18,5 +19,7 @@ interface IMapDatabaseRepository {
         floor: Int,
         placeCoordinates: String
     )
+
     suspend fun getAutoNumber(): String
+    suspend fun getParkingShortInfo(): Map<String, ParkingShortInfo>
 }
