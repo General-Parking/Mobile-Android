@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -37,11 +38,18 @@ import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.components.buttons.TextButton
 import io.mishkav.generalparking.ui.screens.scheme.SchemeViewModel
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts
+import io.mishkav.generalparking.ui.theme.Gray200
 import io.mishkav.generalparking.ui.theme.Shapes
+import io.mishkav.generalparking.ui.theme.Typography
+import io.mishkav.generalparking.ui.theme.generalParkingDarkBackground
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
 import io.mishkav.generalparking.ui.utils.getGoogleMapStyleOption
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import kotlin.math.abs
 
 @Composable
 fun MapScreen(
@@ -57,6 +65,12 @@ fun MapScreen(
     val isArrivedResult by viewModel.isArrivedResult.collectAsState()
     val isExit by viewModel.isExit.collectAsState()
     val isExitResult by viewModel.isExitResult.collectAsState()
+
+    val timeArrive by viewModel.timeArrive
+    val timeReservation by viewModel.timeReservation
+    val timeExitResult by viewModel.timeExitResult.collectAsState()
+    val priceParkingResult by viewModel.priceParkingResult.collectAsState()
+    val bookingRatioResult by viewModel.bookingRatioResult.collectAsState()
 
     val schemeViewModel: SchemeViewModel = viewModel()
     val selectedParkingPlace by schemeViewModel.selectedParkingPlace.collectAsState()
@@ -170,33 +184,60 @@ fun MapScreen(
             )
             is SuccessResult ->
                 if (isExit == "exit")
-                    AlertDialog(
-                        onDismissRequest = {},
-                        text = {
-                            Column {
-                                ScreenTitle(
-                                    text = stringResource(R.string.see_you_again)
-                                )
-                            }
-                        },
-                        backgroundColor = MaterialTheme.colorScheme.background,
-                        buttons = {
-                            Row(
-                                modifier = Modifier.padding(all = 8.dp),
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                TextButton(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    text = stringResource(R.string.finish),
-                                    onClick = {
-                                        viewModel.resetIsExit()
-                                        schemeViewModel.removeParkingPlaceReservation(-1)
-                                        navController.navigate(Routes.map)
+                    timeExitResult.also { exitResult ->
+                        when (exitResult) {
+                            is ErrorResult -> OnErrorResult(
+                                onClick = {
+                                    viewModel.onOpen()
+                                },
+                                message = exitResult.message ?: R.string.on_error_def,
+                                navController = navController,
+                                isTopAppBarAvailable = false
+                            )
+                            is SuccessResult ->
+                                bookingRatioResult.also { bookResult ->
+                                when (bookResult) {
+                                    is ErrorResult -> OnErrorResult(
+                                        onClick = {
+                                            viewModel.onOpen()
+                                        },
+                                        message = bookResult.message ?: R.string.on_error_def,
+                                        navController = navController,
+                                        isTopAppBarAvailable = false
+                                    )
+                                    is SuccessResult ->
+                                        ExitAlert(
+                                            timeExitResult = timeExitResult.data!!,
+                                            timeArriveResult = timeArrive,
+                                            timeReservationResult = timeReservation,
+                                            priceParking = priceParkingResult.data!!,
+                                            bookingRatio = bookingRatioResult.data!!,
+                                            onClick = {
+                                                schemeViewModel.removeParkingPlaceReservation(-1)
+                                                viewModel.resetIsExit()
+                                                navController.navigate(Routes.map)
+                                            }
+                                        )
+                                    is LoadingResult -> Box(
+                                        modifier = Modifier
+                                            .background(MaterialTheme.colorScheme.background)
+                                            .fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularLoader()
                                     }
-                                )
+                                }
+                            }
+                            is LoadingResult -> Box(
+                                modifier = Modifier
+                                    .background(MaterialTheme.colorScheme.background)
+                                    .fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularLoader()
                             }
                         }
-                    )
+                    }
             is LoadingResult -> Box(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.background)
@@ -311,6 +352,105 @@ fun MapScreenContent(
     }
 }
 
+@Composable
+fun ExitAlert(
+    timeExitResult: String,
+    timeArriveResult: String,
+    timeReservationResult: String,
+    priceParking: Long,
+    bookingRatio: Double,
+    onClick: () -> Unit = {}
+) {
+
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
+    var timeExit = LocalDateTime.parse(timeExitResult, formatter)
+    var timeArrive = LocalDateTime.parse(timeArriveResult, formatter)
+    var timeReservation = LocalDateTime.parse(timeReservationResult, formatter)
+
+    var resultParkingPrice = (priceParking / 60).toInt() * abs(Duration.between(timeArrive, timeExit).toMinutes()).toInt()
+    var resultRetentionPrice = ((priceParking / 60).toInt() * bookingRatio * abs(Duration.between(timeReservation, timeArrive).toMinutes())).toInt()
+
+    AlertDialog(
+        onDismissRequest = {},
+        text = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                ScreenTitle(
+                    text = stringResource(R.string.see_you_again),
+                    modifier = Modifier
+                        .padding(vertical = dimensionResource(R.dimen.standard_padding))
+                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .padding(vertical = dimensionResource(R.dimen.standard_padding))
+                        .fillMaxWidth()
+                        .clip(
+                            RoundedCornerShape(
+                                dimensionResource(R.dimen.bottom_shape),
+                            )
+                        )
+                        .background(Gray200)
+                        .padding(dimensionResource(R.dimen.standard_padding))
+                ) {
+                    Text(
+                        text = stringResource(R.string.time_exit_alert),
+                        color = generalParkingDarkBackground,
+                        style = Typography.body1
+                    )
+                    Text(
+                        text = "${abs(Duration.between(timeArrive, timeExit).toMinutes())} ${stringResource(R.string.minutes_exit_alert)}",
+                        color = generalParkingDarkBackground,
+                        style = Typography.body1
+                    )
+                }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(
+                            RoundedCornerShape(
+                                dimensionResource(R.dimen.bottom_shape),
+                            )
+                        )
+                        .background(Gray200)
+                        .padding(dimensionResource(R.dimen.standard_padding))
+                ) {
+                    Text(
+                        text = stringResource(R.string.price_exit_alert),
+                        color = generalParkingDarkBackground,
+                        style = Typography.body1
+                    )
+                    Text(
+                        text = "$resultParkingPrice₽ + $resultRetentionPrice₽",
+                        color = generalParkingDarkBackground,
+                        style = Typography.body1
+                    )
+                    Spacer(Modifier.height(20.dp))
+                }
+            }
+        },
+        backgroundColor = MaterialTheme.colorScheme.background,
+        buttons = {
+            Row(
+                modifier = Modifier.padding(all = 8.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                TextButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.finish),
+                    onClick = onClick
+                )
+            }
+        }
+    )
+}
 object Coordinates {
     object Moscow {
         const val longitude = 37.618423

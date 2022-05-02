@@ -69,13 +69,36 @@ fun BottomTimerScreen(
                 navController = navController,
                 isTopAppBarAvailable = true
             )
-            is SuccessResult -> BottomTimerScreenContent(
-                name = name,
-                textAddress = currentParkingAddress,
-                period = bookingTimeResult.data ?: 60,
-                navigateToSchemeScreen = navigateToSchemeScreen,
-                timeReservationResult = timeReservation
-            )
+            is SuccessResult -> bookingTimeResult.also { bookingResult ->
+                when (bookingResult) {
+                    is ErrorResult -> OnErrorResult(
+                        onClick = {
+                            viewModel.onOpen()
+                        },
+                        message = bookingResult.message ?: R.string.on_error_def,
+                        navController = navController,
+                        isTopAppBarAvailable = true
+                    )
+                    is SuccessResult -> BottomTimerScreenContent(
+                        name = name,
+                        textAddress = currentParkingAddress,
+                        period = bookingTimeResult.data!!,
+                        navigateToSchemeScreen = navigateToSchemeScreen,
+                        timeReservationResult = timeReservation
+                    )
+                    is LoadingResult -> {
+                        Box(
+                            modifier = Modifier
+                                .alpha(0.5f)
+                                .background(MaterialTheme.colorScheme.background)
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularLoader()
+                        }
+                    }
+                }
+            }
             is LoadingResult -> Box(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.background)
@@ -83,31 +106,6 @@ fun BottomTimerScreen(
                 contentAlignment = Alignment.Center
             ) {
                 CircularLoader()
-            }
-        }
-    }
-
-    bookingTimeResult.also { result ->
-        when (result) {
-            is ErrorResult -> OnErrorResult(
-                onClick = {
-                    viewModel.onOpen()
-                },
-                message = result.message ?: R.string.on_error_def,
-                navController = navController,
-                isTopAppBarAvailable = true
-            )
-            is SuccessResult -> {}
-            is LoadingResult -> {
-                Box(
-                    modifier = Modifier
-                        .alpha(0.5f)
-                        .background(MaterialTheme.colorScheme.background)
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularLoader()
-                }
             }
         }
     }
@@ -223,7 +221,7 @@ fun TimerBar(
     timeReservationResult: String,
     darkTheme: Boolean = isSystemInDarkTheme()
 ) {
-    //var timeReservation = LocalDateTime.of(2022,4,20,14,30)
+
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
     var timeReservation = LocalDateTime.parse(timeReservationResult, formatter)
 

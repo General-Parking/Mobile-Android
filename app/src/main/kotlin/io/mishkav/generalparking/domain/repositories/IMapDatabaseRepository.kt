@@ -20,9 +20,17 @@ interface IMapDatabaseRepository {
         placeCoordinates: String
     )
     suspend fun getAutoNumber(): String
-    suspend fun getTimeReservation(myCallback: MapDatabaseRepository.TimeCallback): String
+    suspend fun getTimeReservation(myCallback: MapDatabaseRepository.TimeCallback)
     suspend fun getBookingTime(): Long
-    suspend fun getTimeArrive(myCallback: MapDatabaseRepository.TimeCallback): String
+    suspend fun getPriceParking(
+        address: String,
+        floor: String
+    ): Long
+    suspend fun getBookingRatio(
+        address: String,
+        floor: String
+    ): Double
+    suspend fun getTimeArrive(myCallback: MapDatabaseRepository.TimeCallback)
     suspend fun getIsArrived(): String
     suspend fun resetIsArrived()
     suspend fun getIsExit(): String

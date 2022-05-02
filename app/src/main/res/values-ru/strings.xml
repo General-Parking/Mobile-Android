@@ -80,5 +80,8 @@
     <string name="time_on_parking">Время на паркинге:</string>
     <string name="see_you_again">До новых встреч!</string>
     <string name="finish">Завершить</string>
+    <string name="time_exit_alert">Время:</string>
+    <string name="price_exit_alert">Стоимость:</string>
+    <string name="minutes_exit_alert">минут</string>
 
 </resources>

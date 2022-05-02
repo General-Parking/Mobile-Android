@@ -15,12 +15,15 @@ import io.mishkav.generalparking.domain.entities.ParkingScheme
 import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 import androidx.compose.runtime.setValue
 import io.mishkav.generalparking.state.Session
 import timber.log.Timber
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 class MapDatabaseRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
@@ -82,8 +85,8 @@ class MapDatabaseRepository @Inject constructor(
         placeCoordinates: String, //i_j
         autoNumber: String
     ) {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS", Locale.getDefault())
-        val timeReservation = dateFormat.format(Date())
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
+        val timeReservation = OffsetDateTime.now(ZoneOffset.UTC).format(formatter)
 
         //Check
         val checkReservation = firebaseDatabase
@@ -197,7 +200,7 @@ class MapDatabaseRepository @Inject constructor(
             .getValue() as String
     }
 
-    override suspend fun getTimeReservation(myCallback:TimeCallback): String {
+    override suspend fun getTimeReservation(myCallback:TimeCallback) {
         val timeReservation = TimeMutable()
 
         firebaseDatabase
@@ -216,7 +219,6 @@ class MapDatabaseRepository @Inject constructor(
                     Timber.tag(TAG).w(error.toException(), "loadPost:onCancelled")
                 }
             })
-        return timeReservation.time
     }
 
     override suspend fun getBookingTime(): Long {
@@ -227,7 +229,29 @@ class MapDatabaseRepository @Inject constructor(
             .getValue() as Long
     }
 
-    override suspend fun getTimeArrive(myCallback:TimeCallback): String {
+    override suspend fun getPriceParking(
+        address: String,
+        floor: String
+    ): Long {
+        return firebaseDatabase
+            .child("parking/$address/$floor/price_parking")
+            .get()
+            .await()
+            .getValue() as Long
+    }
+
+    override suspend fun getBookingRatio(
+        address: String,
+        floor: String
+    ): Double {
+        return firebaseDatabase
+            .child("parking/$address/$floor/booking_ratio")
+            .get()
+            .await()
+            .getValue() as Double
+    }
+
+    override suspend fun getTimeArrive(myCallback:TimeCallback) {
         val timeArrive = TimeMutable()
 
         firebaseDatabase
@@ -246,7 +270,6 @@ class MapDatabaseRepository @Inject constructor(
                     Timber.tag(TAG).w(error.toException(), "loadPost:onCancelled")
                 }
             })
-        return timeArrive.time
     }
 
     override suspend fun getIsArrived(): String {
@@ -315,6 +338,18 @@ class MapDatabaseRepository @Inject constructor(
             .await()
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/time_reservation")
+            .setValue(EMPTY_STRING)
+            .await()
+        firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/reservation_address")
+            .setValue(EMPTY_STRING)
+            .await()
+        firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/reservation_level")
+            .setValue(EMPTY_STRING)
+            .await()
+        firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/reservation_place")
             .setValue(EMPTY_STRING)
             .await()
     }

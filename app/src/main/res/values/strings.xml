@@ -81,6 +81,9 @@
     <string name="time_on_parking">Time on parking:</string>
     <string name="see_you_again">See you again!</string>
     <string name="finish">Finish</string>
+    <string name="time_exit_alert">Time:</string>
+    <string name="price_exit_alert">Price:</string>
+    <string name="minutes_exit_alert">minutes</string>
 
 
 </resources>

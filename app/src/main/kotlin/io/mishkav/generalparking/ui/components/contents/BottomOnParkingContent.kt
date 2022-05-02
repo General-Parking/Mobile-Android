@@ -2,9 +2,11 @@ package io.mishkav.generalparking.ui.components.contents
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -13,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
@@ -50,6 +53,7 @@ fun BottomOnParkingScreen(
     val currentParkingAddress by viewModel.currentParkingAddress.collectAsState()
     val timeArriveResult by viewModel.timeArriveResult.collectAsState()
     val timeArrive by viewModel.timeArrive
+    val priceParkingResult by viewModel.priceParkingResult.collectAsState()
 
     timeArriveResult.also { result ->
         when (result) {
@@ -61,12 +65,36 @@ fun BottomOnParkingScreen(
                 navController = navController,
                 isTopAppBarAvailable = true
             )
-            is SuccessResult -> BottomOnParkingScreenContent(
-                name = name,
-                textAddress = currentParkingAddress,
-                navigateToSchemeScreen = navigateToSchemeScreen,
-                timeArriveResult = timeArrive
-            )
+            is SuccessResult -> priceParkingResult.also { priceResult ->
+                when (priceResult) {
+                    is ErrorResult -> OnErrorResult(
+                        onClick = {
+                            viewModel.onOpen()
+                        },
+                        message = priceResult.message ?: R.string.on_error_def,
+                        navController = navController,
+                        isTopAppBarAvailable = true
+                    )
+                    is SuccessResult -> BottomOnParkingScreenContent(
+                        name = name,
+                        textAddress = currentParkingAddress,
+                        priceParking = priceParkingResult.data!!,
+                        navigateToSchemeScreen = navigateToSchemeScreen,
+                        timeArriveResult = timeArrive
+                    )
+                    is LoadingResult -> {
+                        Box(
+                            modifier = Modifier
+                                .alpha(0.5f)
+                                .background(MaterialTheme.colorScheme.background)
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularLoader()
+                        }
+                    }
+                }
+            }
             is LoadingResult -> Box(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.background)
@@ -84,7 +112,7 @@ fun BottomOnParkingScreenContent(
     modifier: Modifier = Modifier,
     name: String = stringResource(R.string.zeros),
     textAddress: String = stringResource(R.string.bottom_title),
-    textCost: String = stringResource(R.string.minute_cost),
+    priceParking: Long,
     timeArriveResult: String,
     navigateToSchemeScreen: () -> Unit = {}
 ) = Column(
@@ -102,58 +130,24 @@ fun BottomOnParkingScreenContent(
         text = "${stringResource(R.string.chosen_seat)} $name"
     )
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        IconTextButton(
-            icon = Icons.Filled.HourglassEmpty,
-            text = stringResource(R.string.time_on_parking),
-            color = Color.White,
-            tint = MaterialTheme.colorScheme.onPrimary,
-            onClick = {}
-        )
-        Spacer(Modifier.width(5.dp))
-        OnParkingBar(
-            timeArriveResult = timeArriveResult
-        )
-    }
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = dimensionResource(R.dimen.standard_padding))
-            .horizontalScroll(rememberScrollState())
-    ) {
-        SimpleIconTextButton(
-            icon = Icons.Filled.ZoomOutMap,
-            text = stringResource(R.string.scheme),
-            color = MaterialTheme.colorScheme.primary,
-            onClick = navigateToSchemeScreen
-        )
-        Spacer(Modifier.weight(1f))
-        Text(
-            text = textCost,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
-        SimpleIconTextButton(
-            icon = Icons.Outlined.Info,
-            text = stringResource(R.string.more),
-            onClick = {}
-        )
-    }
+    OnParkingBar(
+        timeArriveResult = timeArriveResult,
+        priceParking = priceParking,
+        navigateToSchemeScreen = navigateToSchemeScreen
+    )
 }
 
 @Composable
 fun OnParkingBar(
-    timeArriveResult: String
+    timeArriveResult: String,
+    priceParking: Long,
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    navigateToSchemeScreen: () -> Unit = {}
 ) {
 
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
     val timeArrive = LocalDateTime.parse(timeArriveResult, formatter)
-    //val timeArrive = LocalDateTime.of(2022,4,20,14,30)
+
     var diffH = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeArrive).toHoursPart())
     var diffMin = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeArrive).toMinutesPart())
     var diffSec = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeArrive).toSecondsPart())
@@ -167,6 +161,12 @@ fun OnParkingBar(
         )
     }
 
+    var currPrice by remember {
+        mutableStateOf(
+            (priceParking/60).toInt()*diffMin
+        )
+    }
+
     LaunchedEffect(Unit) {
         while (true) {
             diffH = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeArrive).toHoursPart())
@@ -176,26 +176,90 @@ fun OnParkingBar(
                 0 -> String.format("%02d:%02d", diffMin, diffSec)
                 else -> String.format("%02d:%02d:%02d", diffH, diffMin, diffSec)
             }
+            currPrice = (priceParking / 60).toInt() * (diffH*60+diffMin)
             delay((1000).toLong())
         }
     }
 
-    Box(
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .clip(
-                RoundedCornerShape(
-                    dimensionResource(R.dimen.bottom_shape),
-                )
-            )
-            .background(Gray200)
+            .fillMaxWidth()
     ) {
-        Text(
-            text = currTime,
-            color = generalParkingDarkBackground,
-            style = Typography.body1,
-            modifier = Modifier
-                .padding(horizontal = dimensionResource(R.dimen.standard_padding))
+        IconTextButton(
+            icon = Icons.Filled.HourglassEmpty,
+            text = stringResource(R.string.time_on_parking),
+            color = Color.White,
+            enabled = false,
+            tint = MaterialTheme.colorScheme.onPrimary,
+            onClick = {}
         )
+        Spacer(Modifier.width(5.dp))
+        Box(
+            modifier = Modifier
+                .clip(
+                    RoundedCornerShape(
+                        dimensionResource(R.dimen.bottom_shape),
+                    )
+                )
+                .background(Gray200)
+        ) {
+            Text(
+                text = currTime,
+                color = generalParkingDarkBackground,
+                style = Typography.body1,
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(R.dimen.standard_padding))
+            )
+        }
+    }
+    Row(
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = dimensionResource(R.dimen.standard_padding))
+            .horizontalScroll(rememberScrollState())
+    ) {
+        SimpleIconTextButton(
+            icon = Icons.Filled.ZoomOutMap,
+            text = stringResource(R.string.scheme),
+            color = MaterialTheme.colorScheme.primary,
+            onClick = navigateToSchemeScreen
+        )
+        Spacer(
+            Modifier.width(
+                dimensionResource(R.dimen.standard_padding)
+            )
+        )
+        Row(
+            modifier = Modifier
+                .clip(
+                    RoundedCornerShape(
+                        dimensionResource(R.dimen.bottom_shape),
+                    )
+                )
+                .background(
+                    when {
+                        darkTheme -> generalParkingLightBackground
+                        else -> Gray400
+                    }
+                )
+                .padding(dimensionResource(R.dimen.standard_padding))
+        ) {
+            Icon(
+                imageVector = Icons.Filled.CreditCard,
+                contentDescription = stringResource(R.string.space),
+                tint = MaterialTheme.colorScheme.background
+            )
+            Text(
+                text = "$currPrice ₽",
+                color = MaterialTheme.colorScheme.background,
+                style = Typography.body1,
+                modifier = Modifier
+                    .padding(start = dimensionResource(R.dimen.half_standard_padding))
+            )
+        }
     }
 }
 
@@ -204,6 +268,7 @@ fun OnParkingBar(
 fun PreviewBottomOnParkingScreen() {
     BottomOnParkingScreenContent(
         navigateToSchemeScreen = {},
+        priceParking = 100,
         timeArriveResult = ""
     )
 }

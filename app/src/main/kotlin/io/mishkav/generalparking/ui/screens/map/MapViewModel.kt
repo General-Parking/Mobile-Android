@@ -23,10 +23,13 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
 
     val parkingCoordinatesResult = MutableResultFlow<Map<Pair<Double, Double>, String>>()
     val autoNumberResult = MutableResultFlow<Unit>()
-    val timeReservationResult = MutableResultFlow<String>()
+    val timeReservationResult = MutableResultFlow<Unit>()
     var timeReservation = mutableStateOf("")
     val bookingTimeResult = MutableResultFlow<Long>()
-    val timeArriveResult = MutableResultFlow<String>()
+    val timeExitResult = MutableResultFlow<String>()
+    val priceParkingResult = MutableResultFlow<Long>()
+    val bookingRatioResult = MutableResultFlow<Double>()
+    val timeArriveResult = MutableResultFlow<Unit>()
     var timeArrive = mutableStateOf("")
     val isArrivedResult = MutableResultFlow<String>()
     val isExitResult = MutableResultFlow<String>()
@@ -43,9 +46,12 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
         getParkingCoordinates()
         setAutoNumber()
         getBookingTime()
+        getPriceParking()
+        getBookingRatio()
         getTimeArrive()
         getIsArrived()
         getIsExit()
+        getTimeExit()
         getTimeReservation()
         if (timeReservation.value == "")
             session.changeUserState("")
@@ -79,6 +85,30 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     fun getBookingTime() = viewModelScope.launch {
         bookingTimeResult.loadOrError {
             mapDatabaseRepository.getBookingTime()
+        }
+    }
+
+    fun getTimeExit() = viewModelScope.launch {
+        timeExitResult.loadOrError {
+            mapDatabaseRepository.getTimeExit()
+        }
+    }
+
+    fun getPriceParking() = viewModelScope.launch {
+        priceParkingResult.loadOrError {
+            mapDatabaseRepository.getPriceParking(
+                address = currentParkingAddress.value,
+                floor = "-1"
+            )
+        }
+    }
+
+    fun getBookingRatio() = viewModelScope.launch {
+        bookingRatioResult.loadOrError {
+            mapDatabaseRepository.getBookingRatio(
+                address = currentParkingAddress.value,
+                floor = "-1"
+            )
         }
     }
 
