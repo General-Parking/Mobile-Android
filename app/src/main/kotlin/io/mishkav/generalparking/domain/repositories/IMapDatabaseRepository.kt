@@ -19,6 +19,7 @@ interface IMapDatabaseRepository {
         floor: Int,
         placeCoordinates: String
     )
+
     suspend fun getAutoNumber(): String
     suspend fun getParkingShortInfo(): Map<String, ParkingShortInfo>
 }

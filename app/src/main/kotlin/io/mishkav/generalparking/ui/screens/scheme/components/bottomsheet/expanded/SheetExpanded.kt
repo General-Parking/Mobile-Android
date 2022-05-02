@@ -28,7 +28,7 @@ fun SheetExpanded(
             .fillMaxWidth()
             .fillMaxHeight(0.18f)
             .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
-            .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
+            .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
             .background(MaterialTheme.colorScheme.background)
     ) {
         content()

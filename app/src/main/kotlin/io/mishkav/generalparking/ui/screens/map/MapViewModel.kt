@@ -22,7 +22,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
 
     val parkingCoordinatesResult = MutableResultFlow<Map<Pair<Double, Double>, String>>()
     val parkingShortInfoResult = MutableResultFlow<Map<String, ParkingShortInfo>>()
-    val autoNumberResult =  MutableResultFlow<Unit>()
+    val autoNumberResult = MutableResultFlow<Unit>()
     val currentParkingAddress by lazy { session.currentParkingAddress }
 
     init {
