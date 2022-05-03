@@ -59,11 +59,6 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
         getParkingScheme(-1)
     }
 
-    fun onOpenMap() {
-        isCurrentUserReservedParkingPlace.value = _isCurrentUserReservedParkingPlace.value
-        selectedParkingPlace.value = _selectedParkingPlace.value
-    }
-
     fun getParkingScheme(floor: Int) = viewModelScope.launch {
         parkingSchemeResult.loadOrError {
             mapDatabaseRepository.getParkingScheme(currentParkingAddress.value, floor)

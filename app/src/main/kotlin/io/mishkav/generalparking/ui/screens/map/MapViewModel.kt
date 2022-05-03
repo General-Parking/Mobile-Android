@@ -22,6 +22,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     lateinit var session: Session
 
     val parkingCoordinatesResult = MutableResultFlow<Map<Pair<Double, Double>, String>>()
+    val reservationAddressResult = MutableResultFlow<String>()
     val autoNumberResult = MutableResultFlow<Unit>()
     val timeReservationResult = MutableResultFlow<Unit>()
     var timeReservation = mutableStateOf("")
@@ -34,6 +35,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     val isArrivedResult = MutableResultFlow<String>()
     val isExitResult = MutableResultFlow<String>()
     val currentParkingAddress by lazy { session.currentParkingAddress }
+    val selectedParkingPlace by lazy { session.selectedParkingPlace }
     val userState by lazy { session.userState }
     val isArrived by lazy { session.isArrived }
     val isExit by lazy { session.isExit }
@@ -44,6 +46,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
 
     fun onOpen() {
         getParkingCoordinates()
+        getReservationAddress()
         setAutoNumber()
         getBookingTime()
         getPriceParking()
@@ -53,12 +56,6 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
         getIsExit()
         getTimeExit()
         getTimeReservation()
-        if (timeReservation.value == "")
-            session.changeUserState("")
-        else if (timeReservation.value != "" && timeArrive.value == "")
-            session.changeUserState("reserved")
-        else if (timeArrive.value != "")
-            session.changeUserState("arrived")
     }
 
     fun setCurrentParkingAddress(address: String) {
@@ -77,6 +74,13 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
             mapDatabaseRepository.getTimeReservation(object: MapDatabaseRepository.TimeCallback {
                 override fun onCallback(value:String) {
                     timeReservation.value = value
+
+                    if (timeReservation.value == "")
+                        session.changeUserState("")
+                    else if (timeReservation.value != "" && timeArrive.value == "")
+                        session.changeUserState("reserved")
+                    else if (timeArrive.value != "")
+                        session.changeUserState("arrived")
                 }
             })
         }
@@ -117,6 +121,13 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
             mapDatabaseRepository.getTimeArrive(object: MapDatabaseRepository.TimeCallback {
                 override fun onCallback(value:String) {
                     timeArrive.value = value
+
+                    if (timeReservation.value == "")
+                        session.changeUserState("")
+                    else if (timeReservation.value != "" && timeArrive.value == "")
+                        session.changeUserState("reserved")
+                    else if (timeArrive.value != "")
+                        session.changeUserState("arrived")
                 }
             })
         }
@@ -158,6 +169,12 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
             }
 
             coordinatesMap
+        }
+    }
+
+    fun getReservationAddress() = viewModelScope.launch {
+        reservationAddressResult.loadOrError {
+            mapDatabaseRepository.getReservationAddress()
         }
     }
 }

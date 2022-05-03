@@ -21,6 +21,7 @@ import io.mishkav.generalparking.state.Session
 import timber.log.Timber
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -33,7 +34,6 @@ class MapDatabaseRepository @Inject constructor(
     @Inject
     lateinit var session: Session
 
-
     class TimeMutable {
         var time by mutableStateOf("")
     }
@@ -42,12 +42,23 @@ class MapDatabaseRepository @Inject constructor(
         fun onCallback(value: String)
     }
 
+    val timeReservation = TimeMutable()
+    val timeArrive = TimeMutable()
+
     override suspend fun getParkingCoordinates(): Map<String, String> {
         return firebaseDatabase
             .child(PATH_TO_PARKING_COORDINATES)
             .get()
             .await()
             .getValue() as Map<String, String>
+    }
+
+    override suspend fun getReservationAddress(): String {
+        return firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/reservation_address")
+            .get()
+            .await()
+            .getValue() as String
     }
 
     override suspend fun getParkingScheme(address: String, floor: Int): ParkingScheme {
@@ -86,7 +97,7 @@ class MapDatabaseRepository @Inject constructor(
         autoNumber: String
     ) {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
-        val timeReservation = OffsetDateTime.now(ZoneOffset.UTC).format(formatter)
+        val timeReservation = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter)
 
         //Check
         val checkReservation = firebaseDatabase
@@ -201,7 +212,6 @@ class MapDatabaseRepository @Inject constructor(
     }
 
     override suspend fun getTimeReservation(myCallback:TimeCallback) {
-        val timeReservation = TimeMutable()
 
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/time_reservation")
@@ -252,7 +262,6 @@ class MapDatabaseRepository @Inject constructor(
     }
 
     override suspend fun getTimeArrive(myCallback:TimeCallback) {
-        val timeArrive = TimeMutable()
 
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/time_arrive")
@@ -295,6 +304,7 @@ class MapDatabaseRepository @Inject constructor(
     }
 
     override suspend fun resetIsArrived() {
+        session.changeUserState("arrived")
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/arrive")
             .setValue(EMPTY_STRING)
@@ -324,6 +334,7 @@ class MapDatabaseRepository @Inject constructor(
     }
 
     override suspend fun resetIsExit() {
+        session.changeUserState("")
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/exit")
             .setValue(EMPTY_STRING)

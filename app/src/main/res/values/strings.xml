@@ -84,6 +84,7 @@
     <string name="time_exit_alert">Time:</string>
     <string name="price_exit_alert">Price:</string>
     <string name="minutes_exit_alert">minutes</string>
+    <string name="parking_change_body">You have already booked a spot in another car park, cancel your reservation if you want to book in this car park</string>
 
 
 </resources>

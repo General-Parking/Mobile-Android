@@ -13,9 +13,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -38,10 +41,7 @@ import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.components.buttons.TextButton
 import io.mishkav.generalparking.ui.screens.scheme.SchemeViewModel
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts
-import io.mishkav.generalparking.ui.theme.Gray200
-import io.mishkav.generalparking.ui.theme.Shapes
-import io.mishkav.generalparking.ui.theme.Typography
-import io.mishkav.generalparking.ui.theme.generalParkingDarkBackground
+import io.mishkav.generalparking.ui.theme.*
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
@@ -71,13 +71,12 @@ fun MapScreen(
     val timeExitResult by viewModel.timeExitResult.collectAsState()
     val priceParkingResult by viewModel.priceParkingResult.collectAsState()
     val bookingRatioResult by viewModel.bookingRatioResult.collectAsState()
-
-    val schemeViewModel: SchemeViewModel = viewModel()
-    val selectedParkingPlace by schemeViewModel.selectedParkingPlace.collectAsState()
+    val selectedParkingPlace by viewModel.selectedParkingPlace.collectAsState()
+    val reservationAddressResult by viewModel.reservationAddressResult.collectAsState()
+    val currentParkingAddress by viewModel.currentParkingAddress.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.onOpen()
-        schemeViewModel.onOpenMap()
     }
 
     parkingCoordinates.also { result ->
@@ -85,7 +84,6 @@ fun MapScreen(
             is ErrorResult -> OnErrorResult(
                 onClick = {
                     viewModel.onOpen()
-                    schemeViewModel.onOpenMap()
                 },
                 message = result.message ?: R.string.on_error_def,
                 navController = navController,
@@ -94,19 +92,44 @@ fun MapScreen(
             is SuccessResult -> when (autoNumber) {
                 is ErrorResult -> onError(result.message!!)
                 else -> {
-                    MapScreenContent(
-                        parkingCoordinates = parkingCoordinates.data ?: emptyMap(),
-                        selectedParkingPlace = selectedParkingPlace,
-                        userState = userState,
-                        navController = navController,
-                        setParkingAddress = viewModel::setCurrentParkingAddress,
-                        navigateToSchemeScreen = {
-                            navController.navigate(Routes.scheme)
-                        },
-                        navigateToProfileScreen = {
-                            navController.navigate(Routes.profile)
+                    reservationAddressResult.also { addressResult ->
+                        when (addressResult) {
+                            is ErrorResult -> OnErrorResult(
+                                onClick = {
+                                    viewModel.onOpen()
+                                },
+                                message = addressResult.message ?: R.string.on_error_def,
+                                navController = navController,
+                                isTopAppBarAvailable = true
+                            )
+                            is SuccessResult -> MapScreenContent(
+                                parkingCoordinates = parkingCoordinates.data ?: emptyMap(),
+                                selectedParkingPlace = selectedParkingPlace,
+                                userState = userState,
+                                navController = navController,
+                                reservationAddress = reservationAddressResult.data!!,
+                                currentAddress = currentParkingAddress,
+                                setParkingAddress = viewModel::setCurrentParkingAddress,
+                                navigateToSchemeScreen = {
+                                    navController.navigate(Routes.scheme)
+                                },
+                                navigateToProfileScreen = {
+                                    navController.navigate(Routes.profile)
+                                }
+                            )
+                            is LoadingResult -> {
+                                Box(
+                                    modifier = Modifier
+                                        .alpha(0.5f)
+                                        .background(MaterialTheme.colorScheme.background)
+                                        .fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularLoader()
+                                }
+                            }
                         }
-                    )
+                    }
                 }
             }
             is LoadingResult -> Box(
@@ -206,18 +229,21 @@ fun MapScreen(
                                         isTopAppBarAvailable = false
                                     )
                                     is SuccessResult ->
-                                        ExitAlert(
-                                            timeExitResult = timeExitResult.data!!,
-                                            timeArriveResult = timeArrive,
-                                            timeReservationResult = timeReservation,
-                                            priceParking = priceParkingResult.data!!,
-                                            bookingRatio = bookingRatioResult.data!!,
-                                            onClick = {
-                                                schemeViewModel.removeParkingPlaceReservation(-1)
-                                                viewModel.resetIsExit()
-                                                navController.navigate(Routes.map)
-                                            }
-                                        )
+                                        if (timeExitResult.data!! != "")
+                                            ExitAlert(
+                                                timeExitResult = timeExitResult.data!!,
+                                                timeArriveResult = timeArrive,
+                                                timeReservationResult = timeReservation,
+                                                priceParking = priceParkingResult.data!!,
+                                                bookingRatio = bookingRatioResult.data!!,
+                                                onClick = {
+                                                    viewModel.resetIsExit()
+                                                    navController.navigate(Routes.map)
+                                                }
+                                            )
+                                        else {
+                                            viewModel.getTimeExit()
+                                        }
                                     is LoadingResult -> Box(
                                         modifier = Modifier
                                             .background(MaterialTheme.colorScheme.background)
@@ -257,6 +283,8 @@ fun MapScreenContent(
     selectedParkingPlace: String = ParkingSchemeConsts.EMPTY_STRING,
     userState: String = "",
     navController: NavHostController,
+    reservationAddress: String,
+    currentAddress: String,
     setParkingAddress: (address: String) -> Unit = { _ -> },
     navigateToSchemeScreen: () -> Unit = {},
     navigateToProfileScreen: () -> Unit = {}
@@ -267,7 +295,8 @@ fun MapScreenContent(
     }
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
     val coroutineScope = rememberCoroutineScope()
-
+    val alertChangeParking = remember { mutableStateOf(false) }
+    val showAlertChangeParking = remember { mutableStateOf(false) }
 
     BottomSheetScaffold(
         sheetShape = RoundedCornerShape(
@@ -283,17 +312,71 @@ fun MapScreenContent(
             else -> MaterialTheme.colorScheme.background
         },
         sheetContent = {
+            Spacer(modifier = Modifier.height(1.dp)) //After a re-compose the sheetContent looses associated anchor
             when (userState) {
-                "reserved" -> BottomTimerScreen(
-                    name = selectedParkingPlace,
-                    navController = navController,
-                    navigateToSchemeScreen = navigateToSchemeScreen
-                )
-                "arrived" -> BottomOnParkingScreen(
-                    name = selectedParkingPlace,
-                    navController = navController,
-                    navigateToSchemeScreen = navigateToSchemeScreen
-                )
+                "reserved" -> when (alertChangeParking.value) {
+                    false ->
+                        BottomTimerScreen(
+                            name = selectedParkingPlace,
+                            navController = navController,
+                            navigateToSchemeScreen = navigateToSchemeScreen
+                        )
+                    else -> if (showAlertChangeParking.value)
+                        AlertDialog(
+                        onDismissRequest = {},
+                        text = {
+                            ScreenBody(
+                                text = stringResource(R.string.parking_change_body)
+                            )
+                        },
+                        backgroundColor = MaterialTheme.colorScheme.background,
+                        buttons = {
+                            Row(
+                                modifier = Modifier.padding(all = 8.dp),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                TextButton(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = stringResource(R.string.good_text),
+                                    onClick = {
+                                        showAlertChangeParking.value = false
+                                    }
+                                )
+                            }
+                        }
+                    )
+                }
+                "arrived" -> when (alertChangeParking.value) {
+                    false -> BottomOnParkingScreen(
+                        name = selectedParkingPlace,
+                        navController = navController,
+                        navigateToSchemeScreen = navigateToSchemeScreen
+                    )
+                    else ->  if (showAlertChangeParking.value)
+                        AlertDialog(
+                        onDismissRequest = {},
+                        text = {
+                            ScreenBody(
+                                text = stringResource(R.string.parking_change_body)
+                            )
+                        },
+                        backgroundColor = MaterialTheme.colorScheme.background,
+                        buttons = {
+                            Row(
+                                modifier = Modifier.padding(all = 8.dp),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                TextButton(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = stringResource(R.string.good_text),
+                                    onClick = {
+                                        showAlertChangeParking.value = false
+                                    }
+                                )
+                            }
+                        }
+                    )
+                }
                 else -> {
                     BottomScreen(
                         navigateToSchemeScreen = navigateToSchemeScreen
@@ -316,10 +399,16 @@ fun MapScreenContent(
                     val markerClick: (Marker) -> Boolean = {
                         setParkingAddress(address)
                         coroutineScope.launch {
-                            if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
-                                bottomSheetScaffoldState.bottomSheetState.expand()
+                            if (reservationAddress == "" || reservationAddress == address) {
+                                alertChangeParking.value = false
+                                if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+                                    bottomSheetScaffoldState.bottomSheetState.expand()
+                                } else {
+                                    bottomSheetScaffoldState.bottomSheetState.collapse()
+                                }
                             } else {
-                                bottomSheetScaffoldState.bottomSheetState.collapse()
+                                alertChangeParking.value = true
+                                showAlertChangeParking.value = true
                             }
                         }
                         false
@@ -363,12 +452,13 @@ fun ExitAlert(
 ) {
 
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
-    var timeExit = LocalDateTime.parse(timeExitResult, formatter)
-    var timeArrive = LocalDateTime.parse(timeArriveResult, formatter)
-    var timeReservation = LocalDateTime.parse(timeReservationResult, formatter)
+    val timeExit = LocalDateTime.parse(timeExitResult, formatter)
+    val timeArrive = LocalDateTime.parse(timeArriveResult, formatter)
+    val timeReservation = LocalDateTime.parse(timeReservationResult, formatter)
 
     var resultParkingPrice = (priceParking / 60).toInt() * abs(Duration.between(timeArrive, timeExit).toMinutes()).toInt()
-    var resultRetentionPrice = ((priceParking / 60).toInt() * bookingRatio * abs(Duration.between(timeReservation, timeArrive).toMinutes())).toInt()
+    val retentionDiff = abs(Duration.between(timeReservation, timeArrive).toMinutes()) - 60
+    var resultRetentionPrice = ((priceParking / 60).toInt() * bookingRatio * retentionDiff).toInt()
 
     AlertDialog(
         onDismissRequest = {},
@@ -428,7 +518,20 @@ fun ExitAlert(
                         style = Typography.body1
                     )
                     Text(
-                        text = "$resultParkingPrice₽ + $resultRetentionPrice₽",
+                        text = when {
+                            retentionDiff > 0 ->
+                                AnnotatedString(
+                                    text = "$resultParkingPrice₽"
+                                ).plus(
+                                    AnnotatedString(
+                                        text = " + $resultRetentionPrice₽",
+                                        spanStyle = SpanStyle(Yellow500)
+                                    )
+                                )
+                            else -> AnnotatedString(
+                                text = "$resultParkingPrice₽"
+                            )
+                        },
                         color = generalParkingDarkBackground,
                         style = Typography.body1
                     )

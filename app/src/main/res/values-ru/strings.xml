@@ -83,5 +83,6 @@
     <string name="time_exit_alert">Время:</string>
     <string name="price_exit_alert">Стоимость:</string>
     <string name="minutes_exit_alert">минут</string>
+    <string name="parking_change_body">Вы уже забронировали место на другой парковке, отмените бронь если хотите забронировать в этой парковке</string>
 
 </resources>

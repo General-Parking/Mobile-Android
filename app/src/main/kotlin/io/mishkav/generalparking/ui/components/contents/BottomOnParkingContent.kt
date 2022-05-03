@@ -37,9 +37,7 @@ import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
 import kotlinx.coroutines.delay
-import java.time.Duration
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.*
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
@@ -148,9 +146,9 @@ fun OnParkingBar(
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
     val timeArrive = LocalDateTime.parse(timeArriveResult, formatter)
 
-    var diffH = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeArrive).toHoursPart())
-    var diffMin = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeArrive).toMinutesPart())
-    var diffSec = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeArrive).toSecondsPart())
+    var diffH = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeArrive).toHoursPart())
+    var diffMin = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeArrive).toMinutesPart())
+    var diffSec = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeArrive).toSecondsPart())
 
     var currTime by remember {
         mutableStateOf(
@@ -169,9 +167,9 @@ fun OnParkingBar(
 
     LaunchedEffect(Unit) {
         while (true) {
-            diffH = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeArrive).toHoursPart())
-            diffMin = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeArrive).toMinutesPart())
-            diffSec = abs(Duration.between(LocalDateTime.now(ZoneOffset.UTC), timeArrive).toSecondsPart())
+            diffH = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeArrive).toHoursPart())
+            diffMin = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeArrive).toMinutesPart())
+            diffSec = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeArrive).toSecondsPart())
             currTime = when (diffH) {
                 0 -> String.format("%02d:%02d", diffMin, diffSec)
                 else -> String.format("%02d:%02d:%02d", diffH, diffMin, diffSec)
