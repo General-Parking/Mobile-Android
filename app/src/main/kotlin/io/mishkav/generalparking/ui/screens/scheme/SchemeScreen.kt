@@ -151,6 +151,7 @@ fun SchemeScreen(
     }
 }
 
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun SchemeScreenContent(
     textAddress: String = stringResource(R.string.bottom_title),

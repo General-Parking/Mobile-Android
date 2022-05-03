@@ -23,7 +23,6 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 class MapDatabaseRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
@@ -34,7 +33,7 @@ class MapDatabaseRepository @Inject constructor(
     lateinit var session: Session
 
     class TimeMutable {
-        var time by mutableStateOf("")
+        var time by mutableStateOf(EMPTY_STRING)
     }
 
     interface TimeCallback {
@@ -276,8 +275,6 @@ class MapDatabaseRepository @Inject constructor(
                     Timber.tag(TAG).i(timeArrive.time)
 
                     myCallback.onCallback(timeArrive.time)
-//                    if (timeArrive.time != EMPTY_STRING)
-//                        session.changeUserState("arrived")
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -296,7 +293,7 @@ class MapDatabaseRepository @Inject constructor(
                     isArrived.time = dataSnapshot.getValue() as String
                     Timber.tag(TAG).i(isArrived.time)
                     if (isArrived.time != "")
-                        session.changeIsArrived("arrived")
+                        session.changeIsArrived(ARRIVED_STATE)
                     else
                         session.changeIsArrived(EMPTY_STRING)
                 }
@@ -309,7 +306,7 @@ class MapDatabaseRepository @Inject constructor(
     }
 
     override suspend fun resetIsArrived() {
-        session.changeUserState("arrived")
+        session.changeUserState(ARRIVED_STATE)
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/arrive")
             .setValue(EMPTY_STRING)
@@ -325,8 +322,8 @@ class MapDatabaseRepository @Inject constructor(
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     isExit.time = dataSnapshot.getValue() as String
                     Timber.tag(TAG).i(isExit.time)
-                    if (isExit.time != "")
-                        session.changeIsExit("exit")
+                    if (isExit.time != EMPTY_STRING)
+                        session.changeIsExit(EXIT_STATE)
                     else
                         session.changeIsExit(EMPTY_STRING)
                 }
@@ -339,7 +336,6 @@ class MapDatabaseRepository @Inject constructor(
     }
 
     override suspend fun resetIsExit() {
-        session.changeUserState("")
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/exit")
             .setValue(EMPTY_STRING)
@@ -354,18 +350,6 @@ class MapDatabaseRepository @Inject constructor(
             .await()
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/time_reservation")
-            .setValue(EMPTY_STRING)
-            .await()
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/reservation_address")
-            .setValue(EMPTY_STRING)
-            .await()
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/reservation_level")
-            .setValue(EMPTY_STRING)
-            .await()
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/reservation_place")
             .setValue(EMPTY_STRING)
             .await()
     }
@@ -410,6 +394,10 @@ class MapDatabaseRepository @Inject constructor(
         private const val PATH_TO_FREE_PLACES = "free_places"
         private const val PATH_TO_PRICE_PARKING = "price_parking"
         private const val PATH_TO_TOTAL_PLACES = "total_places"
+
+        // States
+        private const val ARRIVED_STATE = "arrived"
+        private const val EXIT_STATE = "exit"
 
         private const val EMPTY_STRING = ""
         private const val SPACE = " "

@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.SwapCalls
+import androidx.compose.material.icons.filled.ZoomOutMap
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
@@ -80,7 +81,8 @@ fun BottomTimerScreen(
                     is SuccessResult -> BottomTimerScreenContent(
                         name = name,
                         textAddress = currentParkingAddress,
-                        period = bookingTimeResult.data!!,
+                        period = bookingTimeResult.data ?: 60,
+                        onRemoveReservationButtonClick = viewModel::removeParkingPlaceReservation,
                         navigateToSchemeScreen = navigateToSchemeScreen,
                         timeReservationResult = timeReservation
                     )
@@ -114,9 +116,9 @@ fun BottomTimerScreenContent(
     modifier: Modifier = Modifier,
     name: String = stringResource(R.string.zeros),
     textAddress: String = stringResource(R.string.bottom_title),
-    textCost: String = stringResource(R.string.minute_cost),
     period: Long,
     timeReservationResult: String,
+    onRemoveReservationButtonClick: () -> Unit = {},
     navigateToSchemeScreen: () -> Unit = {}
 ) = Column(
     modifier = Modifier
@@ -167,31 +169,6 @@ fun BottomTimerScreenContent(
             )
 
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = dimensionResource(R.dimen.standard_padding))
-                    .horizontalScroll(rememberScrollState())
-            ) {
-                SimpleIconTextButton(
-                    icon = Icons.Filled.SwapCalls,
-                    text = stringResource(R.string.route),
-                    color = MaterialTheme.colorScheme.primary,
-                    onClick = {}
-                )
-                Spacer(Modifier.weight(1f))
-                Text(
-                    text = textCost,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-                SimpleIconTextButton(
-                    icon = Icons.Outlined.Info,
-                    text = stringResource(R.string.more),
-                    onClick = {}
-                )
-            }
-            Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -200,15 +177,23 @@ fun BottomTimerScreenContent(
                     icon = Icons.Filled.Done,
                     text = stringResource(R.string.reserved),
                     color = Green600,
-                    onClick = navigateToSchemeScreen
+                    onClick = {}
                 )
                 Spacer(Modifier.width(5.dp))
                 SimpleIconButton(
                     icon = Icons.Filled.Delete,
                     color = Gray500,
-                    onClick = {}
+                    onClick = {
+                        onRemoveReservationButtonClick()
+                    }
                 )
             }
+            SimpleIconTextButton(
+                icon = Icons.Filled.ZoomOutMap,
+                text = stringResource(R.string.scheme),
+                color = MaterialTheme.colorScheme.primary,
+                onClick = navigateToSchemeScreen
+            )
         }
     }
 }
@@ -321,7 +306,6 @@ fun TimerBar(
                 modifier = Modifier
                     .padding(horizontal = dimensionResource(R.dimen.standard_padding))
             )
-
         }
     }
 }

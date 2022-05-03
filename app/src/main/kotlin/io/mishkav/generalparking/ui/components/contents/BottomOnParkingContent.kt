@@ -1,6 +1,5 @@
 package io.mishkav.generalparking.ui.components.contents
 
-import android.content.ContentValues
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -76,7 +75,7 @@ fun BottomOnParkingScreen(
                     is SuccessResult -> BottomOnParkingScreenContent(
                         name = name,
                         textAddress = currentParkingAddress,
-                        priceParking = priceParkingResult.data!!,
+                        priceParking = priceParkingResult.data ?: 60,
                         navigateToSchemeScreen = navigateToSchemeScreen,
                         timeArriveResult = timeArrive
                     )

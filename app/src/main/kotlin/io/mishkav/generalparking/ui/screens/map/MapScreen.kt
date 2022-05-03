@@ -39,7 +39,6 @@ import io.mishkav.generalparking.ui.components.errors.OnErrorResult
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.components.buttons.TextButton
-import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts
 import io.mishkav.generalparking.ui.theme.*
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
@@ -81,6 +80,7 @@ fun MapScreen(
     val bookingRatioResult by viewModel.bookingRatioResult.collectAsState()
     val selectedParkingPlace by viewModel.selectedParkingPlace.collectAsState()
     val reservationAddressResult by viewModel.reservationAddressResult.collectAsState()
+    val openArriveDialog = remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         viewModel.onOpen()
@@ -95,7 +95,7 @@ fun MapScreen(
                 isTopAppBarAvailable = false
             )
             is SuccessResult -> when (autoNumber) {
-                is ErrorResult -> onError(result.message!!)
+                is ErrorResult -> onError(result.message?: R.string.on_error_def)
                 else -> {
                     reservationAddressResult.also { addressResult ->
                         when (addressResult) {
@@ -112,7 +112,7 @@ fun MapScreen(
                                 selectedParkingPlace = selectedParkingPlace,
                                 userState = userState,
                                 navController = navController,
-                                reservationAddress = reservationAddressResult.data!!,
+                                reservationAddress = reservationAddressResult.data ?: "",
                                 setParkingAddress = viewModel::setCurrentParkingAddress,
                                 navigateToSchemeScreen = {
                                     navController.navigate(Routes.scheme)
@@ -158,7 +158,7 @@ fun MapScreen(
                 isTopAppBarAvailable = false
             )
             is SuccessResult ->
-                if (isArrived == "arrived")
+                if (isArrived == "arrived" && openArriveDialog.value)
                     AlertDialog(
                         onDismissRequest = {},
                         text = {
@@ -182,7 +182,7 @@ fun MapScreen(
                                     text = stringResource(R.string.continue_text),
                                     onClick = {
                                         viewModel.resetIsArrived()
-                                        navController.navigate(Routes.map)
+                                        openArriveDialog.value = false
                                     }
                                 )
                             }
@@ -233,15 +233,16 @@ fun MapScreen(
                                         isTopAppBarAvailable = false
                                     )
                                     is SuccessResult ->
-                                        if (timeExitResult.data!! != "")
+                                        if (timeExitResult.data ?: "" != "")
                                             ExitAlert(
-                                                timeExitResult = timeExitResult.data!!,
+                                                timeExitResult = timeExitResult.data ?: "",
                                                 timeArriveResult = timeArrive,
                                                 timeReservationResult = timeReservation,
-                                                priceParking = priceParkingResult.data!!,
-                                                bookingRatio = bookingRatioResult.data!!,
+                                                priceParking = priceParkingResult.data ?: 60,
+                                                bookingRatio = bookingRatioResult.data ?: 0.2,
                                                 onClick = {
                                                     viewModel.resetIsExit()
+                                                    viewModel.removeParkingPlaceReservation()
                                                     navController.navigate(Routes.map)
                                                 }
                                             )
@@ -284,7 +285,7 @@ fun MapScreen(
 @Composable
 fun MapScreenContent(
     parkingCoordinates: Map<Pair<Double, Double>, String> = emptyMap(),
-    selectedParkingPlace: String = ParkingSchemeConsts.EMPTY_STRING,
+    selectedParkingPlace: String = "",
     userState: String = "",
     navController: NavHostController,
     reservationAddress: String,
@@ -296,7 +297,9 @@ fun MapScreenContent(
     val cameraPosition = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(moscowLatLng, 11f)
     }
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = BottomSheetState(BottomSheetValue.Expanded)
+    )
     val coroutineScope = rememberCoroutineScope()
     val alertChangeParking = remember { mutableStateOf(false) }
     val showAlertChangeParking = remember { mutableStateOf(false) }
@@ -557,6 +560,7 @@ fun ExitAlert(
         }
     )
 }
+
 object Coordinates {
     object Moscow {
         const val longitude = 37.618423
