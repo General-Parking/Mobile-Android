@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import io.mishkav.generalparking.GeneralParkingApp
 import io.mishkav.generalparking.dagger.AppComponent
 import io.mishkav.generalparking.domain.entities.ParkingShortInfo
+import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
 import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import io.mishkav.generalparking.state.Session
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
@@ -18,11 +19,15 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     lateinit var mapDatabaseRepository: IMapDatabaseRepository
 
     @Inject
+    lateinit var authDatabaseRepository: IAuthDatabaseRepository
+
+    @Inject
     lateinit var session: Session
 
     val parkingCoordinatesResult = MutableResultFlow<Map<Pair<Double, Double>, String>>()
     val parkingShortInfoResult = MutableResultFlow<Map<String, ParkingShortInfo>>()
     val autoNumberResult = MutableResultFlow<Unit>()
+    val isMinSdkVersionApproved = MutableResultFlow<Boolean>()
     val currentParkingAddress by lazy { session.currentParkingAddress }
 
     init {
@@ -30,9 +35,17 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     }
 
     fun onOpen() {
+        getMinSdkApprove()
         getParkingCoordinates()
         getParkingShortInfo()
         setAutoNumber()
+    }
+
+
+    fun getMinSdkApprove() = viewModelScope.launch {
+        isMinSdkVersionApproved.loadOrError {
+            authDatabaseRepository.isMinSdkVersionApproved()
+        }
     }
 
     fun setCurrentParkingAddress(address: String) {

@@ -48,8 +48,16 @@ fun MapScreen(
     val viewModel: MapViewModel = viewModel()
     val parkingCoordinates by viewModel.parkingCoordinatesResult.collectAsState()
     val autoNumber by viewModel.autoNumberResult.collectAsState()
+    val isMinSdkVersionApproved by viewModel.isMinSdkVersionApproved.collectAsState()
 
     LaunchedEffect(Unit) { viewModel.onOpen() }
+    isMinSdkVersionApproved.takeIf { it is SuccessResult }?.data?.let { result ->
+        LaunchedEffect(Unit) {
+            if (!result) {
+                navController.navigate(Routes.authorization)
+            }
+        }
+    }
 
     parkingCoordinates.also { result ->
         when (result) {

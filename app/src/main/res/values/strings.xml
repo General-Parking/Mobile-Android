@@ -57,6 +57,8 @@
     <string name="error_email_not_verified">Email not verified. Please, check your mailbox</string>
     <string name="error_null_user">There is no active user. Please, sign in</string>
     <string name="error_place_reserved">The place is already booked, try to choose another one</string>
+    <string name="error_min_sdk_version">Your app version is too old. Please update to the current version</string>
+
     <string name="go_reserve">Go to reservation</string>
     <string name="space" >" "</string>
     <string name="bottom_title">Street</string>

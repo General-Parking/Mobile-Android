@@ -56,6 +56,8 @@
     <string name="error_email_not_verified">Почта не подтверждена. Пожалуйста, проверьте свою почту</string>
     <string name="error_null_user">Нет активного пользователя, необходима авторизация</string>
     <string name="error_place_reserved">Место уже забронировано, попробуйте выбрать другое</string>
+    <string name="error_min_sdk_version">У вас слишком старая версия приложения. Пожалуйста, обновите до актуальной версии</string>
+
     <string name="go_reserve">Перейти к бронированию</string>
     <string name="space" >" "</string>
     <string name="bottom_title">Улица</string>
