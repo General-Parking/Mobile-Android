@@ -40,6 +40,8 @@ fun ParkingLotTile(
     parkingPlace: ParkingPlace,
     background: Color,
     coordinates: String,
+    floor: Int,
+    address: String,
     onClick: (state: SchemeState) -> Unit = { _ -> }
 ) = BaseTile(
     modifier = modifier
@@ -57,7 +59,9 @@ fun ParkingLotTile(
                     onClick(
                         SelectedPlaceState(
                             name = parkingPlace.name,
-                            coordinates = coordinates
+                            coordinates = coordinates,
+                            floor = floor,
+                            address = address
                         )
                     )
                 }
@@ -96,18 +100,30 @@ class NotSelectedPlaceState : SchemeState(
 
 class SelectedPlaceState(
     name: String,
-    coordinates: String
+    coordinates: String,
+    floor: Int,
+    address: String
 ) : SchemeState(
     colorState = ParkingPlaceStateColor.SELECTED,
     name = name,
-    coordinates = coordinates
+    coordinates = coordinates,
+    floor = floor,
+    address = address
 )
 
 class ReservedPlaceState(
     name: String,
-    coordinates: String
+    coordinates: String,
+    floor: Int,
+    address: String
 ) : SchemeState(
     colorState = ParkingPlaceStateColor.RESERVED_BY_CURRENT_USER,
     name = name,
-    coordinates = coordinates
+    coordinates = coordinates,
+    floor = floor,
+    address = address
 )
+
+fun SchemeState.equal(other: SchemeState): Boolean {
+    return this.address == other.address && this.floor == other.floor && this.name == other.name
+}

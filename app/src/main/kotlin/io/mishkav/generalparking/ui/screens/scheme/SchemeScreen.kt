@@ -50,6 +50,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
+import io.mishkav.generalparking.domain.entities.ParkingPlace
 import io.mishkav.generalparking.ui.components.contents.ReservedSchemeContent
 import io.mishkav.generalparking.ui.components.contents.SelectedSchemeContent
 import io.mishkav.generalparking.ui.components.contents.UnselectedSchemeContent
@@ -79,43 +80,13 @@ fun SchemeScreen(
     val setParkingPlaceReservation by viewModel.setParkingPlaceReservationResult.collectAsState()
     val removeParkingPlaceReservation by viewModel.removeParkingPlaceReservationResult.collectAsState()
     val parkingState by viewModel.parkingSchemeState.collectAsState()
-    val currentUser by viewModel.currentUser.collectAsState()
+    val onOpenResult by viewModel.onOpenResult.collectAsState()
 
     LaunchedEffect(Unit) {
-        // viewModel.onOpen()
         viewModel.onOpenTest()
         viewModel.getCurrentUser()
         viewModel.getParkingScheme()
     }
-
-    // when {
-    //     currentUser is ErrorResult || parkingSchemeResult is ErrorResult -> onError(parkingSchemeResult.message!!)
-    //     currentUser is SuccessResult && parkingSchemeResult is SuccessResult -> {
-    //         parkingSchemeResult.data?.let {
-    //             SchemeScreenContent(
-    //                 textAddress = currentParkingAddress,
-    //                 parking = it,
-    //                 parkingState = parkingState,
-    //                 onParkingPlaceClick = viewModel::setParkingSchemeState,
-    //                 onReserveButtonClick = viewModel::setParkingPlaceReservation,
-    //                 onRemoveReservationButtonClick = viewModel::removeParkingPlaceReservation,
-    //                 navigateBack = navController::popBackStack,
-    //             )
-    //         }
-    //     }
-    //     currentUser is LoadingResult || parkingSchemeResult is LoadingResult -> {
-    //         Box(
-    //             modifier = Modifier
-    //                 .background(MaterialTheme.colorScheme.background)
-    //                 .fillMaxSize(),
-    //             contentAlignment = Alignment.Center
-    //         ) {
-    //             CircularLoader()
-    //         }
-    //     }
-    // }
-
-    val onOpenResult by viewModel.onOpenResult.collectAsState()
 
     when {
         onOpenResult is ErrorResult -> onError(parkingSchemeResult.message!!)
@@ -143,7 +114,6 @@ fun SchemeScreen(
             }
         }
     }
-
 
     setParkingPlaceReservation.also { result ->
         when (result) {
@@ -308,6 +278,8 @@ fun SchemeScreenContent(
                 parkingScheme = parking[parking.keys.elementAt(floor)]!!,
                 parkingState = parkingState,
                 onParkingPlaceClick = onClick,
+                floor = floor,
+                address = textAddress
             )
         }
     }
@@ -377,13 +349,12 @@ private fun FloorTabView(
 }
 
 private fun getBackgroundColor(
-    state: SchemeState,
-    name: String,
+    place: ParkingPlace,
     coordinates: String,
-    placeSelected: Int
+    state: SchemeState
 ): Color = when {
-    state.coordinates == coordinates && state.name == name -> state.colorState.color
-    placeSelected == 1 -> ParkingPlaceStateColor.RESERVED_BY_OTHER_USERS.color
+    place.name == state.name && state.coordinates == coordinates -> state.colorState.color
+    place.value == 1 -> ParkingPlaceStateColor.RESERVED_BY_OTHER_USERS.color
     else -> ParkingPlaceStateColor.NOT_SELECTED.color
 }
 
@@ -392,7 +363,9 @@ private fun getBackgroundColor(
 fun DrawScheme(
     parkingScheme: ParkingScheme,
     parkingState: SchemeState,
-    onParkingPlaceClick: (state: SchemeState) -> Unit = { _ -> }
+    onParkingPlaceClick: (state: SchemeState) -> Unit = { _ -> },
+    floor: Int,
+    address: String
 ) {
     LazyColumn(
         modifier = Modifier
@@ -432,13 +405,14 @@ fun DrawScheme(
                                             .weight(1f)
                                             .padding(1.dp),
                                         parkingPlace = currentPlace,
-                                        coordinates = "${height}_${width}",
+                                        coordinates = coordinates,
                                         background = getBackgroundColor(
-                                            parkingState,
-                                            currentPlace.name,
-                                            coordinates,
-                                            currentPlace.value
+                                            place = currentPlace,
+                                            coordinates = coordinates,
+                                            state = parkingState
                                         ),
+                                        floor = floor,
+                                        address = address,
                                         onClick = onParkingPlaceClick
                                     )
                                 }

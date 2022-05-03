@@ -1,5 +1,6 @@
 package io.mishkav.generalparking.ui.screens.scheme
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.mishkav.generalparking.GeneralParkingApp
@@ -13,7 +14,7 @@ import io.mishkav.generalparking.state.Session
 import io.mishkav.generalparking.ui.screens.scheme.components.NotSelectedPlaceState
 import io.mishkav.generalparking.ui.screens.scheme.components.ReservedPlaceState
 import io.mishkav.generalparking.ui.screens.scheme.components.SchemeState
-import io.mishkav.generalparking.ui.screens.scheme.components.SelectedPlaceState
+import io.mishkav.generalparking.ui.screens.scheme.components.equal
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
 import io.mishkav.generalparking.ui.utils.loadOrError
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,19 +49,9 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
         appComponent.inject(this)
     }
 
-    fun onOpen() {
-        parkingSchemeState.value = if (_selectedParkingPlaceName.value.isNotEmpty())
-            ReservedPlaceState(
-                name = _selectedParkingPlaceName.value,
-                coordinates = _selectedParkingPlaceCoordinates.value
-            )
-        else
-            NotSelectedPlaceState()
-    }
-
     fun setParkingSchemeState(state: SchemeState) {
         when {
-            parkingSchemeState.value !is ReservedPlaceState && parkingSchemeState.value.coordinates == state.coordinates && state is SelectedPlaceState -> {
+            parkingSchemeState.value !is ReservedPlaceState && parkingSchemeState.value.equal(state) -> {
                 parkingSchemeState.value = NotSelectedPlaceState()
             }
             parkingSchemeState.value !is ReservedPlaceState -> {
@@ -89,7 +80,9 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
 
             parkingSchemeState.value = ReservedPlaceState(
                 name = parkingSchemeState.value.name,
-                coordinates = parkingSchemeState.value.coordinates
+                coordinates = parkingSchemeState.value.coordinates,
+                floor = floor,
+                address = currentParkingAddress.value
             )
             session.changeSelectedParkingPlaceName(parkingSchemeState.value.name)
             session.changeSelectedParkingPlaceCoordinates(parkingSchemeState.value.coordinates)
@@ -118,18 +111,6 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
     fun getCurrentUser() = viewModelScope.launch {
         currentUser.loadOrError {
             authDatabaseRepository.getUserDataFromDatabase()
-
-            // parkingSchemeState.value = if (user.reservationAddress.isNotEmpty())
-            //     ReservedPlaceState(
-            //         name = user.reservationPlace,
-            //         coordinates = "",
-            //
-            //
-            //     )
-            // else
-            //     NotSelectedPlaceState()
-            //
-            // user
         }
     }
 
@@ -146,7 +127,9 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
 
                 ReservedPlaceState(
                     name = user.reservationPlace,
-                    coordinates = coordinates.first()
+                    coordinates = coordinates.first(),
+                    floor = user.reservationLevel.toInt(),
+                    address = currentParkingAddress.value
                 )
             } else
                 NotSelectedPlaceState()
