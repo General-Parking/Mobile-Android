@@ -13,22 +13,25 @@ private val DarkColorPalette = darkColorScheme(
     secondaryContainer = Yellow500.copy(alpha = 0.5f),
     surfaceVariant = Yellow500.copy(alpha = 0.1f),
     background = generalParkingDarkBackground,
-    surface = generalParkingDarkBackground
+    surface = generalParkingDarkBackground,
+    onBackground = Gray500
 )
 
 private val LightColorPalette = lightColorScheme(
     primary = Yellow400,
     onPrimary = Color.Black,
     background = generalParkingLightBackground,
-    surface = generalParkingLightBackground
+    surface = generalParkingLightBackground,
+    onBackground = Gray500
 )
 
 @Composable
 fun GeneralParkingTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() () -> Unit) {
-    val colors = if (darkTheme)
-        DarkColorPalette
-    else
-        LightColorPalette
+    // val colors = if (darkTheme)
+    //     DarkColorPalette
+    // else
+    //     LightColorPalette
+    val colors = LightColorPalette
 
     val systemUiController = rememberSystemUiController()
     systemUiController.setSystemBarsColor(

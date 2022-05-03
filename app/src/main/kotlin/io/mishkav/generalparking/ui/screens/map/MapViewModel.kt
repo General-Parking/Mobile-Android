@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import io.mishkav.generalparking.GeneralParkingApp
 import io.mishkav.generalparking.dagger.AppComponent
 import io.mishkav.generalparking.data.repositories.MapDatabaseRepository
+import io.mishkav.generalparking.domain.entities.ParkingShortInfo
+import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
 import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import io.mishkav.generalparking.state.Session
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
@@ -19,11 +21,13 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     lateinit var mapDatabaseRepository: IMapDatabaseRepository
 
     @Inject
+    lateinit var authDatabaseRepository: IAuthDatabaseRepository
+
+    @Inject
     lateinit var session: Session
 
     val parkingCoordinatesResult = MutableResultFlow<Map<Pair<Double, Double>, String>>()
     val reservationAddressResult = MutableResultFlow<String>()
-    val autoNumberResult = MutableResultFlow<Unit>()
     val timeReservationResult = MutableResultFlow<Unit>()
     var timeReservation = mutableStateOf("")
     val bookingTimeResult = MutableResultFlow<Long>()
@@ -34,6 +38,9 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     var timeArrive = mutableStateOf("")
     val isArrivedResult = MutableResultFlow<String>()
     val isExitResult = MutableResultFlow<String>()
+    val parkingShortInfoResult = MutableResultFlow<Map<String, ParkingShortInfo>>()
+    val autoNumberResult = MutableResultFlow<Unit>()
+    val isMinSdkVersionApproved = MutableResultFlow<Boolean>()
     val currentParkingAddress by lazy { session.currentParkingAddress }
     val selectedParkingPlace by lazy { session.selectedParkingPlace }
     val userState by lazy { session.userState }
@@ -45,7 +52,9 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     }
 
     fun onOpen() {
+        getMinSdkApprove()
         getParkingCoordinates()
+        getParkingShortInfo()
         getReservationAddress()
         setAutoNumber()
         getBookingTime()
@@ -56,6 +65,13 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
         getIsExit()
         getTimeExit()
         getTimeReservation()
+    }
+
+
+    fun getMinSdkApprove() = viewModelScope.launch {
+        isMinSdkVersionApproved.loadOrError {
+            authDatabaseRepository.isMinSdkVersionApproved()
+        }
     }
 
     fun setCurrentParkingAddress(address: String) {
@@ -169,6 +185,12 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
             }
 
             coordinatesMap
+        }
+    }
+
+    fun getParkingShortInfo() = viewModelScope.launch {
+        parkingShortInfoResult.loadOrError {
+            mapDatabaseRepository.getParkingShortInfo()
         }
     }
 

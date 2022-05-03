@@ -12,15 +12,14 @@ import io.mishkav.generalparking.data.exceptions.PlaceNotReservatedException
 import io.mishkav.generalparking.data.exceptions.PlaceReservationException
 import io.mishkav.generalparking.domain.entities.ParkingPlace
 import io.mishkav.generalparking.domain.entities.ParkingScheme
+import io.mishkav.generalparking.domain.entities.ParkingShortInfo
 import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import kotlinx.coroutines.tasks.await
-import java.text.SimpleDateFormat
 import javax.inject.Inject
 import androidx.compose.runtime.setValue
 import io.mishkav.generalparking.state.Session
 import timber.log.Timber
 import java.time.LocalDateTime
-import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -61,32 +60,38 @@ class MapDatabaseRepository @Inject constructor(
             .getValue() as String
     }
 
-    override suspend fun getParkingScheme(address: String, floor: Int): ParkingScheme {
+    override suspend fun getParkingScheme(address: String): Map<String, ParkingScheme> {
         val rawScheme = firebaseDatabase
-            .child("parking/$address/$floor")
+            .child("parking/$address")
             .get()
             .await()
+        val parking: MutableMap<String, ParkingScheme> = mutableMapOf()
 
-        val width = rawScheme.child(PATH_TO_WIDTH).getValue(CLASS_INT)!!
-        val height = rawScheme.child(PATH_TO_HEIGHT).getValue(CLASS_INT)!!
-        val places = hashMapOf<String, ParkingPlace>()
-        for (place in rawScheme.child(PATH_TO_PLACES).children) {
-            val name = place.child(PATH_TO_PLACE_NAME).getValue(CLASS_STRING)!!
-            val rotation = place.child(PATH_TO_PLACE_ROTATE).getValue(CLASS_INT)!!
-            val value = place.child(PATH_TO_PLACE_VALUE).getValue(CLASS_INT)!!
+        for (floor in rawScheme.children.sortedByDescending { it.key?.toInt() }) {
+            val width = rawScheme.child(floor.key!!).child(PATH_TO_WIDTH).getValue(CLASS_INT)!!
+            val height = rawScheme.child(floor.key!!).child(PATH_TO_HEIGHT).getValue(CLASS_INT)!!
+            val places = hashMapOf<String, ParkingPlace>()
+            for (place in rawScheme.child(floor.key!!).child(PATH_TO_PLACES).children) {
+                val name = place.child(PATH_TO_PLACE_NAME).getValue(CLASS_STRING)!!
+                val rotation = place.child(PATH_TO_PLACE_ROTATE).getValue(CLASS_INT)!!
+                val value = place.child(PATH_TO_PLACE_VALUE).getValue(CLASS_INT)!!
 
-            places[place.key!!] = ParkingPlace(
-                name = name,
-                rotation = rotation,
-                value = value
+                places[place.key!!] = ParkingPlace(
+                    name = name,
+                    rotation = rotation,
+                    value = value
+                )
+            }
+            parking.put(
+                floor.key!!,
+                ParkingScheme(
+                    width = width,
+                    height = height,
+                    places = places
+                )
             )
         }
-
-        return ParkingScheme(
-            width = width,
-            height = height,
-            places = places
-        )
+        return parking
     }
 
     override suspend fun setParkingPlaceReservation(
@@ -111,8 +116,8 @@ class MapDatabaseRepository @Inject constructor(
 
         //Users car
         firebaseDatabase
-            .child("users_car/$address")
-            .setValue(hashMapOf(autoNumber to firebaseAuth.currentUser?.uid))
+            .child("users_car/$address/$autoNumber")
+            .setValue(firebaseAuth.currentUser?.uid)
             .await()
 
         //Users
@@ -373,6 +378,24 @@ class MapDatabaseRepository @Inject constructor(
             .getValue() as String
     }
 
+    override suspend fun getParkingShortInfo(): Map<String, ParkingShortInfo> {
+        val rawData = firebaseDatabase
+            .child(PATH_TO_PARKING_SHORT_INFO)
+            .get()
+            .await()
+        var resultMap = mutableMapOf<String, ParkingShortInfo>()
+
+        for (item in rawData.children) {
+            resultMap[item.key!!] = ParkingShortInfo(
+                freePlaces = item.child(PATH_TO_FREE_PLACES).getValue(CLASS_INT)!!,
+                priceOfParking = item.child(PATH_TO_PRICE_PARKING).getValue(CLASS_FLOAT)!!,
+                totalPlaces = item.child(PATH_TO_TOTAL_PLACES).getValue(CLASS_INT)!!
+            )
+        }
+
+        return resultMap
+    }
+
     companion object {
         private const val PATH_TO_PARKING_COORDINATES = "parking/coordinates_address"
         private const val PATH_TO_WIDTH = "m"
@@ -382,10 +405,17 @@ class MapDatabaseRepository @Inject constructor(
         private const val PATH_TO_PLACE_ROTATE = "rotate"
         private const val PATH_TO_PLACE_VALUE = "value"
 
+        // Short Info
+        private const val PATH_TO_PARKING_SHORT_INFO = "parking_short_info"
+        private const val PATH_TO_FREE_PLACES = "free_places"
+        private const val PATH_TO_PRICE_PARKING = "price_parking"
+        private const val PATH_TO_TOTAL_PLACES = "total_places"
+
         private const val EMPTY_STRING = ""
         private const val SPACE = " "
 
         private val CLASS_STRING = String::class.java
         private val CLASS_INT = Int::class.java
+        private val CLASS_FLOAT = Float::class.java
     }
 }

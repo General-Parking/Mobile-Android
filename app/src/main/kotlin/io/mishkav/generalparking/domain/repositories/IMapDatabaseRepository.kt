@@ -2,11 +2,12 @@ package io.mishkav.generalparking.domain.repositories
 
 import io.mishkav.generalparking.data.repositories.MapDatabaseRepository
 import io.mishkav.generalparking.domain.entities.ParkingScheme
+import io.mishkav.generalparking.domain.entities.ParkingShortInfo
 
 interface IMapDatabaseRepository {
     suspend fun getParkingCoordinates(): Map<String, String>
+    suspend fun getParkingScheme(address: String): Map<String, ParkingScheme>
     suspend fun getReservationAddress(): String
-    suspend fun getParkingScheme(address: String, floor: Int): ParkingScheme
     suspend fun setParkingPlaceReservation(
         address: String,
         namePlace: String,
@@ -37,4 +38,5 @@ interface IMapDatabaseRepository {
     suspend fun getIsExit(): String
     suspend fun resetIsExit()
     suspend fun getTimeExit(): String
+    suspend fun getParkingShortInfo(): Map<String, ParkingShortInfo>
 }

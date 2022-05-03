@@ -64,7 +64,16 @@ fun MapScreen(
     val isArrivedResult by viewModel.isArrivedResult.collectAsState()
     val isExit by viewModel.isExit.collectAsState()
     val isExitResult by viewModel.isExitResult.collectAsState()
+    val isMinSdkVersionApproved by viewModel.isMinSdkVersionApproved.collectAsState()
 
+    LaunchedEffect(Unit) { viewModel.onOpen() }
+    isMinSdkVersionApproved.takeIf { it is SuccessResult }?.data?.let { result ->
+        LaunchedEffect(Unit) {
+            if (!result) {
+                navController.navigate(Routes.authorization)
+            }
+        }
+    }
     val timeArrive by viewModel.timeArrive
     val timeReservation by viewModel.timeReservation
     val timeExitResult by viewModel.timeExitResult.collectAsState()
@@ -80,9 +89,7 @@ fun MapScreen(
     parkingCoordinates.also { result ->
         when (result) {
             is ErrorResult -> OnErrorResult(
-                onClick = {
-                    viewModel.onOpen()
-                },
+                onClick = viewModel::onOpen,
                 message = result.message ?: R.string.on_error_def,
                 navController = navController,
                 isTopAppBarAvailable = false

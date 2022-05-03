@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import io.mishkav.generalparking.GeneralParkingApp
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.dagger.AppComponent
+import io.mishkav.generalparking.data.exceptions.MinSdkVersionException
 import io.mishkav.generalparking.data.utils.UserFields.DefaultFields.DEFAULT_STRING_FIELD
 import io.mishkav.generalparking.data.utils.UserFields.FIELD_NAME
 import io.mishkav.generalparking.data.utils.getMetaUserInfoInstance
@@ -39,12 +40,18 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
 
     fun signIn(email: String, password: String) = viewModelScope.launch {
         signInResult.loadOrError(R.string.error_auth) {
+            if (!authDatabaseRepository.isMinSdkVersionApproved())
+                throw MinSdkVersionException()
+
             authRepository.signInWithEmailAndPassword(email, password)
         }
     }
 
     fun createNewUser(name: String, email: String, password: String) = viewModelScope.launch {
         createNewUserResult.loadOrError(R.string.error_registration) {
+            if (!authDatabaseRepository.isMinSdkVersionApproved())
+                throw MinSdkVersionException()
+
             authRepository.createUserWithEmailAndPassword(email, password)
             _currentUser.value = _currentUser.value.copy(
                 email = email,
@@ -78,6 +85,9 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
 
     fun resetPassword(email: String) = viewModelScope.launch {
         resetPasswordResult.loadOrError {
+            if (!authDatabaseRepository.isMinSdkVersionApproved())
+                throw MinSdkVersionException()
+
             authRepository.sendPasswordResetEmail(email)
         }
     }

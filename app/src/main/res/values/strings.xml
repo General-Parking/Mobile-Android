@@ -57,11 +57,13 @@
     <string name="error_email_not_verified">Email not verified. Please, check your mailbox</string>
     <string name="error_null_user">There is no active user. Please, sign in</string>
     <string name="error_place_reserved">The place is already booked, try to choose another one</string>
+    <string name="error_min_sdk_version">Your app version is too old. Please update to the current version</string>
+
     <string name="go_reserve">Go to reservation</string>
     <string name="space" >" "</string>
     <string name="bottom_title">Street</string>
-    <string name="bottom_body">Free 317 seats from 380</string>
-    <string name="minute_cost">12 ₽/min</string>
+    <string name="bottom_body">Free %d seats from %d</string>
+    <string name="minute_cost">%.2f ₽/min</string>
     <string name="choose_seat">Choose a free seat:</string>
     <string name="free">" — free"</string>
     <string name="taken">" — taken"</string>

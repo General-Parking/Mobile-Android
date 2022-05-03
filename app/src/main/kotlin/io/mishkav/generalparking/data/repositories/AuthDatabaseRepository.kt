@@ -85,10 +85,22 @@ class AuthDatabaseRepository @Inject constructor(
         }
     }
 
+    override suspend fun isMinSdkVersionApproved(): Boolean {
+        val minSdkVersionBack = firebaseDatabase
+            .child(PATH_TO_MIN_SDK)
+            .get()
+            .await()
+
+        return minSdkVersionBack.getValue(CLASS_FLOAT)!! <= MIN_SDK_VERSION
+    }
+
     companion object {
         private const val PATH_TO_USERS = "users"
+        private const val PATH_TO_MIN_SDK = "minimumClientVersion"
+        private const val MIN_SDK_VERSION = 1.0f
 
         private val CLASS_STRING = String::class.java
         private val CLASS_INT = Int::class.java
+        private val CLASS_FLOAT = Float::class.java
     }
 }

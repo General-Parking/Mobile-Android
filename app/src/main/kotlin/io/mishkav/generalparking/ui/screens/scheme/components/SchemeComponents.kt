@@ -1,157 +1,129 @@
 package io.mishkav.generalparking.ui.screens.scheme.components
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.Card
-import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.mishkav.generalparking.domain.entities.ParkingPlace
-import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts.BASE_TILE_PADDING
-import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts.BASE_TILE_SIZE
-import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts.EMPTY_STRING
-import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts.PARKING_LOT_HEIGHT
-import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts.PARKING_LOT_WIDTH
+import io.mishkav.generalparking.ui.screens.scheme.AutoSizeText
 import io.mishkav.generalparking.ui.theme.Gray500
 import io.mishkav.generalparking.ui.theme.Orange400
-import io.mishkav.generalparking.ui.theme.Typography
 import io.mishkav.generalparking.ui.theme.Yellow400
-
-sealed interface Tile
-
-class ParkingTile(
-    val place: ParkingPlace,
-    var isOccurred: Boolean = false
-) : Tile
 
 @Composable
 private fun BaseTile(
-    content: @Composable BoxScope.() -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.() -> Unit = {},
 ) = Box(
-    modifier = Modifier
-        .size(BASE_TILE_SIZE)
-        .padding(BASE_TILE_PADDING),
+    modifier = modifier,
     contentAlignment = Alignment.CenterStart,
     content = content
 )
 
 @Composable
-fun EmptyLotTile() = BaseTile {}
+fun EmptyLotTile(
+    modifier: Modifier = Modifier
+) = BaseTile(modifier = modifier)
 
 @Composable
 fun ParkingLotTile(
-    parkingTile: ParkingTile,
+    modifier: Modifier = Modifier,
+    parkingPlace: ParkingPlace,
+    background: Color,
     coordinates: String,
-    onGetSelectedParkingPlace: () -> String = { EMPTY_STRING },
-    onClick: (name: String, coordinates: String) -> Unit = { _, _ -> },
-
-    onSetReservedTransactionPassed: () -> Unit = {},
-    isReservedTransactionPassed: () -> Boolean = { false },
-    getParkingPlaceState: (namePlace: String, value: Int) -> ParkingPlaceState = { _, _ -> ParkingPlaceState.NOT_RESERVED },
-) = BaseTile {
-
-    var state = getParkingPlaceState(parkingTile.place.name, parkingTile.place.value)
-    var isReservedTransactionPassed = isReservedTransactionPassed()
-    var isSelected by remember {
-        mutableStateOf(false)
-    }
-
-    val background by animateColorAsState(
-        when {
-            state == ParkingPlaceState.RESERVED_BY_CURRENT_USER || state == ParkingPlaceState.RESERVED_BY_OTHER_USERS -> {
-                state.color
-            }
-            isSelected -> {
-                if (isReservedTransactionPassed) {
-                    isSelected = false
-                    onSetReservedTransactionPassed()
-                    state.color
-                } else
-                    ParkingPlaceState.SELECTED.color
-            }
-            else -> {
-                state.color
-            }
-
-        }
-    )
-
-    val width: Dp
-    val height: Dp
-    when (parkingTile.place.rotation) {
-        0 -> {
-            width = PARKING_LOT_WIDTH
-            height = PARKING_LOT_HEIGHT
-        }
-        else -> {
-            width = PARKING_LOT_HEIGHT
-            height = PARKING_LOT_WIDTH
-        }
-    }
-
+    floor: Int,
+    address: String,
+    onClick: (state: SchemeState) -> Unit = { _ -> }
+) = BaseTile(
+    modifier = modifier
+) {
+    // TODO Card -> Box Если хотим использовать aspectRotation
     Card(
         modifier = Modifier
-            .width(width)
-            .height(height)
-            .clickable(
-                onClick = {
-                    val selectedPlaceName = onGetSelectedParkingPlace()
-                    if (
-                        (selectedPlaceName.isEmpty() || selectedPlaceName == parkingTile.place.name) &&
-                        state != ParkingPlaceState.RESERVED_BY_OTHER_USERS
-                    ) {
-                        if (isSelected)
-                            onClick(EMPTY_STRING, EMPTY_STRING)
-                        else {
-                            state = ParkingPlaceState.SELECTED
-                            onClick(parkingTile.place.name, coordinates)
-                        }
-                        isSelected = !isSelected
-                    }
+            // .fillMaxHeight(if (parkingPlace.rotation == 0) 0.5f else 1f)
+            // .fillMaxWidth(if (parkingPlace.rotation == 0) 1f else 0.5f)
+            .fillMaxSize()
+            .clickable {
+                if (background != ParkingPlaceStateColor.RESERVED_BY_OTHER_USERS.color &&
+                    background != ParkingPlaceStateColor.RESERVED_BY_CURRENT_USER.color
+                ) {
+                    onClick(
+                        SelectedPlaceState(
+                            name = parkingPlace.name,
+                            coordinates = coordinates,
+                            floor = floor,
+                            address = address
+                        )
+                    )
                 }
-            )
+            }
     ) {
-        Text(
+        AutoSizeText(
+            text = parkingPlace.name,
             modifier = Modifier
                 .background(background)
                 .fillMaxSize()
-                .wrapContentHeight(),
-            text = parkingTile.place.name,
-            style = Typography.body1,
-            color = MaterialTheme.colorScheme.onPrimary
+                .padding(0.5.dp),
+            color = MaterialTheme.colorScheme.onPrimary,
+            maxLines = 1
         )
     }
 }
 
-enum class ParkingPlaceState(val color: Color) {
-    NOT_RESERVED(Yellow400),
+enum class ParkingPlaceStateColor(val color: Color) {
+    NOT_SELECTED(Yellow400),
     SELECTED(Orange400),
     RESERVED_BY_CURRENT_USER(Color.Green),
     RESERVED_BY_OTHER_USERS(Gray500)
 }
 
-object ParkingSchemeConsts {
-    val BASE_TILE_SIZE = 100.dp
-    val BASE_TILE_PADDING = 5.dp
-    val PARKING_LOT_WIDTH = 100.dp
-    val PARKING_LOT_HEIGHT = 70.dp
-    val EMPTY_STRING = ""
+sealed class SchemeState(
+    val colorState: ParkingPlaceStateColor,
+    val name: String = "",
+    val coordinates: String = "",
+    val floor: Int = 0,
+    val address: String = ""
+)
+
+class NotSelectedPlaceState : SchemeState(
+    colorState = ParkingPlaceStateColor.NOT_SELECTED
+)
+
+class SelectedPlaceState(
+    name: String,
+    coordinates: String,
+    floor: Int,
+    address: String
+) : SchemeState(
+    colorState = ParkingPlaceStateColor.SELECTED,
+    name = name,
+    coordinates = coordinates,
+    floor = floor,
+    address = address
+)
+
+class ReservedPlaceState(
+    name: String,
+    coordinates: String,
+    floor: Int,
+    address: String
+) : SchemeState(
+    colorState = ParkingPlaceStateColor.RESERVED_BY_CURRENT_USER,
+    name = name,
+    coordinates = coordinates,
+    floor = floor,
+    address = address
+)
+
+fun SchemeState.equal(other: SchemeState): Boolean {
+    return this.address == other.address && this.floor == other.floor && this.name == other.name
 }
