@@ -82,14 +82,44 @@ fun SchemeScreen(
     val currentUser by viewModel.currentUser.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.onOpen()
+        // viewModel.onOpen()
+        viewModel.onOpenTest()
         viewModel.getCurrentUser()
         viewModel.getParkingScheme()
     }
 
+    // when {
+    //     currentUser is ErrorResult || parkingSchemeResult is ErrorResult -> onError(parkingSchemeResult.message!!)
+    //     currentUser is SuccessResult && parkingSchemeResult is SuccessResult -> {
+    //         parkingSchemeResult.data?.let {
+    //             SchemeScreenContent(
+    //                 textAddress = currentParkingAddress,
+    //                 parking = it,
+    //                 parkingState = parkingState,
+    //                 onParkingPlaceClick = viewModel::setParkingSchemeState,
+    //                 onReserveButtonClick = viewModel::setParkingPlaceReservation,
+    //                 onRemoveReservationButtonClick = viewModel::removeParkingPlaceReservation,
+    //                 navigateBack = navController::popBackStack,
+    //             )
+    //         }
+    //     }
+    //     currentUser is LoadingResult || parkingSchemeResult is LoadingResult -> {
+    //         Box(
+    //             modifier = Modifier
+    //                 .background(MaterialTheme.colorScheme.background)
+    //                 .fillMaxSize(),
+    //             contentAlignment = Alignment.Center
+    //         ) {
+    //             CircularLoader()
+    //         }
+    //     }
+    // }
+
+    val onOpenResult by viewModel.onOpenResult.collectAsState()
+
     when {
-        currentUser is ErrorResult || parkingSchemeResult is ErrorResult -> onError(parkingSchemeResult.message!!)
-        currentUser is SuccessResult && parkingSchemeResult is SuccessResult -> {
+        onOpenResult is ErrorResult -> onError(parkingSchemeResult.message!!)
+        onOpenResult is SuccessResult -> {
             parkingSchemeResult.data?.let {
                 SchemeScreenContent(
                     textAddress = currentParkingAddress,
@@ -102,7 +132,7 @@ fun SchemeScreen(
                 )
             }
         }
-        currentUser is LoadingResult || parkingSchemeResult is LoadingResult -> {
+        onOpenResult is LoadingResult -> {
             Box(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.background)
@@ -113,7 +143,6 @@ fun SchemeScreen(
             }
         }
     }
-
 
 
     setParkingPlaceReservation.also { result ->

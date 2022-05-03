@@ -118,6 +118,41 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
     fun getCurrentUser() = viewModelScope.launch {
         currentUser.loadOrError {
             authDatabaseRepository.getUserDataFromDatabase()
+
+            // parkingSchemeState.value = if (user.reservationAddress.isNotEmpty())
+            //     ReservedPlaceState(
+            //         name = user.reservationPlace,
+            //         coordinates = "",
+            //
+            //
+            //     )
+            // else
+            //     NotSelectedPlaceState()
+            //
+            // user
+        }
+    }
+
+    val onOpenResult = MutableResultFlow<Unit>()
+    fun onOpenTest() = viewModelScope.launch {
+        onOpenResult.loadOrError {
+            val scheme = mapDatabaseRepository.getParkingScheme(currentParkingAddress.value)
+            val user = authDatabaseRepository.getUserDataFromDatabase()
+
+            parkingSchemeState.value = if (user.reservationAddress.isNotEmpty()) {
+
+                val coordinates =
+                    scheme[user.reservationLevel]?.places?.filter { it.value.name == user.reservationPlace }?.keys.orEmpty()
+
+                ReservedPlaceState(
+                    name = user.reservationPlace,
+                    coordinates = coordinates.first()
+                )
+            } else
+                NotSelectedPlaceState()
+
+            parkingSchemeResult.value.data = scheme
+            currentUser.value.data = user
         }
     }
 

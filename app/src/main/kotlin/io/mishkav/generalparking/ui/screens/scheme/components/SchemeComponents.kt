@@ -86,6 +86,8 @@ sealed class SchemeState(
     val colorState: ParkingPlaceStateColor,
     val name: String = "",
     val coordinates: String = "",
+    val floor: Int = 0,
+    val address: String = ""
 )
 
 class NotSelectedPlaceState : SchemeState(
