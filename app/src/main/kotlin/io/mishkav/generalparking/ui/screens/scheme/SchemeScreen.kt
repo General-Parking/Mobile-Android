@@ -83,7 +83,7 @@ fun SchemeScreen(
     val onOpenResult by viewModel.onOpenResult.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.onOpenTest()
+        viewModel.onOpen()
         viewModel.getCurrentUser()
         viewModel.getParkingScheme()
     }

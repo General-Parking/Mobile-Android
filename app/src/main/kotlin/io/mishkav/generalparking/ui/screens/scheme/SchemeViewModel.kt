@@ -115,7 +115,7 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
     }
 
     val onOpenResult = MutableResultFlow<Unit>()
-    fun onOpenTest() = viewModelScope.launch {
+    fun onOpen() = viewModelScope.launch {
         onOpenResult.loadOrError {
             val scheme = mapDatabaseRepository.getParkingScheme(currentParkingAddress.value)
             val user = authDatabaseRepository.getUserDataFromDatabase()
