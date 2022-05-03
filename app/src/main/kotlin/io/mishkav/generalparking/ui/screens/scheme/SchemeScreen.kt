@@ -166,7 +166,7 @@ fun SchemeScreenContent(
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
     val scaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberBottomSheetState(BottomSheetValue.Collapsed)
+        bottomSheetState = rememberBottomSheetState(BottomSheetValue.Expanded)
     )
 
     val sheetToggle: () -> Unit = {
@@ -178,27 +178,8 @@ fun SchemeScreenContent(
             }
         }
     }
-    val sheetToggleExpanded: () -> Unit = {
-        scope.launch {
-            scaffoldState.bottomSheetState.expand()
-        }
-    }
-    val sheetToggleCollapse: () -> Unit = {
-        scope.launch {
-            scaffoldState.bottomSheetState.collapse()
-        }
-    }
 
     val sheetPeekHeight = 72.dp
-    val emptyOnClick: () -> Unit = {}
-    val onClick: (state: SchemeState) -> Unit = { state ->
-        when {
-            parkingState is NotSelectedPlaceState && scaffoldState.bottomSheetState.isCollapsed -> sheetToggleExpanded()
-            parkingState is SelectedPlaceState && parkingState.coordinates != state.coordinates -> sheetToggleExpanded()
-            parkingState is SelectedPlaceState && parkingState.coordinates == state.coordinates -> sheetToggleCollapse()
-        }
-        onParkingPlaceClick(state)
-    }
 
     BottomSheetScaffold(
         modifier = Modifier.fillMaxSize(),
@@ -225,16 +206,14 @@ fun SchemeScreenContent(
             )
         },
         sheetContent = {
-            SheetCollapsed(
-                currentFraction = scaffoldState.currentFraction,
-            ) {
+            SheetCollapsed {
                 FloorTabView(
                     parking = parking,
                     pagerState = pagerState,
                     modifier = Modifier.weight(3f)
                 )
                 IconButton(
-                    onClick = if (scaffoldState.bottomSheetState.isCollapsed) sheetToggle else emptyOnClick,
+                    onClick = sheetToggle,
                     modifier = Modifier
                         .weight(1f)
                         .clip(CircleShape)
@@ -275,7 +254,7 @@ fun SchemeScreenContent(
             DrawScheme(
                 parkingScheme = parking[parking.keys.elementAt(floor)]!!,
                 parkingState = parkingState,
-                onParkingPlaceClick = onClick,
+                onParkingPlaceClick = onParkingPlaceClick,
                 floor = floor,
                 address = textAddress
             )

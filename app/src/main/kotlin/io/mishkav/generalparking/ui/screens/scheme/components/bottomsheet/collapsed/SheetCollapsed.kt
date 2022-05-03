@@ -11,14 +11,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import io.mishkav.generalparking.R
 
 @Composable
 fun SheetCollapsed(
-    currentFraction: Float,
     content: @Composable RowScope.() -> Unit
 ) {
         Row(
@@ -26,8 +24,7 @@ fun SheetCollapsed(
                 .fillMaxWidth()
                 .padding(horizontal = dimensionResource(R.dimen.scheme_horizontal_padding))
                 .height(72.dp)
-                .background(Color.Transparent)
-                .graphicsLayer(alpha = 1f - currentFraction),
+                .background(Color.Transparent),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
