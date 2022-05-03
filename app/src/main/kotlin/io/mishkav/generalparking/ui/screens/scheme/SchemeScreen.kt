@@ -160,7 +160,7 @@ fun SchemeScreenContent(
     parkingState: SchemeState,
     onParkingPlaceClick: (state: SchemeState) -> Unit = { _ -> },
     onReserveButtonClick: (floor: Int) -> Unit = { _ -> },
-    onRemoveReservationButtonClick: (floor: Int) -> Unit = { _ -> },
+    onRemoveReservationButtonClick: () -> Unit = { },
     navigateBack: () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
@@ -258,9 +258,7 @@ fun SchemeScreenContent(
                     is ReservedPlaceState -> ReservedSchemeContent(
                         name = parkingState.name,
                         onClick = {
-                            onRemoveReservationButtonClick(
-                                parking.keys.elementAt(pagerState.currentPage).toInt()
-                            )
+                            onRemoveReservationButtonClick()
                         }
                     )
                 }
