@@ -224,9 +224,10 @@ fun TimerBar(
     var timeReservation = LocalDateTime.parse(timeReservationResult, formatter)
 
     timeReservation = timeReservation.plusMinutes(period)
-    var diffH = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).toHoursPart())
-    var diffMin = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).toMinutesPart())
-    var diffSec = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).toSecondsPart())
+
+    var diffH = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).toHours().toInt() % 24)
+    var diffMin = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).seconds.toInt() % (60 * 60) / 60)
+    var diffSec = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).seconds.toInt() % 60)
 
     var enabled by remember { mutableStateOf(true) }
     var progress by remember {
@@ -254,11 +255,12 @@ fun TimerBar(
     LaunchedEffect(enabled) {
         while (!(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter),timeReservation).isNegative) &&
             enabled || (Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation)
-                .toMinutesPart() > -60)
+                .seconds.toInt() % (60 * 60) / 60 > -60)
         ) {
-            diffH = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).toHoursPart())
-            diffMin = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).toMinutesPart())
-            diffSec = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).toSecondsPart())
+            diffH = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).toHours().toInt() % 24)
+            diffMin = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).seconds.toInt() % (60 * 60) / 60)
+            diffSec = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).seconds.toInt() % 60)
+
             currTime = when (diffH) {
                 0 -> String.format("%02d:%02d", diffMin, diffSec)
                 else -> String.format("%02d:%02d:%02d", diffH, diffMin, diffSec)

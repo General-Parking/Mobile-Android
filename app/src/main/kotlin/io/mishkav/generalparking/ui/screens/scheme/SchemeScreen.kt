@@ -151,7 +151,6 @@ fun SchemeScreenContent(
     onParkingPlaceReserved: (floor: Int) -> Unit = { _ -> },
     onRemoveParkingPlaceReserved: (floor: Int) -> Unit = { _ -> },
     navigateBack: () -> Unit = {},
-
     onSetReservedTransactionPassed: () -> Unit = {},
     getParkingPlaceState: (namePlace: String, value: Int) -> ParkingPlaceState = { _, _ -> ParkingPlaceState.NOT_RESERVED },
 ) = Column(

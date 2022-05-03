@@ -39,7 +39,6 @@ import io.mishkav.generalparking.ui.components.errors.OnErrorResult
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.components.buttons.TextButton
-import io.mishkav.generalparking.ui.screens.scheme.SchemeViewModel
 import io.mishkav.generalparking.ui.screens.scheme.components.ParkingSchemeConsts
 import io.mishkav.generalparking.ui.theme.*
 import io.mishkav.generalparking.ui.utils.ErrorResult
@@ -73,7 +72,6 @@ fun MapScreen(
     val bookingRatioResult by viewModel.bookingRatioResult.collectAsState()
     val selectedParkingPlace by viewModel.selectedParkingPlace.collectAsState()
     val reservationAddressResult by viewModel.reservationAddressResult.collectAsState()
-    val currentParkingAddress by viewModel.currentParkingAddress.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.onOpen()
@@ -108,7 +106,6 @@ fun MapScreen(
                                 userState = userState,
                                 navController = navController,
                                 reservationAddress = reservationAddressResult.data!!,
-                                currentAddress = currentParkingAddress,
                                 setParkingAddress = viewModel::setCurrentParkingAddress,
                                 navigateToSchemeScreen = {
                                     navController.navigate(Routes.scheme)
@@ -284,7 +281,6 @@ fun MapScreenContent(
     userState: String = "",
     navController: NavHostController,
     reservationAddress: String,
-    currentAddress: String,
     setParkingAddress: (address: String) -> Unit = { _ -> },
     navigateToSchemeScreen: () -> Unit = {},
     navigateToProfileScreen: () -> Unit = {}
