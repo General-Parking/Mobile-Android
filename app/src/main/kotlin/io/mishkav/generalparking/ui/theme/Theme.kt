@@ -27,10 +27,11 @@ private val LightColorPalette = lightColorScheme(
 
 @Composable
 fun GeneralParkingTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() () -> Unit) {
-    val colors = if (darkTheme)
-        DarkColorPalette
-    else
-        LightColorPalette
+    // val colors = if (darkTheme)
+    //     DarkColorPalette
+    // else
+    //     LightColorPalette
+    val colors = LightColorPalette
 
     val systemUiController = rememberSystemUiController()
     systemUiController.setSystemBarsColor(
