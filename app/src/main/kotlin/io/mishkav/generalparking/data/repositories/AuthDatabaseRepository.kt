@@ -1,6 +1,5 @@
 package io.mishkav.generalparking.data.repositories
 
-import androidx.compose.ui.res.stringResource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import io.mishkav.generalparking.data.exceptions.NullUserException

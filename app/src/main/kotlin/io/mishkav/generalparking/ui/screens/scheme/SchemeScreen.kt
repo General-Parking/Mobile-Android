@@ -64,7 +64,6 @@ import io.mishkav.generalparking.ui.screens.scheme.components.ParkingPlaceStateC
 import io.mishkav.generalparking.ui.screens.scheme.components.ReservedPlaceState
 import io.mishkav.generalparking.ui.screens.scheme.components.SchemeState
 import io.mishkav.generalparking.ui.screens.scheme.components.SelectedPlaceState
-import io.mishkav.generalparking.ui.screens.scheme.components.bottomsheet.extension.currentFraction
 import io.mishkav.generalparking.ui.theme.Gray400
 import io.mishkav.generalparking.ui.theme.Yellow400
 import kotlinx.coroutines.launch
