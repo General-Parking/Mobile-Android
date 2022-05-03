@@ -50,6 +50,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
+import io.mishkav.generalparking.domain.entities.ParkingPlace
 import io.mishkav.generalparking.ui.components.contents.ReservedSchemeContent
 import io.mishkav.generalparking.ui.components.contents.SelectedSchemeContent
 import io.mishkav.generalparking.ui.components.contents.UnselectedSchemeContent
@@ -63,7 +64,6 @@ import io.mishkav.generalparking.ui.screens.scheme.components.ParkingPlaceStateC
 import io.mishkav.generalparking.ui.screens.scheme.components.ReservedPlaceState
 import io.mishkav.generalparking.ui.screens.scheme.components.SchemeState
 import io.mishkav.generalparking.ui.screens.scheme.components.SelectedPlaceState
-import io.mishkav.generalparking.ui.screens.scheme.components.bottomsheet.extension.currentFraction
 import io.mishkav.generalparking.ui.theme.Gray400
 import io.mishkav.generalparking.ui.theme.Yellow400
 import kotlinx.coroutines.launch
@@ -79,7 +79,7 @@ fun SchemeScreen(
     val setParkingPlaceReservation by viewModel.setParkingPlaceReservationResult.collectAsState()
     val removeParkingPlaceReservation by viewModel.removeParkingPlaceReservationResult.collectAsState()
     val parkingState by viewModel.parkingSchemeState.collectAsState()
-    val currentUser by viewModel.currentUser.collectAsState()
+    val onOpenResult by viewModel.onOpenResult.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.onOpen()
@@ -88,8 +88,8 @@ fun SchemeScreen(
     }
 
     when {
-        currentUser is ErrorResult || parkingSchemeResult is ErrorResult -> onError(parkingSchemeResult.message!!)
-        currentUser is SuccessResult && parkingSchemeResult is SuccessResult -> {
+        onOpenResult is ErrorResult -> onError(parkingSchemeResult.message!!)
+        onOpenResult is SuccessResult -> {
             parkingSchemeResult.data?.let {
                 SchemeScreenContent(
                     textAddress = currentParkingAddress,
@@ -102,7 +102,7 @@ fun SchemeScreen(
                 )
             }
         }
-        currentUser is LoadingResult || parkingSchemeResult is LoadingResult -> {
+        onOpenResult is LoadingResult -> {
             Box(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.background)
@@ -113,8 +113,6 @@ fun SchemeScreen(
             }
         }
     }
-
-
 
     setParkingPlaceReservation.also { result ->
         when (result) {
@@ -161,13 +159,13 @@ fun SchemeScreenContent(
     parkingState: SchemeState,
     onParkingPlaceClick: (state: SchemeState) -> Unit = { _ -> },
     onReserveButtonClick: (floor: Int) -> Unit = { _ -> },
-    onRemoveReservationButtonClick: (floor: Int) -> Unit = { _ -> },
+    onRemoveReservationButtonClick: () -> Unit = { },
     navigateBack: () -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
     val scaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberBottomSheetState(BottomSheetValue.Collapsed)
+        bottomSheetState = rememberBottomSheetState(BottomSheetValue.Expanded)
     )
 
     val sheetToggle: () -> Unit = {
@@ -179,27 +177,8 @@ fun SchemeScreenContent(
             }
         }
     }
-    val sheetToggleExpanded: () -> Unit = {
-        scope.launch {
-            scaffoldState.bottomSheetState.expand()
-        }
-    }
-    val sheetToggleCollapse: () -> Unit = {
-        scope.launch {
-            scaffoldState.bottomSheetState.collapse()
-        }
-    }
 
     val sheetPeekHeight = 72.dp
-    val emptyOnClick: () -> Unit = {}
-    val onClick: (state: SchemeState) -> Unit = { state ->
-        when {
-            parkingState is NotSelectedPlaceState && scaffoldState.bottomSheetState.isCollapsed -> sheetToggleExpanded()
-            parkingState is SelectedPlaceState && parkingState.coordinates != state.coordinates -> sheetToggleExpanded()
-            parkingState is SelectedPlaceState && parkingState.coordinates == state.coordinates -> sheetToggleCollapse()
-        }
-        onParkingPlaceClick(state)
-    }
 
     BottomSheetScaffold(
         modifier = Modifier.fillMaxSize(),
@@ -226,16 +205,14 @@ fun SchemeScreenContent(
             )
         },
         sheetContent = {
-            SheetCollapsed(
-                currentFraction = scaffoldState.currentFraction,
-            ) {
+            SheetCollapsed {
                 FloorTabView(
                     parking = parking,
                     pagerState = pagerState,
                     modifier = Modifier.weight(3f)
                 )
                 IconButton(
-                    onClick = if (scaffoldState.bottomSheetState.isCollapsed) sheetToggle else emptyOnClick,
+                    onClick = sheetToggle,
                     modifier = Modifier
                         .weight(1f)
                         .clip(CircleShape)
@@ -259,9 +236,7 @@ fun SchemeScreenContent(
                     is ReservedPlaceState -> ReservedSchemeContent(
                         name = parkingState.name,
                         onClick = {
-                            onRemoveReservationButtonClick(
-                                parking.keys.elementAt(pagerState.currentPage).toInt()
-                            )
+                            onRemoveReservationButtonClick()
                         }
                     )
                 }
@@ -278,7 +253,9 @@ fun SchemeScreenContent(
             DrawScheme(
                 parkingScheme = parking[parking.keys.elementAt(floor)]!!,
                 parkingState = parkingState,
-                onParkingPlaceClick = onClick,
+                onParkingPlaceClick = onParkingPlaceClick,
+                floor = floor,
+                address = textAddress
             )
         }
     }
@@ -348,13 +325,12 @@ private fun FloorTabView(
 }
 
 private fun getBackgroundColor(
-    state: SchemeState,
-    name: String,
+    place: ParkingPlace,
     coordinates: String,
-    placeSelected: Int
+    state: SchemeState
 ): Color = when {
-    state.coordinates == coordinates && state.name == name -> state.colorState.color
-    placeSelected == 1 -> ParkingPlaceStateColor.RESERVED_BY_OTHER_USERS.color
+    place.name == state.name && state.coordinates == coordinates -> state.colorState.color
+    place.value == 1 -> ParkingPlaceStateColor.RESERVED_BY_OTHER_USERS.color
     else -> ParkingPlaceStateColor.NOT_SELECTED.color
 }
 
@@ -363,7 +339,9 @@ private fun getBackgroundColor(
 fun DrawScheme(
     parkingScheme: ParkingScheme,
     parkingState: SchemeState,
-    onParkingPlaceClick: (state: SchemeState) -> Unit = { _ -> }
+    onParkingPlaceClick: (state: SchemeState) -> Unit = { _ -> },
+    floor: Int,
+    address: String
 ) {
     LazyColumn(
         modifier = Modifier
@@ -403,13 +381,14 @@ fun DrawScheme(
                                             .weight(1f)
                                             .padding(1.dp),
                                         parkingPlace = currentPlace,
-                                        coordinates = "${height}_${width}",
+                                        coordinates = coordinates,
                                         background = getBackgroundColor(
-                                            parkingState,
-                                            currentPlace.name,
-                                            coordinates,
-                                            currentPlace.value
+                                            place = currentPlace,
+                                            coordinates = coordinates,
+                                            state = parkingState
                                         ),
+                                        floor = floor,
+                                        address = address,
                                         onClick = onParkingPlaceClick
                                     )
                                 }
