@@ -83,8 +83,8 @@ class MapDatabaseRepository @Inject constructor(
 
         //Users car
         firebaseDatabase
-            .child("users_car/$address")
-            .setValue(hashMapOf(autoNumber to firebaseAuth.currentUser?.uid))
+            .child("users_car/$address/$autoNumber")
+            .setValue(firebaseAuth.currentUser?.uid)
             .await()
 
         //Users
