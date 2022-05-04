@@ -31,6 +31,7 @@ fun GeneralParkingTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Co
     //     DarkColorPalette
     // else
     //     LightColorPalette
+    // TODO Добавить темную тему
     val colors = LightColorPalette
 
     val systemUiController = rememberSystemUiController()

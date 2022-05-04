@@ -129,9 +129,10 @@ fun MapScreenContent(
         Box(Modifier.fillMaxSize()) {
             GoogleMap(
                 modifier = Modifier,
-                properties = MapProperties(
-                    mapStyleOptions = if (isSystemInDarkTheme()) getGoogleMapStyleOption() else null
-                ),
+                // TODO Добавить темную тему
+                // properties = MapProperties(
+                //     mapStyleOptions = if (isSystemInDarkTheme()) getGoogleMapStyleOption() else null
+                // ),
                 cameraPositionState = cameraPosition
             ) {
                 for ((coordinates, address) in parkingCoordinates) {
