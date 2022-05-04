@@ -17,6 +17,7 @@ import io.mishkav.generalparking.ui.components.texts.BottomTitle
 @Composable
 fun SelectedSchemeContent(
     name: String = stringResource(R.string.zeros),
+    floor: Int = 0,
     onClick: () -> Unit = {}
 ) {
     Column(
@@ -34,7 +35,7 @@ fun SelectedSchemeContent(
                 .padding(bottom = dimensionResource(R.dimen.half_standard_padding))
         )
         Text(
-            text = stringResource(R.string.floor_number),
+            text = stringResource(R.string.floor_number).format(floor),
             color = MaterialTheme.colorScheme.onPrimary
         )
         Row(
