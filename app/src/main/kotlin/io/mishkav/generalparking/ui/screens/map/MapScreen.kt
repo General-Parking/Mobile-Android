@@ -298,7 +298,10 @@ fun MapScreenContent(
         position = CameraPosition.fromLatLngZoom(moscowLatLng, 11f)
     }
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = BottomSheetState(BottomSheetValue.Expanded)
+        bottomSheetState = when (userState) {
+            "" -> BottomSheetState(BottomSheetValue.Collapsed)
+            else -> BottomSheetState(BottomSheetValue.Expanded)
+        }
     )
     val coroutineScope = rememberCoroutineScope()
     val alertChangeParking = remember { mutableStateOf(false) }
