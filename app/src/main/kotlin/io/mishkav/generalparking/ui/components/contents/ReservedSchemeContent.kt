@@ -22,6 +22,7 @@ import io.mishkav.generalparking.ui.theme.Green600
 @Composable
 fun ReservedSchemeContent(
     name: String = stringResource(R.string.zeros),
+    floor: Int = 0,
     onClick: () -> Unit = {}
 ) {
     Column(
@@ -39,7 +40,7 @@ fun ReservedSchemeContent(
                 .padding(bottom = dimensionResource(R.dimen.standard_padding))
         )
         Text(
-            text = stringResource(R.string.floor_number),
+            text = stringResource(R.string.floor_number).format(floor),
             color = MaterialTheme.colorScheme.onPrimary
         )
         Row(

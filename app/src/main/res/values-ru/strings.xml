@@ -68,7 +68,7 @@
     <string name="taken">" — занятые"</string>
     <string name="reserve">Забронировать</string>
     <string name="chosen_seat">Место</string>
-    <string name="floor_number">-1 этаж</string>
+    <string name="floor_number">%d этаж</string>
     <string name="reserved">Забронировано</string>
     <string name="username">Имя</string>
     <string name="on_error_body">Что-то пошло не так…</string>

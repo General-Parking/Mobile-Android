@@ -231,10 +231,12 @@ fun SchemeScreenContent(
                     is NotSelectedPlaceState -> UnselectedSchemeContent()
                     is SelectedPlaceState -> SelectedSchemeContent(
                         name = parkingState.name,
+                        floor = parkingState.floor,
                         onClick = { onReserveButtonClick(parking.keys.elementAt(pagerState.currentPage).toInt()) }
                     )
                     is ReservedPlaceState -> ReservedSchemeContent(
                         name = parkingState.name,
+                        floor = parkingState.floor,
                         onClick = {
                             onRemoveReservationButtonClick()
                         }
@@ -254,7 +256,7 @@ fun SchemeScreenContent(
                 parkingScheme = parking[parking.keys.elementAt(floor)]!!,
                 parkingState = parkingState,
                 onParkingPlaceClick = onParkingPlaceClick,
-                floor = floor,
+                floor = parking.keys.elementAt(floor).toInt(),
                 address = textAddress
             )
         }
