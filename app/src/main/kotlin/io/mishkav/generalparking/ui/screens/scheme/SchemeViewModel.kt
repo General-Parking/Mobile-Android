@@ -123,7 +123,6 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
                 scheme[user.reservationLevel]?.places?.filter { it.value.name == user.reservationPlace }?.keys.orEmpty()
                     .firstOrNull() ?: ""
 
-
             parkingSchemeState.value = if (user.reservationAddress.isNotEmpty()) {
                 ReservedPlaceState(
                     name = user.reservationPlace,

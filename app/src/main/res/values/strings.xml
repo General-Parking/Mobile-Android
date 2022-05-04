@@ -69,7 +69,7 @@
     <string name="taken">" — taken"</string>
     <string name="reserve">Reserve</string>
     <string name="chosen_seat">Seat</string>
-    <string name="floor_number">-1st floor</string>
+    <string name="floor_number">%d floor</string>
     <string name="reserved">Reserved</string>
     <string name="username">Name</string>
     <string name="on_error_body">We have some troubles…</string>
