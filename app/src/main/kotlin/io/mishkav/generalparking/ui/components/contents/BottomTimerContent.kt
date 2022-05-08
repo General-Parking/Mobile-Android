@@ -2,10 +2,8 @@ package io.mishkav.generalparking.ui.components.contents
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Surface
@@ -13,9 +11,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.SwapCalls
 import androidx.compose.material.icons.filled.ZoomOutMap
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -210,25 +206,42 @@ fun TimerBar(
 
     timeReservation = timeReservation.plusMinutes(period)
 
-    var diffH = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).toHours().toInt() % 24)
-    var diffMin = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).seconds.toInt() % (60 * 60) / 60)
-    var diffSec = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).seconds.toInt() % 60)
+    var difference = Duration.between(
+        LocalDateTime.parse(
+            LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik"))
+                .format(formatter), formatter
+        ), timeReservation
+    )
+    var differenceHours = abs(difference.toHours().toInt() % 24)
+    var differenceMinutes = abs(difference.seconds.toInt() % (60 * 60) / 60)
+    var differenceSeconds = abs(difference.seconds.toInt() % 60)
 
     var enabled by remember { mutableStateOf(true) }
     var progress by remember {
         mutableStateOf(
-            (diffMin * 60 + diffSec).toFloat().div(period.toInt() * 60)
+            (differenceMinutes * 60 + differenceSeconds).toFloat().div(period.toInt() * 60)
         )
     }
-    if (Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).isNegative) {
+    if (Duration.between(
+            LocalDateTime.parse(
+                LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik"))
+                    .format(formatter), formatter
+            ), timeReservation
+        ).isNegative
+    ) {
         enabled = false
         progress = 0f
     }
-    var currTime by remember {
+    var currentTime by remember {
         mutableStateOf(
-            when (diffH) {
-                0 -> String.format("%02d:%02d", diffMin, diffSec)
-                else -> String.format("%02d:%02d:%02d", diffH, diffMin, diffSec)
+            when (differenceHours) {
+                0 -> String.format("%02d:%02d", differenceMinutes, differenceSeconds)
+                else -> String.format(
+                    "%02d:%02d:%02d",
+                    differenceHours,
+                    differenceMinutes,
+                    differenceSeconds
+                )
             }
         )
     }
@@ -238,25 +251,53 @@ fun TimerBar(
     )
 
     LaunchedEffect(enabled) {
-        while (!(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter),timeReservation).isNegative) &&
-            enabled || (Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation)
+        while (!(Duration.between(
+                LocalDateTime.parse(
+                    LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik"))
+                        .format(formatter), formatter
+                ), timeReservation
+            ).isNegative) &&
+            enabled || (Duration.between(
+                LocalDateTime.parse(
+                    LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik"))
+                        .format(formatter), formatter
+                ), timeReservation
+            )
                 .seconds.toInt() % (60 * 60) / 60 > -60)
         ) {
-            diffH = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).toHours().toInt() % 24)
-            diffMin = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).seconds.toInt() % (60 * 60) / 60)
-            diffSec = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).seconds.toInt() % 60)
+            difference = Duration.between(
+                LocalDateTime.parse(
+                    LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik"))
+                        .format(formatter), formatter
+                ), timeReservation
+            )
+            differenceHours = abs(difference.toHours().toInt() % 24)
+            differenceMinutes = abs(difference.seconds.toInt() % (60 * 60) / 60)
+            differenceSeconds = abs(difference.seconds.toInt() % 60)
 
-            currTime = when (diffH) {
-                0 -> String.format("%02d:%02d", diffMin, diffSec)
-                else -> String.format("%02d:%02d:%02d", diffH, diffMin, diffSec)
+            currentTime = when (differenceHours) {
+                0 -> String.format("%02d:%02d", differenceMinutes, differenceSeconds)
+                else -> String.format(
+                    "%02d:%02d:%02d",
+                    differenceHours,
+                    differenceMinutes,
+                    differenceSeconds
+                )
             }
             if (enabled)
-                progress = (diffMin * 60 + diffSec).toFloat().div(period.toInt() * 60)
-            delay((1000).toLong())
+                progress =
+                    (differenceMinutes * 60 + differenceSeconds).toFloat().div(period.toInt() * 60)
+            delay(1000L)
         }
     }
 
-    if (Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeReservation).isNegative) {
+    if (Duration.between(
+            LocalDateTime.parse(
+                LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik"))
+                    .format(formatter), formatter
+            ), timeReservation
+        ).isNegative
+    ) {
         enabled = false
     }
 
@@ -300,7 +341,7 @@ fun TimerBar(
                 .background(Gray200)
         ) {
             Text(
-                text = currTime,
+                text = currentTime,
                 color = generalParkingDarkBackground,
                 style = Typography.body1,
                 modifier = Modifier
@@ -312,9 +353,8 @@ fun TimerBar(
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewBottomTimerScreen() {
+fun BottomTimerScreenPreview() {
     BottomTimerScreenContent(
-        navigateToSchemeScreen = {},
         timeReservationResult = "",
         period = 60
     )

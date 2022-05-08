@@ -1,11 +1,9 @@
 package io.mishkav.generalparking.state
 
-import android.content.ContentValues
 import android.content.Context
 import androidx.core.content.edit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import timber.log.Timber
 
 class Session(context: Context) {
 
@@ -65,8 +63,6 @@ class Session(context: Context) {
     fun changeUserState(state: String) {
         sharedPreferences.edit { putString(PREF_USER_STATE, state) }
         _userState.value = state
-
-        Timber.tag(ContentValues.TAG).i(state)
     }
 
     fun changeIsArrived(isArrived: String) {
@@ -85,7 +81,6 @@ class Session(context: Context) {
         const val PREF_SELECTED_PARKING_PLACE = "selectedParkingPlaceName"
         const val PREF_SELECTED_PARKING_COORDINATES = "selectedParkingPlaceCoordinates"
         const val PREF_SELECTED_PARKING_FLOOR = "_selectedParkingPlaceFloor"
-        const val PREF_IS_CURRENT_USER_RESERVED_PLACE = "isCurrentUserReservedParkingPlace"
         const val PREF_USER_STATE = "userState"
         const val PREF_IS_ARRIVED = "isArrived"
         const val PREF_IS_EXIT = "isExit"

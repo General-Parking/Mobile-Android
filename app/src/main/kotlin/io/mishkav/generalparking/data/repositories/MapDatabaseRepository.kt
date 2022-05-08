@@ -1,8 +1,6 @@
 package io.mishkav.generalparking.data.repositories
 
 import android.content.ContentValues.TAG
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -13,10 +11,10 @@ import io.mishkav.generalparking.data.exceptions.PlaceReservationException
 import io.mishkav.generalparking.domain.entities.ParkingPlace
 import io.mishkav.generalparking.domain.entities.ParkingScheme
 import io.mishkav.generalparking.domain.entities.ParkingShortInfo
+import io.mishkav.generalparking.domain.entities.TimeCallback
 import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import androidx.compose.runtime.setValue
 import io.mishkav.generalparking.state.Session
 import timber.log.Timber
 import java.time.LocalDateTime
@@ -31,17 +29,6 @@ class MapDatabaseRepository @Inject constructor(
 
     @Inject
     lateinit var session: Session
-
-    class TimeMutable {
-        var time by mutableStateOf(EMPTY_STRING)
-    }
-
-    interface TimeCallback {
-        fun onCallback(value: String)
-    }
-
-    val timeReservation = TimeMutable()
-    val timeArrive = TimeMutable()
 
     override suspend fun getParkingCoordinates(): Map<String, String> {
         return firebaseDatabase
@@ -215,22 +202,22 @@ class MapDatabaseRepository @Inject constructor(
             .getValue() as String
     }
 
-    override suspend fun getTimeReservation(myCallback:TimeCallback) {
+    override suspend fun getTimeReservation(myCallback: TimeCallback) {
 
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/time_reservation")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    timeReservation.time = dataSnapshot.getValue() as String
-                    Timber.tag(TAG).i(timeReservation.time)
+                    val timeReservation = dataSnapshot.getValue() as String
+                    Timber.tag(TAG).i(timeReservation)
 
-                    myCallback.onCallback(timeReservation.time)
-                    if (timeReservation.time == EMPTY_STRING)
+                    myCallback.onCallback(timeReservation)
+                    if (timeReservation == EMPTY_STRING)
                         session.changeUserState(EMPTY_STRING)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Timber.tag(TAG).w(error.toException(), "loadPost:onCancelled")
+                    Timber.tag(TAG).w(error.toException(), ON_CANCELLED_MESSAGE)
                 }
             })
     }
@@ -271,38 +258,36 @@ class MapDatabaseRepository @Inject constructor(
             .child("users/${firebaseAuth.currentUser?.uid}/time_arrive")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    timeArrive.time = dataSnapshot.getValue() as String
-                    Timber.tag(TAG).i(timeArrive.time)
+                    val timeArrive = dataSnapshot.getValue() as String
+                    Timber.tag(TAG).i(timeArrive)
 
-                    myCallback.onCallback(timeArrive.time)
+                    myCallback.onCallback(timeArrive)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Timber.tag(TAG).w(error.toException(), "loadPost:onCancelled")
+                    Timber.tag(TAG).w(error.toException(), ON_CANCELLED_MESSAGE)
                 }
             })
     }
 
-    override suspend fun getIsArrived(): String {
-        val isArrived = TimeMutable()
+    override suspend fun getIsArrived() {
 
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/arrive")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    isArrived.time = dataSnapshot.getValue() as String
-                    Timber.tag(TAG).i(isArrived.time)
-                    if (isArrived.time != "")
+                    val isArrived = dataSnapshot.getValue() as String
+                    Timber.tag(TAG).i(isArrived)
+                    if (isArrived != EMPTY_STRING)
                         session.changeIsArrived(ARRIVED_STATE)
                     else
                         session.changeIsArrived(EMPTY_STRING)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Timber.tag(TAG).w(error.toException(), "loadPost:onCancelled")
+                    Timber.tag(TAG).w(error.toException(), ON_CANCELLED_MESSAGE)
                 }
             })
-        return isArrived.time
     }
 
     override suspend fun resetIsArrived() {
@@ -313,26 +298,24 @@ class MapDatabaseRepository @Inject constructor(
             .await()
     }
 
-    override suspend fun getIsExit(): String {
-        val isExit = TimeMutable()
+    override suspend fun getIsExit() {
 
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/exit")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    isExit.time = dataSnapshot.getValue() as String
-                    Timber.tag(TAG).i(isExit.time)
-                    if (isExit.time != EMPTY_STRING)
+                    val isExit = dataSnapshot.getValue() as String
+                    Timber.tag(TAG).i(isExit)
+                    if (isExit != EMPTY_STRING)
                         session.changeIsExit(EXIT_STATE)
                     else
                         session.changeIsExit(EMPTY_STRING)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Timber.tag(TAG).w(error.toException(), "loadPost:onCancelled")
+                    Timber.tag(TAG).w(error.toException(), ON_CANCELLED_MESSAGE)
                 }
             })
-        return isExit.time
     }
 
     override suspend fun resetIsExit() {
@@ -398,6 +381,8 @@ class MapDatabaseRepository @Inject constructor(
         // States
         private const val ARRIVED_STATE = "arrived"
         private const val EXIT_STATE = "exit"
+
+        private const val ON_CANCELLED_MESSAGE = "loadPost:onCancelled"
 
         private const val EMPTY_STRING = ""
         private const val SPACE = " "

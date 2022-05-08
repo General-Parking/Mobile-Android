@@ -1,8 +1,8 @@
 package io.mishkav.generalparking.domain.repositories
 
-import io.mishkav.generalparking.data.repositories.MapDatabaseRepository
 import io.mishkav.generalparking.domain.entities.ParkingScheme
 import io.mishkav.generalparking.domain.entities.ParkingShortInfo
+import io.mishkav.generalparking.domain.entities.TimeCallback
 
 interface IMapDatabaseRepository {
     suspend fun getParkingCoordinates(): Map<String, String>
@@ -22,7 +22,7 @@ interface IMapDatabaseRepository {
         placeCoordinates: String
     )
     suspend fun getAutoNumber(): String
-    suspend fun getTimeReservation(myCallback: MapDatabaseRepository.TimeCallback)
+    suspend fun getTimeReservation(myCallback: TimeCallback)
     suspend fun getBookingTime(): Long
     suspend fun getPriceParking(
         address: String,
@@ -32,10 +32,10 @@ interface IMapDatabaseRepository {
         address: String,
         floor: String
     ): Double
-    suspend fun getTimeArrive(myCallback: MapDatabaseRepository.TimeCallback)
-    suspend fun getIsArrived(): String
+    suspend fun getTimeArrive(myCallback: TimeCallback)
+    suspend fun getIsArrived()
     suspend fun resetIsArrived()
-    suspend fun getIsExit(): String
+    suspend fun getIsExit()
     suspend fun resetIsExit()
     suspend fun getTimeExit(): String
     suspend fun getParkingShortInfo(): Map<String, ParkingShortInfo>

@@ -145,36 +145,59 @@ fun OnParkingBar(
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
     val timeArrive = LocalDateTime.parse(timeArriveResult, formatter)
 
-    var diffH = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeArrive).toHours().toInt() % 24)
-    var diffMin = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeArrive).seconds.toInt() % (60 * 60) / 60)
-    var diffSec = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeArrive).seconds.toInt() % 60)
+    var difference = Duration.between(
+        LocalDateTime.parse(
+            LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik"))
+                .format(formatter), formatter
+        ), timeArrive
+    )
+    var differenceHours = abs(difference.toHours().toInt() % 24)
+    var differenceMinutes = abs(difference.seconds.toInt() % (60 * 60) / 60)
+    var differenceSeconds = abs(difference.seconds.toInt() % 60)
 
-    var currTime by remember {
+    var currentTime by remember {
         mutableStateOf(
-            when (diffH) {
-                0 -> String.format("%02d:%02d", diffMin, diffSec)
-                else -> String.format("%02d:%02d:%02d", diffH, diffMin, diffSec)
+            when (differenceHours) {
+                0 -> String.format("%02d:%02d", differenceMinutes, differenceSeconds)
+                else -> String.format(
+                    "%02d:%02d:%02d",
+                    differenceHours,
+                    differenceMinutes,
+                    differenceSeconds
+                )
             }
         )
     }
 
-    var currPrice by remember {
+    var currentPrice by remember {
         mutableStateOf(
-            (priceParking/60).toInt()*diffMin
+            (priceParking / 60).toInt() * differenceMinutes
         )
     }
 
     LaunchedEffect(Unit) {
         while (true) {
-            diffH = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeArrive).toHours().toInt() % 24)
-            diffMin = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeArrive).seconds.toInt() % (60 * 60) / 60)
-            diffSec = abs(Duration.between(LocalDateTime.parse(LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter), formatter), timeArrive).seconds.toInt() % 60)
-            currTime = when (diffH) {
-                0 -> String.format("%02d:%02d", diffMin, diffSec)
-                else -> String.format("%02d:%02d:%02d", diffH, diffMin, diffSec)
+            difference = Duration.between(
+                LocalDateTime.parse(
+                    LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik"))
+                        .format(formatter), formatter
+                ), timeArrive
+            )
+            differenceHours = abs(difference.toHours().toInt() % 24)
+            differenceMinutes = abs(difference.seconds.toInt() % (60 * 60) / 60)
+            differenceSeconds = abs(difference.seconds.toInt() % 60)
+
+            currentTime = when (differenceHours) {
+                0 -> String.format("%02d:%02d", differenceMinutes, differenceSeconds)
+                else -> String.format(
+                    "%02d:%02d:%02d",
+                    differenceHours,
+                    differenceMinutes,
+                    differenceSeconds
+                )
             }
-            currPrice = (priceParking / 60).toInt() * (diffH*60+diffMin)
-            delay((1000).toLong())
+            currentPrice = (priceParking / 60).toInt() * (differenceHours * 60 + differenceMinutes)
+            delay(1000L)
         }
     }
 
@@ -202,7 +225,7 @@ fun OnParkingBar(
                 .background(Gray200)
         ) {
             Text(
-                text = currTime,
+                text = currentTime,
                 color = generalParkingDarkBackground,
                 style = Typography.body1,
                 modifier = Modifier
@@ -210,6 +233,7 @@ fun OnParkingBar(
             )
         }
     }
+
     Row(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
@@ -250,7 +274,7 @@ fun OnParkingBar(
                 tint = MaterialTheme.colorScheme.background
             )
             Text(
-                text = "$currPrice ₽",
+                text = "$currentPrice ₽",
                 color = MaterialTheme.colorScheme.background,
                 style = Typography.body1,
                 modifier = Modifier
@@ -262,7 +286,7 @@ fun OnParkingBar(
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewBottomOnParkingScreen() {
+fun BottomOnParkingScreenPreview() {
     BottomOnParkingScreenContent(
         navigateToSchemeScreen = {},
         priceParking = 100,
