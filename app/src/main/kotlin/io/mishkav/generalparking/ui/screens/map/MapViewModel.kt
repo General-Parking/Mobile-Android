@@ -8,6 +8,7 @@ import io.mishkav.generalparking.R
 import io.mishkav.generalparking.dagger.AppComponent
 import io.mishkav.generalparking.data.repositories.MapDatabaseRepository
 import io.mishkav.generalparking.domain.entities.ParkingShortInfo
+import io.mishkav.generalparking.domain.entities.TimeCallback
 import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
 import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import io.mishkav.generalparking.state.Session
@@ -106,7 +107,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
 
     fun getTimeReservation() = viewModelScope.launch {
         timeReservationResult.loadOrError {
-            mapDatabaseRepository.getTimeReservation(object: MapDatabaseRepository.TimeCallback {
+            mapDatabaseRepository.getTimeReservation(object: TimeCallback {
                 override fun onCallback(value:String) {
                     timeReservation.value = value
 
@@ -153,7 +154,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
 
     fun getTimeArrive() = viewModelScope.launch {
         timeArriveResult.loadOrError {
-            mapDatabaseRepository.getTimeArrive(object: MapDatabaseRepository.TimeCallback {
+            mapDatabaseRepository.getTimeArrive(object: TimeCallback {
                 override fun onCallback(value:String) {
                     timeArrive.value = value
 

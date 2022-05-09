@@ -303,6 +303,15 @@ fun MapScreenContent(
             else -> BottomSheetState(BottomSheetValue.Expanded)
         }
     )
+    val bottomSheetGesturesEnabled = remember {
+        mutableStateOf(
+            when (userState) {
+                "" -> true
+                else -> false
+            }
+        )
+    }
+
     val coroutineScope = rememberCoroutineScope()
     val alertChangeParking = remember { mutableStateOf(false) }
     val showAlertChangeParking = remember { mutableStateOf(false) }
@@ -316,6 +325,7 @@ fun MapScreenContent(
         ),
         sheetElevation = dimensionResource(R.dimen.null_dp),
         scaffoldState = bottomSheetScaffoldState,
+        sheetGesturesEnabled = bottomSheetGesturesEnabled.value,
         sheetBackgroundColor = when (userState) {
             "reserved" -> Color.Transparent
             else -> MaterialTheme.colorScheme.background
@@ -411,10 +421,15 @@ fun MapScreenContent(
                         coroutineScope.launch {
                             if (reservationAddress == "" || reservationAddress == address) {
                                 alertChangeParking.value = false
-                                if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+                                if (userState == "") {
+                                    if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+                                        bottomSheetScaffoldState.bottomSheetState.expand()
+                                    } else {
+                                        bottomSheetScaffoldState.bottomSheetState.collapse()
+                                    }
+                                }
+                                else {
                                     bottomSheetScaffoldState.bottomSheetState.expand()
-                                } else {
-                                    bottomSheetScaffoldState.bottomSheetState.collapse()
                                 }
                             } else {
                                 alertChangeParking.value = true
