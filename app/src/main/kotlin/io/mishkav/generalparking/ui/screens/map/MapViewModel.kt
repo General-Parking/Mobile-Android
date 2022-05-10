@@ -9,6 +9,7 @@ import io.mishkav.generalparking.dagger.AppComponent
 import io.mishkav.generalparking.data.repositories.MapDatabaseRepository
 import io.mishkav.generalparking.domain.entities.ParkingShortInfo
 import io.mishkav.generalparking.domain.entities.TimeCallback
+import io.mishkav.generalparking.domain.entities.UserState
 import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
 import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import io.mishkav.generalparking.state.Session
@@ -107,16 +108,16 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
 
     fun getTimeReservation() = viewModelScope.launch {
         timeReservationResult.loadOrError {
-            mapDatabaseRepository.getTimeReservation(object: TimeCallback {
-                override fun onCallback(value:String) {
+            mapDatabaseRepository.getTimeReservation(object : TimeCallback {
+                override fun onCallback(value: String) {
                     timeReservation.value = value
 
                     if (timeReservation.value == EMPTY_STRING)
-                        session.changeUserState(EMPTY_STRING)
+                        session.changeUserState(UserState.NOTHING.value)
                     else if (timeReservation.value != EMPTY_STRING && timeArrive.value == EMPTY_STRING)
-                        session.changeUserState("reserved")
+                        session.changeUserState(UserState.RESERVED.value)
                     else if (timeArrive.value != EMPTY_STRING)
-                        session.changeUserState("arrived")
+                        session.changeUserState(UserState.ARRIVED.value)
                 }
             })
         }
@@ -154,16 +155,16 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
 
     fun getTimeArrive() = viewModelScope.launch {
         timeArriveResult.loadOrError {
-            mapDatabaseRepository.getTimeArrive(object: TimeCallback {
-                override fun onCallback(value:String) {
+            mapDatabaseRepository.getTimeArrive(object : TimeCallback {
+                override fun onCallback(value: String) {
                     timeArrive.value = value
 
                     if (timeReservation.value == EMPTY_STRING)
-                        session.changeUserState(EMPTY_STRING)
+                        session.changeUserState(UserState.NOTHING.value)
                     else if (timeReservation.value != EMPTY_STRING && timeArrive.value == EMPTY_STRING)
-                        session.changeUserState("reserved")
+                        session.changeUserState(UserState.RESERVED.value)
                     else if (timeArrive.value != EMPTY_STRING)
-                        session.changeUserState("arrived")
+                        session.changeUserState(UserState.ARRIVED.value)
                 }
             })
         }

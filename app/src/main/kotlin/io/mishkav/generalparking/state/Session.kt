@@ -2,6 +2,7 @@ package io.mishkav.generalparking.state
 
 import android.content.Context
 import androidx.core.content.edit
+import io.mishkav.generalparking.domain.entities.UserState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -58,7 +59,6 @@ class Session(context: Context) {
         sharedPreferences.edit { putString(PREF_SELECTED_PARKING_FLOOR, floor) }
         _selectedParkingPlaceFloor.value = floor
     }
-
 
     fun changeUserState(state: String) {
         sharedPreferences.edit { putString(PREF_USER_STATE, state) }

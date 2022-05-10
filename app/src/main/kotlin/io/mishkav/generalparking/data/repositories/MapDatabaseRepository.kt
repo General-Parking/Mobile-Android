@@ -8,10 +8,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import io.mishkav.generalparking.data.exceptions.PlaceNotReservatedException
 import io.mishkav.generalparking.data.exceptions.PlaceReservationException
-import io.mishkav.generalparking.domain.entities.ParkingPlace
-import io.mishkav.generalparking.domain.entities.ParkingScheme
-import io.mishkav.generalparking.domain.entities.ParkingShortInfo
-import io.mishkav.generalparking.domain.entities.TimeCallback
+import io.mishkav.generalparking.domain.entities.*
 import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -88,7 +85,7 @@ class MapDatabaseRepository @Inject constructor(
         autoNumber: String
     ) {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
-        val timeReservation = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik")).format(formatter)
+        val timeReservation = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of(TIME_ZONE)).format(formatter)
 
         //Check
         val checkReservation = firebaseDatabase
@@ -213,7 +210,7 @@ class MapDatabaseRepository @Inject constructor(
 
                     myCallback.onCallback(timeReservation)
                     if (timeReservation == EMPTY_STRING)
-                        session.changeUserState(EMPTY_STRING)
+                        session.changeUserState(UserState.NOTHING.value)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -252,7 +249,7 @@ class MapDatabaseRepository @Inject constructor(
             .getValue() as Double
     }
 
-    override suspend fun getTimeArrive(myCallback:TimeCallback) {
+    override suspend fun getTimeArrive(myCallback: TimeCallback) {
 
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/time_arrive")
@@ -279,9 +276,9 @@ class MapDatabaseRepository @Inject constructor(
                     val isArrived = dataSnapshot.getValue() as String
                     Timber.tag(TAG).i(isArrived)
                     if (isArrived != EMPTY_STRING)
-                        session.changeIsArrived(ARRIVED_STATE)
+                        session.changeIsArrived(UserState.ARRIVED.value)
                     else
-                        session.changeIsArrived(EMPTY_STRING)
+                        session.changeIsArrived(UserState.NOTHING.value)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -291,7 +288,7 @@ class MapDatabaseRepository @Inject constructor(
     }
 
     override suspend fun resetIsArrived() {
-        session.changeUserState(ARRIVED_STATE)
+        session.changeUserState(UserState.ARRIVED.value)
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/arrive")
             .setValue(EMPTY_STRING)
@@ -307,9 +304,9 @@ class MapDatabaseRepository @Inject constructor(
                     val isExit = dataSnapshot.getValue() as String
                     Timber.tag(TAG).i(isExit)
                     if (isExit != EMPTY_STRING)
-                        session.changeIsExit(EXIT_STATE)
+                        session.changeIsExit(UserState.EXIT.value)
                     else
-                        session.changeIsExit(EMPTY_STRING)
+                        session.changeIsExit(UserState.NOTHING.value)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -377,10 +374,6 @@ class MapDatabaseRepository @Inject constructor(
         private const val PATH_TO_FREE_PLACES = "free_places"
         private const val PATH_TO_PRICE_PARKING = "price_parking"
         private const val PATH_TO_TOTAL_PLACES = "total_places"
-
-        // States
-        private const val ARRIVED_STATE = "arrived"
-        private const val EXIT_STATE = "exit"
 
         private const val ON_CANCELLED_MESSAGE = "loadPost:onCancelled"
 

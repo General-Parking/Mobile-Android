@@ -1,4 +1,4 @@
-package io.mishkav.generalparking.ui.components.contents
+package io.mishkav.generalparking.ui.screens.map.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
+import io.mishkav.generalparking.domain.entities.TIME_ZONE
+import io.mishkav.generalparking.domain.entities.UserState
 import io.mishkav.generalparking.ui.components.buttons.IconTextButton
 import io.mishkav.generalparking.ui.components.buttons.SimpleIconTextButton
 import io.mishkav.generalparking.ui.components.errors.OnErrorResult
@@ -51,6 +53,7 @@ fun BottomOnParkingScreen(
     val timeArriveResult by viewModel.timeArriveResult.collectAsState()
     val timeArrive by viewModel.timeArrive
     val priceParkingResult by viewModel.priceParkingResult.collectAsState()
+    val isExit by viewModel.isExit.collectAsState()
 
     timeArriveResult.also { result ->
         when (result) {
@@ -77,6 +80,7 @@ fun BottomOnParkingScreen(
                         textAddress = currentParkingAddress,
                         priceParking = priceParkingResult.data ?: 60,
                         navigateToSchemeScreen = navigateToSchemeScreen,
+                        isExit = isExit,
                         timeArriveResult = timeArrive
                     )
                     is LoadingResult -> {
@@ -111,6 +115,7 @@ fun BottomOnParkingScreenContent(
     textAddress: String = stringResource(R.string.bottom_title),
     priceParking: Long,
     timeArriveResult: String,
+    isExit: String = UserState.NOTHING.value,
     navigateToSchemeScreen: () -> Unit = {}
 ) = Column(
     modifier = modifier
@@ -130,6 +135,7 @@ fun BottomOnParkingScreenContent(
     OnParkingBar(
         timeArriveResult = timeArriveResult,
         priceParking = priceParking,
+        isExit = isExit,
         navigateToSchemeScreen = navigateToSchemeScreen
     )
 }
@@ -138,6 +144,7 @@ fun BottomOnParkingScreenContent(
 fun OnParkingBar(
     timeArriveResult: String,
     priceParking: Long,
+    isExit: String,
     darkTheme: Boolean = isSystemInDarkTheme(),
     navigateToSchemeScreen: () -> Unit = {}
 ) {
@@ -147,7 +154,7 @@ fun OnParkingBar(
 
     var difference = Duration.between(
         LocalDateTime.parse(
-            LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik"))
+            LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of(TIME_ZONE))
                 .format(formatter), formatter
         ), timeArrive
     )
@@ -175,11 +182,11 @@ fun OnParkingBar(
         )
     }
 
-    LaunchedEffect(Unit) {
-        while (true) {
+    LaunchedEffect(isExit) {
+        while (isExit != UserState.EXIT.value) {
             difference = Duration.between(
                 LocalDateTime.parse(
-                    LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik"))
+                    LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of(TIME_ZONE))
                         .format(formatter), formatter
                 ), timeArrive
             )
@@ -214,7 +221,9 @@ fun OnParkingBar(
             tint = MaterialTheme.colorScheme.onPrimary,
             onClick = {}
         )
+
         Spacer(Modifier.width(5.dp))
+
         Box(
             modifier = Modifier
                 .clip(
@@ -248,11 +257,9 @@ fun OnParkingBar(
             color = MaterialTheme.colorScheme.primary,
             onClick = navigateToSchemeScreen
         )
-        Spacer(
-            Modifier.width(
-                dimensionResource(R.dimen.standard_padding)
-            )
-        )
+
+        Spacer(Modifier.width(dimensionResource(R.dimen.standard_padding)))
+
         Row(
             modifier = Modifier
                 .clip(

@@ -76,3 +76,10 @@ data class User(
         }
     }
 }
+
+enum class UserState(val value: String) {
+    NOTHING(""),
+    RESERVED("reserved"),
+    ARRIVED("arrived"),
+    EXIT("exit")
+}

@@ -1,4 +1,4 @@
-package io.mishkav.generalparking.ui.components.contents
+package io.mishkav.generalparking.ui.screens.map.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
+import io.mishkav.generalparking.domain.entities.TIME_ZONE
 import io.mishkav.generalparking.ui.components.buttons.IconTextButton
 import io.mishkav.generalparking.ui.components.buttons.SimpleIconButton
 import io.mishkav.generalparking.ui.components.buttons.SimpleIconTextButton
@@ -175,7 +176,9 @@ fun BottomTimerScreenContent(
                     color = Green600,
                     onClick = {}
                 )
+
                 Spacer(Modifier.width(5.dp))
+
                 SimpleIconButton(
                     icon = Icons.Filled.Delete,
                     color = Gray500,
@@ -208,7 +211,7 @@ fun TimerBar(
 
     var difference = Duration.between(
         LocalDateTime.parse(
-            LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik"))
+            LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of(TIME_ZONE))
                 .format(formatter), formatter
         ), timeReservation
     )
@@ -224,7 +227,7 @@ fun TimerBar(
     }
     if (Duration.between(
             LocalDateTime.parse(
-                LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik"))
+                LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of(TIME_ZONE))
                     .format(formatter), formatter
             ), timeReservation
         ).isNegative
@@ -253,13 +256,13 @@ fun TimerBar(
     LaunchedEffect(enabled) {
         while (!(Duration.between(
                 LocalDateTime.parse(
-                    LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik"))
+                    LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of(TIME_ZONE))
                         .format(formatter), formatter
                 ), timeReservation
             ).isNegative) &&
             enabled || (Duration.between(
                 LocalDateTime.parse(
-                    LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik"))
+                    LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of(TIME_ZONE))
                         .format(formatter), formatter
                 ), timeReservation
             )
@@ -267,7 +270,7 @@ fun TimerBar(
         ) {
             difference = Duration.between(
                 LocalDateTime.parse(
-                    LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik"))
+                    LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of(TIME_ZONE))
                         .format(formatter), formatter
                 ), timeReservation
             )
@@ -293,7 +296,7 @@ fun TimerBar(
 
     if (Duration.between(
             LocalDateTime.parse(
-                LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of("Atlantic/Reykjavik"))
+                LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of(TIME_ZONE))
                     .format(formatter), formatter
             ), timeReservation
         ).isNegative
@@ -321,14 +324,10 @@ fun TimerBar(
             .padding(horizontal = dimensionResource(R.dimen.bottom_padding))
     ) {
         Text(
-            text = when {
-                enabled -> stringResource(R.string.reservation_retention)
-                else -> stringResource(R.string.paid_retention)
-            },
-            color = when {
-                enabled -> MaterialTheme.colorScheme.onPrimary
-                else -> generalParkingLightBackground
-            },
+            text = if (enabled) stringResource(R.string.reservation_retention)
+            else stringResource(R.string.paid_retention),
+            color = if (enabled) MaterialTheme.colorScheme.onPrimary
+            else generalParkingLightBackground,
             style = Typography.button
         )
         Box(
