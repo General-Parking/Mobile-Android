@@ -29,7 +29,6 @@ import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
 import io.mishkav.generalparking.ui.screens.main.Routes
-import io.mishkav.generalparking.ui.theme.Typography
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
@@ -100,10 +99,12 @@ fun AuthorizationScreenContent(
             text = stringResource(R.string.authorization),
             modifier = Modifier.weight(1f)
         )
+
         ScreenBody(
             text = stringResource(R.string.authorization_welcome),
             modifier = Modifier.weight(1f)
         )
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -162,6 +163,7 @@ fun AuthorizationScreenContent(
             },
             modifier = Modifier.weight(1f)
         )
+
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically,
@@ -170,21 +172,16 @@ fun AuthorizationScreenContent(
                 .weight(1f)
 
         ) {
-            Text(
-                text = stringResource(R.string.no_account),
-                color = MaterialTheme.colorScheme.onPrimary,
-                style = Typography.subtitle1
+            SimpleTextButton(
+                text = stringResource(R.string.forgot_password),
+                onClick = navigateToForgotPasswordScreen
             )
+
             SimpleTextButton(
                 text = stringResource(R.string.create),
                 onClick = navigateToRegistrationScreen
             )
         }
-
-        SimpleTextButton(
-            text = stringResource(R.string.forgot_password),
-            onClick = navigateToForgotPasswordScreen
-        )
     }
 }
 
