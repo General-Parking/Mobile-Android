@@ -97,43 +97,20 @@ class MapDatabaseRepository @Inject constructor(
         if (checkReservation == 1L)
             throw PlaceReservationException()
 
-        //Users car
+        val post = mapOf(
+            //Users car
+            "users_car/$address/$autoNumber" to firebaseAuth.currentUser?.uid,
+            //Users
+            "users/${firebaseAuth.currentUser?.uid}/reservation_address" to address,
+            "users/${firebaseAuth.currentUser?.uid}/reservation_place" to namePlace,
+            "users/${firebaseAuth.currentUser?.uid}/reservation_level" to floor,
+            "users/${firebaseAuth.currentUser?.uid}/time_reservation" to timeReservation,
+            //Parking
+            "parking/$address/$floor/places/$placeCoordinates/reservation" to firebaseAuth.currentUser?.uid,
+            "parking/$address/$floor/places/$placeCoordinates/value" to 1
+        )
         firebaseDatabase
-            .child("users_car/$address/$autoNumber")
-            .setValue(firebaseAuth.currentUser?.uid)
-            .await()
-
-        //Users
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/reservation_address")
-            .setValue(address)
-            .await()
-
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/reservation_place")
-            .setValue(namePlace)
-            .await()
-
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/reservation_level")
-            .setValue(floor)
-            .await()
-
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/time_reservation")
-            .setValue(timeReservation)
-            .await()
-
-        //Parking
-        firebaseDatabase
-            .child("parking/$address/$floor/places/$placeCoordinates/reservation")
-            .setValue(firebaseAuth.currentUser?.uid)
-            .await()
-
-        firebaseDatabase
-            .child("parking/$address/$floor/places/$placeCoordinates/value")
-            .setValue(1)
-            .await()
+            .updateChildren(post)
     }
 
     override suspend fun removeParkingPlaceReservation(
@@ -152,43 +129,20 @@ class MapDatabaseRepository @Inject constructor(
         if (checkReservation == 0L)
             throw PlaceNotReservatedException()
 
-        //Users
+        val post = mapOf(
+            //Users
+            "users/${firebaseAuth.currentUser?.uid}/reservation_address" to EMPTY_STRING,
+            "users/${firebaseAuth.currentUser?.uid}/reservation_place" to EMPTY_STRING,
+            "users/${firebaseAuth.currentUser?.uid}/reservation_level" to EMPTY_STRING,
+            "users/${firebaseAuth.currentUser?.uid}/time_reservation" to EMPTY_STRING,
+            //Parking
+            "parking/$address/$floor/places/$placeCoordinates/reservation" to SPACE,
+            "parking/$address/$floor/places/$placeCoordinates/value" to 0,
+            //Users car
+            "users_car/$address/$autoNumber" to null
+        )
         firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/reservation_address")
-            .setValue(EMPTY_STRING)
-            .await()
-
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/reservation_place")
-            .setValue(EMPTY_STRING)
-            .await()
-
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/reservation_level")
-            .setValue(EMPTY_STRING)
-            .await()
-
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/time_reservation")
-            .setValue(EMPTY_STRING)
-            .await()
-
-        //Parking
-        firebaseDatabase
-            .child("parking/$address/$floor/places/$placeCoordinates/reservation")
-            .setValue(SPACE)
-            .await()
-
-        firebaseDatabase
-            .child("parking/$address/$floor/places/$placeCoordinates/value")
-            .setValue(0)
-            .await()
-
-        //Users car
-        firebaseDatabase
-            .child("users_car/$address/$autoNumber")
-            .removeValue()
-            .await()
+            .updateChildren(post)
     }
 
     override suspend fun getAutoNumber(): String {
@@ -316,22 +270,15 @@ class MapDatabaseRepository @Inject constructor(
     }
 
     override suspend fun resetIsExit() {
+        val post = mapOf(
+            "exit" to EMPTY_STRING,
+            "time_arrive" to EMPTY_STRING,
+            "time_exit" to EMPTY_STRING,
+            "time_reservation" to EMPTY_STRING
+        )
         firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/exit")
-            .setValue(EMPTY_STRING)
-            .await()
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/time_arrive")
-            .setValue(EMPTY_STRING)
-            .await()
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/time_exit")
-            .setValue(EMPTY_STRING)
-            .await()
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/time_reservation")
-            .setValue(EMPTY_STRING)
-            .await()
+            .child("users/${firebaseAuth.currentUser?.uid}")
+            .updateChildren(post)
     }
 
     override suspend fun getTimeExit(): String {

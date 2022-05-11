@@ -7,6 +7,7 @@ import io.mishkav.generalparking.GeneralParkingApp
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.dagger.AppComponent
 import io.mishkav.generalparking.data.repositories.MapDatabaseRepository
+import io.mishkav.generalparking.domain.entities.LoadState
 import io.mishkav.generalparking.domain.entities.ParkingShortInfo
 import io.mishkav.generalparking.domain.entities.TimeCallback
 import io.mishkav.generalparking.domain.entities.UserState
@@ -40,7 +41,9 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     val timeArriveResult = MutableResultFlow<Unit>()
     var timeArrive = mutableStateOf("")
     val isArrivedResult = MutableResultFlow<Unit>()
+    val resetIsArrivedResult = MutableResultFlow<LoadState>()
     val isExitResult = MutableResultFlow<Unit>()
+    val resetIsExitResult = MutableResultFlow<LoadState>()
     val parkingShortInfoResult = MutableResultFlow<Map<String, ParkingShortInfo>>()
     val autoNumberResult = MutableResultFlow<Unit>()
     val isMinSdkVersionApproved = MutableResultFlow<Boolean>()
@@ -177,7 +180,11 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     }
 
     fun resetIsArrived() = viewModelScope.launch {
-        mapDatabaseRepository.resetIsArrived()
+        resetIsArrivedResult.loadOrError {
+            LoadState.LOADING
+            mapDatabaseRepository.resetIsArrived()
+            LoadState.RESETING
+        }
     }
 
     fun getIsExit() = viewModelScope.launch {
@@ -187,8 +194,12 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     }
 
     fun resetIsExit() = viewModelScope.launch {
-        session.changeUserState(EMPTY_STRING)
-        mapDatabaseRepository.resetIsExit()
+        resetIsExitResult.loadOrError {
+            session.changeUserState(EMPTY_STRING)
+            LoadState.LOADING
+            mapDatabaseRepository.resetIsExit()
+            LoadState.RESETING
+        }
     }
 
     fun getParkingCoordinates() = viewModelScope.launch {

@@ -83,3 +83,8 @@ enum class UserState(val value: String) {
     ARRIVED("arrived"),
     EXIT("exit")
 }
+
+enum class LoadState {
+    LOADING,
+    RESETING
+}

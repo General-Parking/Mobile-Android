@@ -28,6 +28,7 @@ import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.screens.main.Routes
 import kotlinx.coroutines.launch
 import com.google.maps.android.compose.rememberCameraPositionState
+import io.mishkav.generalparking.domain.entities.LoadState
 import io.mishkav.generalparking.domain.entities.UserState
 import io.mishkav.generalparking.ui.components.contents.*
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
@@ -55,7 +56,9 @@ fun MapScreen(
 
     val isArrived by viewModel.isArrived.collectAsState()
     val isArrivedResult by viewModel.isArrivedResult.collectAsState()
+    val resetIsArrivedResult by viewModel.resetIsArrivedResult.collectAsState()
     val isExit by viewModel.isExit.collectAsState()
+    val resetIsExitResult by viewModel.resetIsExitResult.collectAsState()
     val isExitResult by viewModel.isExitResult.collectAsState()
     val isMinSdkVersionApproved by viewModel.isMinSdkVersionApproved.collectAsState()
 
@@ -270,6 +273,42 @@ fun MapScreen(
                 contentAlignment = Alignment.Center
             ) {
                 CircularLoader()
+            }
+        }
+    }
+
+    resetIsArrivedResult.also { result ->
+        when (result) {
+            is ErrorResult -> onError(result.message!!)
+            else -> {
+                if (resetIsArrivedResult.data == LoadState.LOADING)
+                    Box(
+                        modifier = Modifier
+                            .alpha(0.5f)
+                            .background(MaterialTheme.colorScheme.background)
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularLoader()
+                    }
+            }
+        }
+    }
+
+    resetIsExitResult.also { result ->
+        when (result) {
+            is ErrorResult -> onError(result.message!!)
+            else -> {
+                if (resetIsExitResult.data == LoadState.LOADING)
+                    Box(
+                        modifier = Modifier
+                            .alpha(0.5f)
+                            .background(MaterialTheme.colorScheme.background)
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularLoader()
+                    }
             }
         }
     }
