@@ -41,6 +41,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.egoriku.animatedbottomsheet.bottomsheet.collapsed.SheetCollapsed
@@ -336,7 +337,6 @@ private fun getBackgroundColor(
     else -> ParkingPlaceStateColor.NOT_SELECTED.color
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalPagerApi::class)
 @Composable
 fun DrawScheme(
     parkingScheme: ParkingScheme,
@@ -364,9 +364,11 @@ fun DrawScheme(
                 }
             ) {
                 Column {
+                    val raw_width = LocalConfiguration.current.screenWidthDp.dp
+                    val current_width = (raw_width - 10.dp) / parkingScheme.width
                     for (height in 1..parkingScheme.height + 1) {
                         Row(
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.height(current_width)
                         ) {
                             for (width in 1..parkingScheme.width + 1) {
                                 val coordinates = "${height}_${width}"
@@ -374,14 +376,12 @@ fun DrawScheme(
                                 when (currentPlace) {
                                     null -> EmptyLotTile(
                                         modifier = Modifier
-                                            // .aspectRatio(1f)
-                                            .weight(1f)
+                                            .width(current_width)
                                     )
                                     else -> ParkingLotTile(
                                         modifier = Modifier
-                                            // .aspectRatio(1f)
-                                            .weight(1f)
-                                            .padding(1.dp),
+                                            .width(current_width)
+                                            .padding(0.5.dp),
                                         parkingPlace = currentPlace,
                                         coordinates = coordinates,
                                         background = getBackgroundColor(
