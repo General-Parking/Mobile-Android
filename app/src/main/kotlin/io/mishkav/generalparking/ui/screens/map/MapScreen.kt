@@ -1,5 +1,6 @@
 package io.mishkav.generalparking.ui.screens.map
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material3.MaterialTheme
@@ -9,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -17,6 +17,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -25,7 +28,6 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.screens.main.Routes
@@ -38,7 +40,6 @@ import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
-import io.mishkav.generalparking.ui.utils.getGoogleMapStyleOption
 
 @Composable
 fun MapScreen(
@@ -109,6 +110,8 @@ fun MapScreenContent(
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
+    val raw_image = ImageBitmap.imageResource(id = R.drawable.ic_marker).asAndroidBitmap()
+    val image = Bitmap.createScaledBitmap(raw_image, 130, 170, false)
 
     BottomSheetScaffold(
         sheetShape = RoundedCornerShape(
@@ -150,7 +153,7 @@ fun MapScreenContent(
                     }
                     Marker(
                         position = parkingLatLng,
-                        icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker),
+                        icon = BitmapDescriptorFactory.fromBitmap(image),
                         onClick = markerClick
                     )
                 }

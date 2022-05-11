@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.toUpperCase
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -89,6 +91,7 @@ fun RegistrationExtensionDataContent(
     var textNumberAutoRegion by rememberSaveable { mutableStateOf("") }
     var textModel by rememberSaveable { mutableStateOf("") }
     var textPhone by rememberSaveable { mutableStateOf("") }
+    val pattern = remember { Regex("[ABEKMHOPCTYX\\s]*") }
 
     val focusManager = LocalFocusManager.current
     val colors = TextFieldDefaults.textFieldColors(
@@ -160,14 +163,11 @@ fun RegistrationExtensionDataContent(
                                 shape = Shapes.small
                             )
                     ) {
-
                         TextField(
                             value = textNumberAutoLeftSymbols,
                             onValueChange = {
-                                if (it.length <= 1)
-                                    textNumberAutoLeftSymbols =
-                                        if (it == it.uppercase() && it.onlyLetters()) it
-                                        else ""
+                                if (it.uppercase().matches(pattern))
+                                    textNumberAutoLeftSymbols = it.uppercase()
                                 if (textNumberAutoLeftSymbols.length == 1)
                                     focusManager.moveFocus(FocusDirection.Right)
                             },
@@ -203,10 +203,8 @@ fun RegistrationExtensionDataContent(
                         TextField(
                             value = textNumberAutoRightSymbols,
                             onValueChange = {
-                                if (it.length <= 2)
-                                    textNumberAutoRightSymbols =
-                                        if (it == it.uppercase() && it.onlyLetters()) it
-                                        else ""
+                                if (it.uppercase().matches(pattern))
+                                    textNumberAutoRightSymbols = it.uppercase()
                                 if (textNumberAutoRightSymbols.length == 2)
                                     focusManager.moveFocus(FocusDirection.Right)
                             },
