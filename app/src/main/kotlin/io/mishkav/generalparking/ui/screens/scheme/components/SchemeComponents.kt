@@ -4,15 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Card
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import io.mishkav.generalparking.domain.entities.ParkingPlace
 import io.mishkav.generalparking.ui.screens.scheme.AutoSizeText
 import io.mishkav.generalparking.ui.theme.Gray500
@@ -47,11 +46,11 @@ fun ParkingLotTile(
     modifier = modifier
 ) {
     // TODO Card -> Box Если хотим использовать aspectRotation
-    Card(
+    Box(
         modifier = Modifier
-            // .fillMaxHeight(if (parkingPlace.rotation == 0) 0.5f else 1f)
-            // .fillMaxWidth(if (parkingPlace.rotation == 0) 1f else 0.5f)
-            .fillMaxSize()
+            .fillMaxHeight(if (parkingPlace.rotation == 0) 0.6f else 1f)
+            .fillMaxWidth(if (parkingPlace.rotation == 0) 1f else 0.6f)
+            // .fillMaxSize()
             .clickable {
                 if (background != ParkingPlaceStateColor.RESERVED_BY_OTHER_USERS.color &&
                     background != ParkingPlaceStateColor.RESERVED_BY_CURRENT_USER.color
@@ -71,8 +70,7 @@ fun ParkingLotTile(
             text = parkingPlace.name,
             modifier = Modifier
                 .background(background)
-                .fillMaxSize()
-                .padding(0.5.dp),
+                .fillMaxSize(),
             color = MaterialTheme.colorScheme.onPrimary,
             maxLines = 1
         )

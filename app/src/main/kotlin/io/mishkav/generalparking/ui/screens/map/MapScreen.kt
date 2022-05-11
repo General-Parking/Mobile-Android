@@ -1,5 +1,6 @@
 package io.mishkav.generalparking.ui.screens.map
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material3.MaterialTheme
@@ -15,6 +16,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -346,6 +350,9 @@ fun MapScreenContent(
     }
 
     val coroutineScope = rememberCoroutineScope()
+
+    val raw_image = ImageBitmap.imageResource(id = R.drawable.ic_marker).asAndroidBitmap()
+    val image = Bitmap.createScaledBitmap(raw_image, 130, 170, false)
     val alertChangeParking = remember { mutableStateOf(false) }
     val showAlertChangeParking = remember { mutableStateOf(false) }
 
@@ -475,7 +482,7 @@ fun MapScreenContent(
                     }
                     Marker(
                         position = parkingLatLng,
-                        icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_marker),
+                        icon = BitmapDescriptorFactory.fromBitmap(image),
                         onClick = markerClick
                     )
                 }
