@@ -351,8 +351,8 @@ fun MapScreenContent(
 
     val coroutineScope = rememberCoroutineScope()
 
-    val raw_image = ImageBitmap.imageResource(id = R.drawable.ic_marker).asAndroidBitmap()
-    val image = Bitmap.createScaledBitmap(raw_image, 130, 170, false)
+    val rawImage = ImageBitmap.imageResource(id = R.drawable.ic_marker).asAndroidBitmap()
+    val image = Bitmap.createScaledBitmap(rawImage, 130, 170, false)
     val alertChangeParking = remember { mutableStateOf(false) }
     val showAlertChangeParking = remember { mutableStateOf(false) }
 
