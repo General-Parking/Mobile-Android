@@ -67,6 +67,7 @@ import io.mishkav.generalparking.ui.screens.scheme.components.SchemeState
 import io.mishkav.generalparking.ui.screens.scheme.components.SelectedPlaceState
 import io.mishkav.generalparking.ui.theme.Gray400
 import io.mishkav.generalparking.ui.theme.Yellow400
+import io.mishkav.generalparking.ui.utils.disabledHorizontalPointerInputScroll
 import kotlinx.coroutines.launch
 
 @Composable
@@ -251,7 +252,8 @@ fun SchemeScreenContent(
 
         HorizontalPager(
             count = parking.keys.size,
-            state = pagerState
+            state = pagerState,
+            modifier = Modifier.disabledHorizontalPointerInputScroll()
         ) { floor ->
             DrawScheme(
                 parkingScheme = parking[parking.keys.elementAt(floor)]!!,
