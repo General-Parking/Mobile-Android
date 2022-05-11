@@ -97,7 +97,7 @@ class AuthDatabaseRepository @Inject constructor(
     companion object {
         private const val PATH_TO_USERS = "users"
         private const val PATH_TO_MIN_SDK = "minimumClientVersion"
-        private const val MIN_SDK_VERSION = 1.0f
+        private const val MIN_SDK_VERSION = 1.1f
 
         private val CLASS_STRING = String::class.java
         private val CLASS_INT = Int::class.java
