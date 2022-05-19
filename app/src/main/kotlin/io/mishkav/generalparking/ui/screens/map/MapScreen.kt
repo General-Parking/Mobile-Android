@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -38,7 +39,6 @@ import io.mishkav.generalparking.ui.components.contents.*
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
 import io.mishkav.generalparking.ui.components.errors.OnErrorResult
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
-import io.mishkav.generalparking.ui.components.texts.ScreenTitle
 import io.mishkav.generalparking.ui.components.buttons.TextButton
 import io.mishkav.generalparking.ui.screens.map.components.BottomOnParkingScreen
 import io.mishkav.generalparking.ui.screens.map.components.BottomTimerScreen
@@ -161,25 +161,59 @@ fun MapScreen(
             is SuccessResult ->
                 if (isArrived == UserState.ARRIVED.value && openArriveDialog.value)
                     AlertDialog(
+                        shape = RoundedCornerShape(
+                            dimensionResource(R.dimen.bottom_shape),
+                        ),
                         onDismissRequest = {},
                         text = {
-                            Column {
-                                ScreenTitle(
-                                    text = stringResource(R.string.arrive_title)
-                                )
-                                ScreenBody(
-                                    text = stringResource(R.string.arrive_body)
-                                )
+                            Column (
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = dimensionResource(R.dimen.standard_padding))
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.arrive_title),
+                                        style = Typography.h5,
+                                        textAlign = TextAlign.Center,
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        modifier = Modifier
+                                            .align(Alignment.BottomCenter)
+                                    )
+                                }
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = dimensionResource(R.dimen.standard_padding))
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.arrive_body),
+                                        style = Typography.h6,
+                                        textAlign = TextAlign.Center,
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        modifier = Modifier
+                                            .align(Alignment.BottomCenter)
+                                    )
+                                }
                             }
                         },
                         backgroundColor = MaterialTheme.colorScheme.background,
                         buttons = {
                             Row(
-                                modifier = Modifier.padding(all = 8.dp),
+                                modifier = Modifier
+                                    .padding(horizontal = dimensionResource(R.dimen.exit_button_padding))
+                                    .offset(y = (-15).dp),
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 TextButton(
                                     modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(
+                                        dimensionResource(R.dimen.bottom_shape),
+                                    ),
                                     text = stringResource(R.string.continue_text),
                                     onClick = {
                                         viewModel.resetIsArrived()

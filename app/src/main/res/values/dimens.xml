@@ -28,4 +28,6 @@
     <dimen name="on_error_padding">30dp</dimen>
 
     <dimen name="standard_elevation">8dp</dimen>
+
+    <dimen name="exit_button_padding">25dp</dimen>
 </resources>

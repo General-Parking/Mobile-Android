@@ -17,11 +17,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.dp
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.buttons.TextButton
-import io.mishkav.generalparking.ui.components.texts.ScreenTitle
-import io.mishkav.generalparking.ui.theme.Gray200
-import io.mishkav.generalparking.ui.theme.Typography
-import io.mishkav.generalparking.ui.theme.Yellow500
-import io.mishkav.generalparking.ui.theme.generalParkingDarkBackground
+import io.mishkav.generalparking.ui.theme.*
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -47,6 +43,9 @@ fun ExitAlert(
     var resultRetentionPrice = ((priceParking / 60).toInt() * bookingRatio * retentionDiff).toInt()
 
     AlertDialog(
+        shape = RoundedCornerShape(
+            dimensionResource(R.dimen.bottom_shape),
+        ),
         onDismissRequest = {},
         text = {
             Column(
@@ -55,11 +54,19 @@ fun ExitAlert(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                ScreenTitle(
-                    text = stringResource(R.string.see_you_again),
+                Box(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .padding(vertical = dimensionResource(R.dimen.standard_padding))
-                )
+                ) {
+                    Text(
+                        text = stringResource(R.string.see_you_again),
+                        style = Typography.h5,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                    )
+                }
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
@@ -121,18 +128,22 @@ fun ExitAlert(
                         color = generalParkingDarkBackground,
                         style = Typography.body1
                     )
-                    Spacer(Modifier.height(20.dp))
                 }
             }
         },
         backgroundColor = MaterialTheme.colorScheme.background,
         buttons = {
             Row(
-                modifier = Modifier.padding(all = 8.dp),
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(R.dimen.exit_button_padding))
+                    .offset(y = (-15).dp),
                 horizontalArrangement = Arrangement.Center
             ) {
                 TextButton(
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(
+                        dimensionResource(R.dimen.bottom_shape),
+                    ),
                     text = stringResource(R.string.finish),
                     onClick = onClick
                 )
