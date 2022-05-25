@@ -36,7 +36,6 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     var timeReservation = mutableStateOf("")
     val bookingTimeResult = MutableResultFlow<Long>()
     val timeExitResult = MutableResultFlow<String>()
-    val priceParkingResult = MutableResultFlow<Long>()
     val bookingRatioResult = MutableResultFlow<Double>()
     val timeArriveResult = MutableResultFlow<Unit>()
     var timeArrive = mutableStateOf("")
@@ -68,7 +67,6 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
         getReservationAddress()
         setAutoNumber()
         getBookingTime()
-        getPriceParking()
         getBookingRatio()
         getTimeArrive()
         getIsArrived()
@@ -135,15 +133,6 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     fun getTimeExit() = viewModelScope.launch {
         timeExitResult.loadOrError {
             mapDatabaseRepository.getTimeExit()
-        }
-    }
-
-    fun getPriceParking() = viewModelScope.launch {
-        priceParkingResult.loadOrError {
-            mapDatabaseRepository.getPriceParking(
-                address = currentParkingAddress.value,
-                floor = _selectedParkingPlaceFloor.value
-            )
         }
     }
 

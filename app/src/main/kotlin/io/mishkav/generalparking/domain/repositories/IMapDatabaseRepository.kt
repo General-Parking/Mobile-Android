@@ -24,10 +24,6 @@ interface IMapDatabaseRepository {
     suspend fun getAutoNumber(): String
     suspend fun getTimeReservation(myCallback: TimeCallback)
     suspend fun getBookingTime(): Long
-    suspend fun getPriceParking(
-        address: String,
-        floor: String
-    ): Long
     suspend fun getBookingRatio(
         address: String,
         floor: String

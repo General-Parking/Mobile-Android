@@ -6,7 +6,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -15,7 +14,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
@@ -54,8 +52,9 @@ fun BottomOnParkingScreen(
     val currentParkingAddress by viewModel.currentParkingAddress.collectAsState()
     val timeArriveResult by viewModel.timeArriveResult.collectAsState()
     val timeArrive by viewModel.timeArrive
-    val priceParkingResult by viewModel.priceParkingResult.collectAsState()
     val isExit by viewModel.isExit.collectAsState()
+    val parkingShortInfoResult by viewModel.parkingShortInfoResult.collectAsState()
+    val currentParkingInfo = parkingShortInfoResult.data?.get(currentParkingAddress)
 
     timeArriveResult.also { result ->
         when (result) {
@@ -67,37 +66,14 @@ fun BottomOnParkingScreen(
                 navController = navController,
                 isTopAppBarAvailable = true
             )
-            is SuccessResult -> priceParkingResult.also { priceResult ->
-                when (priceResult) {
-                    is ErrorResult -> OnErrorResult(
-                        onClick = {
-                            viewModel.onOpen()
-                        },
-                        message = priceResult.message ?: R.string.on_error_def,
-                        navController = navController,
-                        isTopAppBarAvailable = true
-                    )
-                    is SuccessResult -> BottomOnParkingScreenContent(
-                        name = name,
-                        textAddress = currentParkingAddress,
-                        priceParking = priceParkingResult.data ?: 60,
-                        navigateToSchemeScreen = navigateToSchemeScreen,
-                        isExit = isExit,
-                        timeArriveResult = timeArrive
-                    )
-                    is LoadingResult -> {
-                        Box(
-                            modifier = Modifier
-                                .alpha(0.5f)
-                                .background(MaterialTheme.colorScheme.background)
-                                .fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularLoader()
-                        }
-                    }
-                }
-            }
+            is SuccessResult -> BottomOnParkingScreenContent(
+                name = name,
+                textAddress = currentParkingAddress,
+                priceParking = currentParkingInfo?.priceOfParking ?: 0f,
+                navigateToSchemeScreen = navigateToSchemeScreen,
+                isExit = isExit,
+                timeArriveResult = timeArrive
+            )
             is LoadingResult -> Box(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.background)
@@ -115,7 +91,7 @@ fun BottomOnParkingScreenContent(
     modifier: Modifier = Modifier,
     name: String = stringResource(R.string.zeros),
     textAddress: String = stringResource(R.string.bottom_title),
-    priceParking: Long,
+    priceParking: Float = 0f,
     timeArriveResult: String,
     isExit: String = UserState.NOTHING.value,
     navigateToSchemeScreen: () -> Unit = {}
@@ -145,7 +121,7 @@ fun BottomOnParkingScreenContent(
 @Composable
 fun OnParkingBar(
     timeArriveResult: String,
-    priceParking: Long,
+    priceParking: Float = 0f,
     isExit: String,
     darkTheme: Boolean = isSystemInDarkTheme(),
     navigateToSchemeScreen: () -> Unit = {}
@@ -305,7 +281,6 @@ fun OnParkingBar(
 fun BottomOnParkingScreenPreview() {
     BottomOnParkingScreenContent(
         navigateToSchemeScreen = {},
-        priceParking = 100,
         timeArriveResult = ""
     )
 }

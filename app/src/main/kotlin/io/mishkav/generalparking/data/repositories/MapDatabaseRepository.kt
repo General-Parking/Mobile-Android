@@ -1,6 +1,5 @@
 package io.mishkav.generalparking.data.repositories
 
-import android.content.ContentValues.TAG
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -160,7 +159,7 @@ class MapDatabaseRepository @Inject constructor(
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val timeReservation = dataSnapshot.getValue() as String
-                    Timber.tag(TAG).i(timeReservation)
+                    Timber.tag(TAG).i("getTimeReservation: timeReservation = $timeReservation")
 
                     myCallback.onCallback(timeReservation)
                     if (timeReservation == EMPTY_STRING)
@@ -176,17 +175,6 @@ class MapDatabaseRepository @Inject constructor(
     override suspend fun getBookingTime(): Long {
         return firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/remaining_booking_time")
-            .get()
-            .await()
-            .getValue() as Long
-    }
-
-    override suspend fun getPriceParking(
-        address: String,
-        floor: String
-    ): Long {
-        return firebaseDatabase
-            .child("parking/$address/$floor/price_parking")
             .get()
             .await()
             .getValue() as Long
@@ -210,7 +198,7 @@ class MapDatabaseRepository @Inject constructor(
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val timeArrive = dataSnapshot.getValue() as String
-                    Timber.tag(TAG).i(timeArrive)
+                    Timber.tag(TAG).i("getTimeArrive: timeArrive = $timeArrive")
 
                     myCallback.onCallback(timeArrive)
                 }
@@ -228,7 +216,7 @@ class MapDatabaseRepository @Inject constructor(
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val isArrived = dataSnapshot.getValue() as String
-                    Timber.tag(TAG).i(isArrived)
+                    Timber.tag(TAG).i("getIsArrived: isArrived = $isArrived")
                     if (isArrived != EMPTY_STRING)
                         session.changeIsArrived(UserState.ARRIVED.value)
                     else
@@ -256,7 +244,7 @@ class MapDatabaseRepository @Inject constructor(
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     val isExit = dataSnapshot.getValue() as String
-                    Timber.tag(TAG).i(isExit)
+                    Timber.tag(TAG).i("getIsExit: isExit = $isExit")
                     if (isExit != EMPTY_STRING)
                         session.changeIsExit(UserState.EXIT.value)
                     else
@@ -326,6 +314,7 @@ class MapDatabaseRepository @Inject constructor(
 
         private const val EMPTY_STRING = ""
         private const val SPACE = " "
+        private const val TAG = "MapDatabaseRepository"
 
         private val CLASS_STRING = String::class.java
         private val CLASS_INT = Int::class.java

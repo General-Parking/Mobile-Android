@@ -1,4 +1,4 @@
-package io.mishkav.generalparking.ui.components.contents
+package io.mishkav.generalparking.ui.screens.map.components
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.buttons.BottomTextButton

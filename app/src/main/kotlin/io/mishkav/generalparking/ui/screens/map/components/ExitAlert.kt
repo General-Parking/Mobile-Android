@@ -28,7 +28,7 @@ fun ExitAlert(
     timeExitResult: String,
     timeArriveResult: String,
     timeReservationResult: String,
-    priceParking: Long,
+    priceParking: Float = 0f,
     bookingRatio: Double,
     onClick: () -> Unit = {}
 ) {

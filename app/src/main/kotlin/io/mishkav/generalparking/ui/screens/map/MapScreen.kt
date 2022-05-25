@@ -35,12 +35,12 @@ import kotlinx.coroutines.launch
 import com.google.maps.android.compose.rememberCameraPositionState
 import io.mishkav.generalparking.domain.entities.LoadState
 import io.mishkav.generalparking.domain.entities.UserState
-import io.mishkav.generalparking.ui.components.contents.*
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
 import io.mishkav.generalparking.ui.components.errors.OnErrorResult
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.buttons.TextButton
 import io.mishkav.generalparking.ui.screens.map.components.BottomOnParkingScreen
+import io.mishkav.generalparking.ui.screens.map.components.BottomScreen
 import io.mishkav.generalparking.ui.screens.map.components.BottomTimerScreen
 import io.mishkav.generalparking.ui.screens.map.components.ExitAlert
 import io.mishkav.generalparking.ui.theme.*
@@ -77,11 +77,13 @@ fun MapScreen(
     val timeArrive by viewModel.timeArrive
     val timeReservation by viewModel.timeReservation
     val timeExitResult by viewModel.timeExitResult.collectAsState()
-    val priceParkingResult by viewModel.priceParkingResult.collectAsState()
     val bookingRatioResult by viewModel.bookingRatioResult.collectAsState()
     val selectedParkingPlace by viewModel.selectedParkingPlace.collectAsState()
     val reservationAddressResult by viewModel.reservationAddressResult.collectAsState()
     val openArriveDialog = remember { mutableStateOf(true) }
+    val currentParkingAddress by viewModel.currentParkingAddress.collectAsState()
+    val parkingShortInfoResult by viewModel.parkingShortInfoResult.collectAsState()
+    val currentParkingInfo = parkingShortInfoResult.data?.get(currentParkingAddress)
 
     LaunchedEffect(Unit) {
         viewModel.onOpen()
@@ -273,7 +275,7 @@ fun MapScreen(
                                                 timeExitResult = timeExitResult.data ?: "",
                                                 timeArriveResult = timeArrive,
                                                 timeReservationResult = timeReservation,
-                                                priceParking = priceParkingResult.data ?: 60,
+                                                priceParking = currentParkingInfo?.priceOfParking ?: 0f,
                                                 bookingRatio = bookingRatioResult.data ?: 0.2,
                                                 onClick = {
                                                     viewModel.resetIsExit()
