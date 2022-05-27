@@ -16,6 +16,7 @@ import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import io.mishkav.generalparking.state.Session
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
 import io.mishkav.generalparking.ui.utils.loadOrError
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -55,6 +56,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     private val autoNumber by lazy { session.autoNumber }
     private val selectedParkingPlaceCoordinates by lazy { session.selectedParkingPlaceCoordinates }
     private val _selectedParkingPlaceFloor by lazy { session.selectedParkingPlaceFloor }
+    val onTimerResult = MutableResultFlow<Unit>()
 
     init {
         appComponent.inject(this)
@@ -66,13 +68,44 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
         getParkingShortInfo()
         getReservationAddress()
         setAutoNumber()
-        getBookingTime()
+//        getBookingTime()
         getBookingRatio()
         getTimeArrive()
         getIsArrived()
         getIsExit()
         getTimeExit()
-        getTimeReservation()
+//        getTimeReservation()
+        loadData()
+    }
+
+    private fun loadData() = viewModelScope.launch {
+        onTimerResult.loadOrError {
+            val jobsToLoad = arrayOf(
+                launch {
+                    timeReservationResult.loadOrError {
+                        mapDatabaseRepository.getTimeReservation(object : TimeCallback {
+                            override fun onCallback(value: String) {
+                                timeReservation.value = value
+
+                                if (timeReservation.value == EMPTY_STRING)
+                                    session.changeUserState(UserState.NOTHING.value)
+                                else if (timeReservation.value != EMPTY_STRING && timeArrive.value == EMPTY_STRING)
+                                    session.changeUserState(UserState.RESERVED.value)
+                                else if (timeArrive.value != EMPTY_STRING)
+                                    session.changeUserState(UserState.ARRIVED.value)
+                            }
+                        })
+                    }
+                },
+                launch {
+                    bookingTimeResult.loadOrError {
+                        mapDatabaseRepository.getBookingTime()
+                    }
+                }
+            )
+
+            joinAll(*jobsToLoad)
+        }
     }
 
     fun removeParkingPlaceReservation() = viewModelScope.launch {
@@ -107,28 +140,28 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
         }
     }
 
-    fun getTimeReservation() = viewModelScope.launch {
-        timeReservationResult.loadOrError {
-            mapDatabaseRepository.getTimeReservation(object : TimeCallback {
-                override fun onCallback(value: String) {
-                    timeReservation.value = value
-
-                    if (timeReservation.value == EMPTY_STRING)
-                        session.changeUserState(UserState.NOTHING.value)
-                    else if (timeReservation.value != EMPTY_STRING && timeArrive.value == EMPTY_STRING)
-                        session.changeUserState(UserState.RESERVED.value)
-                    else if (timeArrive.value != EMPTY_STRING)
-                        session.changeUserState(UserState.ARRIVED.value)
-                }
-            })
-        }
-    }
-
-    fun getBookingTime() = viewModelScope.launch {
-        bookingTimeResult.loadOrError {
-            mapDatabaseRepository.getBookingTime()
-        }
-    }
+//    fun getTimeReservation() = viewModelScope.launch {
+//        timeReservationResult.loadOrError {
+//            mapDatabaseRepository.getTimeReservation(object : TimeCallback {
+//                override fun onCallback(value: String) {
+//                    timeReservation.value = value
+//
+//                    if (timeReservation.value == EMPTY_STRING)
+//                        session.changeUserState(UserState.NOTHING.value)
+//                    else if (timeReservation.value != EMPTY_STRING && timeArrive.value == EMPTY_STRING)
+//                        session.changeUserState(UserState.RESERVED.value)
+//                    else if (timeArrive.value != EMPTY_STRING)
+//                        session.changeUserState(UserState.ARRIVED.value)
+//                }
+//            })
+//        }
+//    }
+//
+//    fun getBookingTime() = viewModelScope.launch {
+//        bookingTimeResult.loadOrError {
+//            mapDatabaseRepository.getBookingTime()
+//        }
+//    }
 
     fun getTimeExit() = viewModelScope.launch {
         timeExitResult.loadOrError {
@@ -194,7 +227,6 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     fun getParkingCoordinates() = viewModelScope.launch {
         parkingCoordinatesResult.loadOrError {
             val rawCoordinates = mapDatabaseRepository.getParkingCoordinates()
-
             val coordinatesMap = mutableMapOf<Pair<Double, Double>, String>()
 
             for ((key, value) in rawCoordinates) {

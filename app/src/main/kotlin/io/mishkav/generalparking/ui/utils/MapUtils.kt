@@ -1,6 +1,7 @@
 package io.mishkav.generalparking.ui.utils
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import com.google.android.gms.maps.model.MapStyleOptions
 import io.mishkav.generalparking.ui.utils.GoogleMapStylePath.NIGHT
@@ -21,6 +22,14 @@ fun getGoogleMapStyleOption(): MapStyleOptions? {
     }
 
     return jsonString?.let { MapStyleOptions(it) }
+}
+
+// Error functions
+@Composable
+inline fun Result<*>.subscribeOnError(crossinline onError: (message: Int) -> Unit) = (this as? ErrorResult)?.message?.let {
+    LaunchedEffect(this) {
+        onError(it)
+    }
 }
 
 object GoogleMapStylePath {

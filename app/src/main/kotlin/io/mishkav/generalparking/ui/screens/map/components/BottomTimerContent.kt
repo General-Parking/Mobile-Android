@@ -38,6 +38,7 @@ import io.mishkav.generalparking.ui.theme.*
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
+import io.mishkav.generalparking.ui.utils.subscribeOnError
 import kotlinx.coroutines.delay
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -46,58 +47,26 @@ import kotlin.math.abs
 @Composable
 fun BottomTimerScreen(
     name: String,
-    navController: NavHostController,
-    navigateToSchemeScreen: () -> Unit
+    navigateToSchemeScreen: () -> Unit,
+    showMessage: (message: Int) -> Unit = {}
 ) {
     val viewModel: MapViewModel = viewModel()
     val currentParkingAddress by viewModel.currentParkingAddress.collectAsState()
     val timeReservationResult by viewModel.timeReservationResult.collectAsState()
+    timeReservationResult.subscribeOnError(showMessage)
+    val onTimerResult by viewModel.onTimerResult.collectAsState()
+    onTimerResult.subscribeOnError(showMessage)
     val bookingTimeResult by viewModel.bookingTimeResult.collectAsState()
+    bookingTimeResult.subscribeOnError(showMessage)
     val timeReservation by viewModel.timeReservation
 
-    timeReservationResult.also { result ->
-        when (result) {
-            is ErrorResult -> OnErrorResult(
-                onClick = {
-                    viewModel.onOpen()
-                },
-                message = result.message ?: R.string.on_error_def,
-                navController = navController,
-                isTopAppBarAvailable = true
-            )
-            is SuccessResult -> bookingTimeResult.also { bookingResult ->
-                when (bookingResult) {
-                    is ErrorResult -> OnErrorResult(
-                        onClick = {
-                            viewModel.onOpen()
-                        },
-                        message = bookingResult.message ?: R.string.on_error_def,
-                        navController = navController,
-                        isTopAppBarAvailable = true
-                    )
-                    is SuccessResult -> BottomTimerScreenContent(
-                        name = name,
-                        textAddress = currentParkingAddress,
-                        period = bookingTimeResult.data ?: 60,
-                        onRemoveReservationButtonClick = viewModel::removeParkingPlaceReservation,
-                        navigateToSchemeScreen = navigateToSchemeScreen,
-                        timeReservationResult = timeReservation
-                    )
-                    is LoadingResult -> {
-                        Box(
-                            modifier = Modifier
-                                .alpha(0.5f)
-                                .background(MaterialTheme.colorScheme.background)
-                                .fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularLoader()
-                        }
-                    }
-                }
-            }
-            is LoadingResult -> Box(
+    val isLoading = onTimerResult is LoadingResult
+
+    when {
+        isLoading -> {
+            Box(
                 modifier = Modifier
+                    .alpha(0.5f)
                     .background(MaterialTheme.colorScheme.background)
                     .fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -105,12 +74,21 @@ fun BottomTimerScreen(
                 CircularLoader()
             }
         }
+        else -> {
+            BottomTimerScreenContent(
+                name = name,
+                textAddress = currentParkingAddress,
+                period = bookingTimeResult.data ?: 60,
+                onRemoveReservationButtonClick = viewModel::removeParkingPlaceReservation,
+                navigateToSchemeScreen = navigateToSchemeScreen,
+                timeReservationResult = timeReservation
+            )
+        }
     }
 }
 
 @Composable
 fun BottomTimerScreenContent(
-    modifier: Modifier = Modifier,
     name: String = stringResource(R.string.zeros),
     textAddress: String = stringResource(R.string.bottom_title),
     period: Long,
@@ -137,7 +115,7 @@ fun BottomTimerScreenContent(
         )
     }
     Box(
-        modifier = modifier
+        modifier = Modifier
             .clip(
                 RoundedCornerShape(
                     dimensionResource(R.dimen.bottom_shape),

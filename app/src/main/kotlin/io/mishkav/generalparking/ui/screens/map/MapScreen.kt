@@ -410,12 +410,10 @@ fun MapScreenContent(
             Spacer(modifier = Modifier.height(1.dp)) //After a re-compose the sheetContent looses associated anchor
             when (userState) {
                 UserState.RESERVED.value -> when (alertChangeParking.value) {
-                    false ->
-                        BottomTimerScreen(
-                            name = selectedParkingPlace,
-                            navController = navController,
-                            navigateToSchemeScreen = navigateToSchemeScreen
-                        )
+                    false -> BottomTimerScreen(
+                        name = selectedParkingPlace,
+                        navigateToSchemeScreen = navigateToSchemeScreen
+                    )
                     else -> if (showAlertChangeParking.value)
                         AlertDialog(
                         onDismissRequest = {},

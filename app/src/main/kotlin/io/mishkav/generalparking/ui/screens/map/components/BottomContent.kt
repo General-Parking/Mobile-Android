@@ -47,10 +47,9 @@ fun BottomScreenContent(
     freePlaces: Int = 0,
     totalPlaces: Int = 0,
     priceParking: Float = 0f,
-    navigateToSchemeScreen: () -> Unit = {},
-    modifier: Modifier = Modifier
+    navigateToSchemeScreen: () -> Unit = {}
 ) = Column(
-    modifier = modifier
+    modifier = Modifier
         .padding(
             horizontal = dimensionResource(R.dimen.bottom_padding),
             vertical = dimensionResource(R.dimen.bottom_top_padding)

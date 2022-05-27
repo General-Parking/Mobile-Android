@@ -88,7 +88,6 @@ fun BottomOnParkingScreen(
 
 @Composable
 fun BottomOnParkingScreenContent(
-    modifier: Modifier = Modifier,
     name: String = stringResource(R.string.zeros),
     textAddress: String = stringResource(R.string.bottom_title),
     priceParking: Float = 0f,
@@ -96,7 +95,7 @@ fun BottomOnParkingScreenContent(
     isExit: String = UserState.NOTHING.value,
     navigateToSchemeScreen: () -> Unit = {}
 ) = Column(
-    modifier = modifier
+    modifier = Modifier
         .padding(
             horizontal = dimensionResource(R.dimen.bottom_padding),
             vertical = dimensionResource(R.dimen.bottom_top_padding)
@@ -222,8 +221,7 @@ fun OnParkingBar(
                 color = generalParkingDarkBackground,
                 style = Typography.body1,
                 textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(horizontal = dimensionResource(R.dimen.standard_padding))
+                modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.standard_padding))
             )
         }
     }
