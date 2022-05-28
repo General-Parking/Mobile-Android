@@ -88,5 +88,6 @@
     <string name="parking_change_body">Вы уже забронировали место на другой парковке, отмените бронь если хотите забронировать в этой парковке</string>
     <string name="time_without_hours">%02d:%02d</string>
     <string name="time_with_hours">%02d:%02d:%02d</string>
+    <string name="price_rub">%d ₽</string>
 
 </resources>

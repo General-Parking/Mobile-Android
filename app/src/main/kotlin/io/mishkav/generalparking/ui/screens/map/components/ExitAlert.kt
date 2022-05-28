@@ -38,8 +38,14 @@ fun ExitAlert(
     val timeArrive = LocalDateTime.parse(timeArriveResult, formatter)
     val timeReservation = LocalDateTime.parse(timeReservationResult, formatter)
 
+    // priceParking - стоимость нахождение на парковке, руб/мин
+    // resultParkingPrice - итоговая сумма за нахождение на парковке = priceParking(руб/ч) * время нахождения(мин)
     var resultParkingPrice = (priceParking / 60).toInt() * abs(Duration.between(timeArrive, timeExit).toMinutes()).toInt()
+
+    // retentionDiff - время платного удержания = все время бронирования минус час
     val retentionDiff = abs(Duration.between(timeReservation, timeArrive).toMinutes()) - 60
+
+    // resultRetentionPrice - стоимость платного удержания = priceParking(руб/ч) * коэффициент стоимости * время(мин)
     var resultRetentionPrice = ((priceParking / 60).toInt() * bookingRatio * retentionDiff).toInt()
 
     AlertDialog(

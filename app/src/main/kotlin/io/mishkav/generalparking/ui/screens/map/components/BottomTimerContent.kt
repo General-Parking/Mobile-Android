@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -25,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.domain.entities.TIME_ZONE
-import io.mishkav.generalparking.ui.components.buttons.IconTextButton
 import io.mishkav.generalparking.ui.components.buttons.SimpleIconButton
 import io.mishkav.generalparking.ui.components.buttons.SimpleIconTextButton
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
@@ -144,12 +144,27 @@ fun BottomTimerScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                IconTextButton(
-                    icon = Icons.Filled.Done,
-                    text = stringResource(R.string.reserved),
-                    color = Green600,
-                    onClick = {}
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .clip(Shapes.medium)
+                        .background(Green600)
+                        .padding(
+                            vertical = 8.dp,
+                            horizontal = 16.dp
+                        )
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Done,
+                        contentDescription = stringResource(R.string.space),
+                        tint = generalParkingLightBackground
+                    )
+                    Text(
+                        text = stringResource(R.string.reserved),
+                        color = generalParkingLightBackground,
+                        style = Typography.button
+                    )
+                }
 
                 Spacer(Modifier.width(5.dp))
 
@@ -183,6 +198,7 @@ fun TimerBar(
 
     timeReservation = timeReservation.plusMinutes(period)
 
+    // difference - разница между текущим временем и временем начала бронирования+period
     var difference = Duration.between(
         LocalDateTime.parse(
             LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of(TIME_ZONE))
@@ -193,12 +209,19 @@ fun TimerBar(
     var differenceMinutes = abs(difference.seconds.toInt() % (60 * 60) / 60)
     var differenceSeconds = abs(difference.seconds.toInt() % 60)
 
+    val timeWithoutHours = stringResource(R.string.time_without_hours)
+    val timeWithHours = stringResource(R.string.time_with_hours)
+
+    // enabled - флаг на отображать/не отображать таймер
     var enabled by remember { mutableStateOf(true) }
     var progress by remember {
         mutableStateOf(
             (differenceMinutes * 60 + differenceSeconds).toFloat().div(period.toInt() * 60)
         )
     }
+
+    // Если разница во времени отрицательная, то есть progress уже ниже 0f
+    // то останавливаем визуальное изменение таймера
     if (Duration.between(
             LocalDateTime.parse(
                 LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of(TIME_ZONE))
@@ -212,9 +235,8 @@ fun TimerBar(
     var currentTime by remember {
         mutableStateOf(
             when (differenceHours) {
-                0 -> String.format("%02d:%02d", differenceMinutes, differenceSeconds)
-                else -> String.format(
-                    "%02d:%02d:%02d",
+                0 -> timeWithoutHours.format(differenceMinutes, differenceSeconds)
+                else -> timeWithHours.format(
                     differenceHours,
                     differenceMinutes,
                     differenceSeconds
@@ -228,6 +250,7 @@ fun TimerBar(
     )
 
     LaunchedEffect(enabled) {
+        // Пока разница во времени не будет отрицательной или не пройдут сутки платного удержания
         while (!(Duration.between(
                 LocalDateTime.parse(
                     LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of(TIME_ZONE))
@@ -240,7 +263,7 @@ fun TimerBar(
                         .format(formatter), formatter
                 ), timeReservation
             )
-                .seconds.toInt() % (60 * 60) / 60 > -60)
+                .toHours().toInt() / 24 == 0)
         ) {
             difference = Duration.between(
                 LocalDateTime.parse(
@@ -253,9 +276,8 @@ fun TimerBar(
             differenceSeconds = abs(difference.seconds.toInt() % 60)
 
             currentTime = when (differenceHours) {
-                0 -> String.format("%02d:%02d", differenceMinutes, differenceSeconds)
-                else -> String.format(
-                    "%02d:%02d:%02d",
+                0 -> timeWithoutHours.format(differenceMinutes, differenceSeconds)
+                else -> timeWithHours.format(
                     differenceHours,
                     differenceMinutes,
                     differenceSeconds
@@ -266,16 +288,6 @@ fun TimerBar(
                     (differenceMinutes * 60 + differenceSeconds).toFloat().div(period.toInt() * 60)
             delay(1000L)
         }
-    }
-
-    if (Duration.between(
-            LocalDateTime.parse(
-                LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of(TIME_ZONE))
-                    .format(formatter), formatter
-            ), timeReservation
-        ).isNegative
-    ) {
-        enabled = false
     }
 
     LinearProgressIndicator(

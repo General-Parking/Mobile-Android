@@ -6,8 +6,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.MaterialTheme
@@ -15,7 +14,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -26,7 +24,6 @@ import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.domain.entities.TIME_ZONE
 import io.mishkav.generalparking.domain.entities.UserState
-import io.mishkav.generalparking.ui.components.buttons.IconTextButton
 import io.mishkav.generalparking.ui.components.buttons.SimpleIconTextButton
 import io.mishkav.generalparking.ui.components.errors.OnErrorResult
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
@@ -129,6 +126,7 @@ fun OnParkingBar(
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
     val timeArrive = LocalDateTime.parse(timeArriveResult, formatter)
 
+    // difference - разница между текущим временем и временем заезда
     var difference = Duration.between(
         LocalDateTime.parse(
             LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of(TIME_ZONE))
@@ -139,12 +137,14 @@ fun OnParkingBar(
     var differenceMinutes = abs(difference.seconds.toInt() % (60 * 60) / 60)
     var differenceSeconds = abs(difference.seconds.toInt() % 60)
 
+    val timeWithoutHours = stringResource(R.string.time_without_hours)
+    val timeWithHours = stringResource(R.string.time_with_hours)
+
     var currentTime by remember {
         mutableStateOf(
             when (differenceHours) {
-                0 -> String.format("%02d:%02d", differenceMinutes, differenceSeconds)
-                else -> String.format(
-                    "%02d:%02d:%02d",
+                0 -> timeWithoutHours.format(differenceMinutes, differenceSeconds)
+                else -> timeWithHours.format(
                     differenceHours,
                     differenceMinutes,
                     differenceSeconds
@@ -172,9 +172,8 @@ fun OnParkingBar(
             differenceSeconds = abs(difference.seconds.toInt() % 60)
 
             currentTime = when (differenceHours) {
-                0 -> String.format("%02d:%02d", differenceMinutes, differenceSeconds)
-                else -> String.format(
-                    "%02d:%02d:%02d",
+                0 -> timeWithoutHours.format(differenceMinutes, differenceSeconds)
+                else -> timeWithHours.format(
                     differenceHours,
                     differenceMinutes,
                     differenceSeconds
@@ -192,16 +191,23 @@ fun OnParkingBar(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        IconTextButton(
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .height(42.dp),
-            icon = Icons.Filled.HourglassEmpty,
-            text = stringResource(R.string.time_on_parking),
-            color = Color.White,
-            enabled = false,
-            tint = MaterialTheme.colorScheme.onPrimary,
-            onClick = {}
-        )
+                .clip(Shapes.medium)
+                .height(42.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.HourglassEmpty,
+                contentDescription = stringResource(R.string.space),
+                tint = MaterialTheme.colorScheme.onPrimary
+            )
+            Text(
+                text = stringResource(R.string.time_on_parking),
+                color = MaterialTheme.colorScheme.onPrimary,
+                style = Typography.button
+            )
+        }
 
         Spacer(Modifier.width(5.dp))
 
@@ -264,7 +270,7 @@ fun OnParkingBar(
                 tint = MaterialTheme.colorScheme.background
             )
             Text(
-                text = "$currentPrice ₽",
+                text = stringResource(R.string.price_rub).format(currentPrice),
                 color = MaterialTheme.colorScheme.background,
                 style = Typography.body1,
                 modifier = Modifier
