@@ -19,7 +19,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -33,47 +32,35 @@ import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.screens.main.Routes
 import kotlinx.coroutines.launch
 import com.google.maps.android.compose.rememberCameraPositionState
-import io.mishkav.generalparking.domain.entities.LoadState
 import io.mishkav.generalparking.domain.entities.UserState
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
 import io.mishkav.generalparking.ui.components.errors.OnErrorResult
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.buttons.TextButton
-import io.mishkav.generalparking.ui.screens.map.components.BottomOnParkingScreen
-import io.mishkav.generalparking.ui.screens.map.components.BottomScreen
-import io.mishkav.generalparking.ui.screens.map.components.BottomTimerScreen
-import io.mishkav.generalparking.ui.screens.map.components.ExitAlert
+import io.mishkav.generalparking.ui.screens.map.components.*
 import io.mishkav.generalparking.ui.theme.*
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
+import io.mishkav.generalparking.ui.utils.subscribeOnError
 
 @Composable
 fun MapScreen(
     navController: NavHostController,
-    onError: @Composable (Int) -> Unit
+    onError: @Composable (Int) -> Unit,
+    showMessage: (message: Int) -> Unit = {}
 ) {
     val viewModel: MapViewModel = viewModel()
     val parkingCoordinates by viewModel.parkingCoordinatesResult.collectAsState()
     val autoNumber by viewModel.autoNumberResult.collectAsState()
     val userState by viewModel.userState.collectAsState()
 
-    val isArrived by viewModel.isArrived.collectAsState()
-    val isArrivedResult by viewModel.isArrivedResult.collectAsState()
-    val resetIsArrivedResult by viewModel.resetIsArrivedResult.collectAsState()
-    val isExit by viewModel.isExit.collectAsState()
-    val resetIsExitResult by viewModel.resetIsExitResult.collectAsState()
-    val isExitResult by viewModel.isExitResult.collectAsState()
+    val alertState by viewModel.alertState.collectAsState()
+    val isAlertResult by viewModel.isAlertResult.collectAsState()
+    val resetAlertResult by viewModel.resetAlertResult.collectAsState()
+    resetAlertResult.subscribeOnError(showMessage)
     val isMinSdkVersionApproved by viewModel.isMinSdkVersionApproved.collectAsState()
 
-    LaunchedEffect(Unit) { viewModel.onOpen() }
-    isMinSdkVersionApproved.takeIf { it is SuccessResult }?.data?.let { result ->
-        LaunchedEffect(Unit) {
-            if (!result) {
-                navController.navigate(Routes.authorization)
-            }
-        }
-    }
     val timeArrive by viewModel.timeArrive
     val timeReservation by viewModel.timeReservation
     val timeExitResult by viewModel.timeExitResult.collectAsState()
@@ -85,8 +72,13 @@ fun MapScreen(
     val parkingShortInfoResult by viewModel.parkingShortInfoResult.collectAsState()
     val currentParkingInfo = parkingShortInfoResult.data?.get(currentParkingAddress)
 
-    LaunchedEffect(Unit) {
-        viewModel.onOpen()
+    LaunchedEffect(Unit) { viewModel.onOpen() }
+    isMinSdkVersionApproved.takeIf { it is SuccessResult }?.data?.let { result ->
+        LaunchedEffect(Unit) {
+            if (!result) {
+                navController.navigate(Routes.authorization)
+            }
+        }
     }
 
     parkingCoordinates.also { result ->
@@ -150,7 +142,7 @@ fun MapScreen(
         }
     }
 
-    isArrivedResult.also { result ->
+    isAlertResult.also { result ->
         when (result) {
             is ErrorResult -> OnErrorResult(
                 onClick = {
@@ -161,93 +153,14 @@ fun MapScreen(
                 isTopAppBarAvailable = false
             )
             is SuccessResult ->
-                if (isArrived == UserState.ARRIVED.value && openArriveDialog.value)
-                    AlertDialog(
-                        shape = RoundedCornerShape(
-                            dimensionResource(R.dimen.bottom_shape),
-                        ),
-                        onDismissRequest = {},
-                        text = {
-                            Column (
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = dimensionResource(R.dimen.standard_padding))
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.arrive_title),
-                                        style = Typography.h5,
-                                        textAlign = TextAlign.Center,
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                        modifier = Modifier
-                                            .align(Alignment.BottomCenter)
-                                    )
-                                }
-                                Box(
-                                    contentAlignment = Alignment.Center,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = dimensionResource(R.dimen.standard_padding))
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.arrive_body),
-                                        style = Typography.h6,
-                                        textAlign = TextAlign.Center,
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                        modifier = Modifier
-                                            .align(Alignment.BottomCenter)
-                                    )
-                                }
-                            }
-                        },
-                        backgroundColor = MaterialTheme.colorScheme.background,
-                        buttons = {
-                            Row(
-                                modifier = Modifier
-                                    .padding(horizontal = dimensionResource(R.dimen.exit_button_padding))
-                                    .offset(y = (-15).dp),
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                TextButton(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(
-                                        dimensionResource(R.dimen.bottom_shape),
-                                    ),
-                                    text = stringResource(R.string.continue_text),
-                                    onClick = {
-                                        viewModel.resetIsArrived()
-                                        openArriveDialog.value = false
-                                    }
-                                )
-                            }
+                if (alertState == UserState.ARRIVED && openArriveDialog.value)
+                    ArriveAlert(
+                        onClick = {
+                            viewModel.resetAlertState(UserState.ARRIVED)
+                            openArriveDialog.value = false
                         }
                     )
-            is LoadingResult -> Box(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularLoader()
-            }
-        }
-    }
-
-    isExitResult.also { result ->
-        when (result) {
-            is ErrorResult -> OnErrorResult(
-                onClick = {
-                    viewModel.onOpen()
-                },
-                message = result.message!!,
-                navController = navController,
-                isTopAppBarAvailable = false
-            )
-            is SuccessResult ->
-                if (isExit == UserState.EXIT.value)
+                else if (alertState == UserState.EXIT)
                     timeExitResult.also { exitResult ->
                         when (exitResult) {
                             is ErrorResult -> OnErrorResult(
@@ -260,42 +173,43 @@ fun MapScreen(
                             )
                             is SuccessResult ->
                                 bookingRatioResult.also { bookResult ->
-                                when (bookResult) {
-                                    is ErrorResult -> OnErrorResult(
-                                        onClick = {
-                                            viewModel.onOpen()
-                                        },
-                                        message = bookResult.message!!,
-                                        navController = navController,
-                                        isTopAppBarAvailable = false
-                                    )
-                                    is SuccessResult ->
-                                        if (timeExitResult.data ?: "" != UserState.NOTHING.value)
-                                            ExitAlert(
-                                                timeExitResult = timeExitResult.data ?: "",
-                                                timeArriveResult = timeArrive,
-                                                timeReservationResult = timeReservation,
-                                                priceParking = currentParkingInfo?.priceOfParking ?: 0f,
-                                                bookingRatio = bookingRatioResult.data ?: 0.2,
-                                                onClick = {
-                                                    viewModel.resetIsExit()
-                                                    viewModel.removeParkingPlaceReservation()
-                                                    navController.navigate(Routes.map)
-                                                }
-                                            )
-                                        else {
-                                            viewModel.getTimeExit()
+                                    when (bookResult) {
+                                        is ErrorResult -> OnErrorResult(
+                                            onClick = {
+                                                viewModel.onOpen()
+                                            },
+                                            message = bookResult.message!!,
+                                            navController = navController,
+                                            isTopAppBarAvailable = false
+                                        )
+                                        is SuccessResult ->
+                                            if (timeExitResult.data!! != "")
+                                                ExitAlert(
+                                                    timeExitResult = timeExitResult.data ?: "",
+                                                    timeArriveResult = timeArrive,
+                                                    timeReservationResult = timeReservation,
+                                                    priceParking = currentParkingInfo?.priceOfParking
+                                                        ?: 0f,
+                                                    bookingRatio = bookingRatioResult.data ?: 0.2,
+                                                    onClick = {
+                                                        viewModel.resetAlertState(UserState.EXIT)
+                                                        viewModel.removeParkingPlaceReservation()
+                                                        navController.navigate(Routes.map)
+                                                    }
+                                                )
+                                            else {
+                                                viewModel.getTimeExit()
+                                            }
+                                        is LoadingResult -> Box(
+                                            modifier = Modifier
+                                                .background(MaterialTheme.colorScheme.background)
+                                                .fillMaxSize(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            CircularLoader()
                                         }
-                                    is LoadingResult -> Box(
-                                        modifier = Modifier
-                                            .background(MaterialTheme.colorScheme.background)
-                                            .fillMaxSize(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        CircularLoader()
                                     }
                                 }
-                            }
                             is LoadingResult -> Box(
                                 modifier = Modifier
                                     .background(MaterialTheme.colorScheme.background)
@@ -316,42 +230,6 @@ fun MapScreen(
             }
         }
     }
-
-    resetIsArrivedResult.also { result ->
-        when (result) {
-            is ErrorResult -> onError(result.message!!)
-            else -> {
-                if (resetIsArrivedResult.data == LoadState.LOADING)
-                    Box(
-                        modifier = Modifier
-                            .alpha(0.5f)
-                            .background(MaterialTheme.colorScheme.background)
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularLoader()
-                    }
-            }
-        }
-    }
-
-    resetIsExitResult.also { result ->
-        when (result) {
-            is ErrorResult -> onError(result.message!!)
-            else -> {
-                if (resetIsExitResult.data == LoadState.LOADING)
-                    Box(
-                        modifier = Modifier
-                            .alpha(0.5f)
-                            .background(MaterialTheme.colorScheme.background)
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularLoader()
-                    }
-            }
-        }
-    }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -359,7 +237,7 @@ fun MapScreen(
 fun MapScreenContent(
     parkingCoordinates: Map<Pair<Double, Double>, String> = emptyMap(),
     selectedParkingPlace: String = "",
-    userState: String = "",
+    userState: UserState = UserState.NOTHING,
     navController: NavHostController,
     reservationAddress: String,
     setParkingAddress: (address: String) -> Unit = { _ -> },
@@ -372,14 +250,14 @@ fun MapScreenContent(
     }
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = when (userState) {
-            "" -> BottomSheetState(BottomSheetValue.Collapsed)
+            UserState.NOTHING -> BottomSheetState(BottomSheetValue.Collapsed)
             else -> BottomSheetState(BottomSheetValue.Expanded)
         }
     )
     val bottomSheetGesturesEnabled = remember {
         mutableStateOf(
             when (userState) {
-                "" -> true
+                UserState.NOTHING-> true
                 else -> false
             }
         )
@@ -403,13 +281,13 @@ fun MapScreenContent(
         scaffoldState = bottomSheetScaffoldState,
         sheetGesturesEnabled = bottomSheetGesturesEnabled.value,
         sheetBackgroundColor = when (userState) {
-            UserState.RESERVED.value -> Color.Transparent
+            UserState.RESERVED -> Color.Transparent
             else -> MaterialTheme.colorScheme.background
         },
         sheetContent = {
             Spacer(modifier = Modifier.height(1.dp)) //After a re-compose the sheetContent looses associated anchor
             when (userState) {
-                UserState.RESERVED.value -> when (alertChangeParking.value) {
+                UserState.RESERVED -> when (alertChangeParking.value) {
                     false -> BottomTimerScreen(
                         name = selectedParkingPlace,
                         navigateToSchemeScreen = navigateToSchemeScreen
@@ -439,7 +317,7 @@ fun MapScreenContent(
                         }
                     )
                 }
-                UserState.ARRIVED.value -> when (alertChangeParking.value) {
+                UserState.ARRIVED -> when (alertChangeParking.value) {
                     false -> BottomOnParkingScreen(
                         name = selectedParkingPlace,
                         navController = navController,
@@ -495,7 +373,7 @@ fun MapScreenContent(
                         coroutineScope.launch {
                             if (reservationAddress == "" || reservationAddress == address) {
                                 alertChangeParking.value = false
-                                if (userState == UserState.NOTHING.value) {
+                                if (userState == UserState.NOTHING) {
                                     bottomSheetGesturesEnabled.value = true
                                     if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
                                         bottomSheetScaffoldState.bottomSheetState.expand()

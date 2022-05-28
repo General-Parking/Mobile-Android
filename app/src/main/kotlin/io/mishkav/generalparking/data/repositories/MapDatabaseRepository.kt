@@ -12,6 +12,7 @@ import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import io.mishkav.generalparking.state.Session
+import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -25,6 +26,20 @@ class MapDatabaseRepository @Inject constructor(
 
     @Inject
     lateinit var session: Session
+
+    private val _userState = MutableStateFlow(UserState.NOTHING)
+    override val userState = _userState
+
+    private val _alertState = MutableStateFlow(UserState.NOTHING)
+    override val alertState = _alertState
+
+    override fun changeUserState(state: UserState) {
+        _userState.value = state
+    }
+
+    override fun changeAlertState(state: UserState) {
+        _alertState.value = state
+    }
 
     override suspend fun getParkingCoordinates(): Map<String, String> {
         return firebaseDatabase
@@ -163,7 +178,7 @@ class MapDatabaseRepository @Inject constructor(
 
                     myCallback.onCallback(timeReservation)
                     if (timeReservation == EMPTY_STRING)
-                        session.changeUserState(UserState.NOTHING.value)
+                        changeUserState(UserState.NOTHING)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -209,7 +224,14 @@ class MapDatabaseRepository @Inject constructor(
             })
     }
 
-    override suspend fun getIsArrived() {
+    override suspend fun resetIsArrived() {
+        firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/arrive")
+            .setValue(EMPTY_STRING)
+            .await()
+    }
+
+    override suspend fun getAlertState() {
 
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/arrive")
@@ -218,26 +240,15 @@ class MapDatabaseRepository @Inject constructor(
                     val isArrived = dataSnapshot.getValue() as String
                     Timber.tag(TAG).i("getIsArrived: isArrived = $isArrived")
                     if (isArrived != EMPTY_STRING)
-                        session.changeIsArrived(UserState.ARRIVED.value)
+                        changeAlertState(UserState.ARRIVED)
                     else
-                        session.changeIsArrived(UserState.NOTHING.value)
+                        changeAlertState(UserState.NOTHING)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
                     Timber.tag(TAG).w(error.toException(), ON_CANCELLED_MESSAGE)
                 }
             })
-    }
-
-    override suspend fun resetIsArrived() {
-        session.changeUserState(UserState.ARRIVED.value)
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/arrive")
-            .setValue(EMPTY_STRING)
-            .await()
-    }
-
-    override suspend fun getIsExit() {
 
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/exit")
@@ -246,9 +257,9 @@ class MapDatabaseRepository @Inject constructor(
                     val isExit = dataSnapshot.getValue() as String
                     Timber.tag(TAG).i("getIsExit: isExit = $isExit")
                     if (isExit != EMPTY_STRING)
-                        session.changeIsExit(UserState.EXIT.value)
+                        changeAlertState(UserState.EXIT)
                     else
-                        session.changeIsExit(UserState.NOTHING.value)
+                        changeAlertState(UserState.NOTHING)
                 }
 
                 override fun onCancelled(error: DatabaseError) {

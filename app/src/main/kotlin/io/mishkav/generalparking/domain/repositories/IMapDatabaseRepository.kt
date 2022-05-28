@@ -3,8 +3,14 @@ package io.mishkav.generalparking.domain.repositories
 import io.mishkav.generalparking.domain.entities.ParkingScheme
 import io.mishkav.generalparking.domain.entities.ParkingShortInfo
 import io.mishkav.generalparking.domain.entities.TimeCallback
+import io.mishkav.generalparking.domain.entities.UserState
+import kotlinx.coroutines.flow.StateFlow
 
 interface IMapDatabaseRepository {
+    val userState: StateFlow<UserState>
+    fun changeUserState(state: UserState)
+    val alertState: StateFlow<UserState>
+    fun changeAlertState(state: UserState)
     suspend fun getParkingCoordinates(): Map<String, String>
     suspend fun getParkingScheme(address: String): Map<String, ParkingScheme>
     suspend fun getReservationAddress(): String
@@ -29,9 +35,8 @@ interface IMapDatabaseRepository {
         floor: String
     ): Double
     suspend fun getTimeArrive(myCallback: TimeCallback)
-    suspend fun getIsArrived()
+    suspend fun getAlertState()
     suspend fun resetIsArrived()
-    suspend fun getIsExit()
     suspend fun resetIsExit()
     suspend fun getTimeExit(): String
     suspend fun getParkingShortInfo(): Map<String, ParkingShortInfo>

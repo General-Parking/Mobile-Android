@@ -25,15 +25,6 @@ class Session(context: Context) {
     private val _selectedParkingPlaceFloor = MutableStateFlow(sharedPreferences.getString(PREF_SELECTED_PARKING_FLOOR, "").orEmpty())
     val selectedParkingPlaceFloor: StateFlow<String> = _selectedParkingPlaceFloor
 
-    private val _userState = MutableStateFlow(sharedPreferences.getString(PREF_USER_STATE, "").orEmpty())
-    val userState: StateFlow<String> = _userState
-
-    private val _isArrived = MutableStateFlow(sharedPreferences.getString(PREF_IS_ARRIVED, "").orEmpty())
-    val isArrived: StateFlow<String> = _isArrived
-
-    private val _isExit = MutableStateFlow(sharedPreferences.getString(PREF_IS_EXIT, "").orEmpty())
-    val isExit: StateFlow<String> = _isExit
-
     fun changeCurrentParkingAddress(address: String) {
         sharedPreferences.edit { putString(PREF_CURRENT_PARKING_ADDRESS, address) }
         _currentParkingAddress.value = address
@@ -58,21 +49,6 @@ class Session(context: Context) {
     fun changeSelectedParkingPlaceFloor(floor: String) {
         sharedPreferences.edit { putString(PREF_SELECTED_PARKING_FLOOR, floor) }
         _selectedParkingPlaceFloor.value = floor
-    }
-
-    fun changeUserState(state: String) {
-        sharedPreferences.edit { putString(PREF_USER_STATE, state) }
-        _userState.value = state
-    }
-
-    fun changeIsArrived(isArrived: String) {
-        sharedPreferences.edit { putString(PREF_IS_ARRIVED, isArrived) }
-        _isArrived.value = isArrived
-    }
-
-    fun changeIsExit(isExit: String) {
-        sharedPreferences.edit { putString(PREF_IS_EXIT, isExit) }
-        _isExit.value = isExit
     }
 
     companion object {

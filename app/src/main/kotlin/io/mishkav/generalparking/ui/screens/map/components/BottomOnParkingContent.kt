@@ -52,7 +52,7 @@ fun BottomOnParkingScreen(
     val currentParkingAddress by viewModel.currentParkingAddress.collectAsState()
     val timeArriveResult by viewModel.timeArriveResult.collectAsState()
     val timeArrive by viewModel.timeArrive
-    val isExit by viewModel.isExit.collectAsState()
+    val alertState by viewModel.alertState.collectAsState()
     val parkingShortInfoResult by viewModel.parkingShortInfoResult.collectAsState()
     val currentParkingInfo = parkingShortInfoResult.data?.get(currentParkingAddress)
 
@@ -71,7 +71,7 @@ fun BottomOnParkingScreen(
                 textAddress = currentParkingAddress,
                 priceParking = currentParkingInfo?.priceOfParking ?: 0f,
                 navigateToSchemeScreen = navigateToSchemeScreen,
-                isExit = isExit,
+                alertState = alertState,
                 timeArriveResult = timeArrive
             )
             is LoadingResult -> Box(
@@ -92,7 +92,7 @@ fun BottomOnParkingScreenContent(
     textAddress: String = stringResource(R.string.bottom_title),
     priceParking: Float = 0f,
     timeArriveResult: String,
-    isExit: String = UserState.NOTHING.value,
+    alertState: UserState = UserState.NOTHING,
     navigateToSchemeScreen: () -> Unit = {}
 ) = Column(
     modifier = Modifier
@@ -112,7 +112,7 @@ fun BottomOnParkingScreenContent(
     OnParkingBar(
         timeArriveResult = timeArriveResult,
         priceParking = priceParking,
-        isExit = isExit,
+        alertState = alertState,
         navigateToSchemeScreen = navigateToSchemeScreen
     )
 }
@@ -121,7 +121,7 @@ fun BottomOnParkingScreenContent(
 fun OnParkingBar(
     timeArriveResult: String,
     priceParking: Float = 0f,
-    isExit: String,
+    alertState: UserState,
     darkTheme: Boolean = isSystemInDarkTheme(),
     navigateToSchemeScreen: () -> Unit = {}
 ) {
@@ -159,8 +159,8 @@ fun OnParkingBar(
         )
     }
 
-    LaunchedEffect(isExit) {
-        while (isExit != UserState.EXIT.value) {
+    LaunchedEffect(alertState) {
+        while (alertState != UserState.EXIT) {
             difference = Duration.between(
                 LocalDateTime.parse(
                     LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of(TIME_ZONE))

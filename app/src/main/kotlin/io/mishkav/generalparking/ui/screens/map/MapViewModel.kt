@@ -6,8 +6,6 @@ import androidx.lifecycle.viewModelScope
 import io.mishkav.generalparking.GeneralParkingApp
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.dagger.AppComponent
-import io.mishkav.generalparking.data.repositories.MapDatabaseRepository
-import io.mishkav.generalparking.domain.entities.LoadState
 import io.mishkav.generalparking.domain.entities.ParkingShortInfo
 import io.mishkav.generalparking.domain.entities.TimeCallback
 import io.mishkav.generalparking.domain.entities.UserState
@@ -40,18 +38,15 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     val bookingRatioResult = MutableResultFlow<Double>()
     val timeArriveResult = MutableResultFlow<Unit>()
     var timeArrive = mutableStateOf("")
-    val isArrivedResult = MutableResultFlow<Unit>()
-    val resetIsArrivedResult = MutableResultFlow<LoadState>()
-    val isExitResult = MutableResultFlow<Unit>()
-    val resetIsExitResult = MutableResultFlow<LoadState>()
+    val isAlertResult = MutableResultFlow<Unit>()
+    val resetAlertResult = MutableResultFlow<Unit>()
     val parkingShortInfoResult = MutableResultFlow<Map<String, ParkingShortInfo>>()
     val autoNumberResult = MutableResultFlow<Unit>()
     val isMinSdkVersionApproved = MutableResultFlow<Boolean>()
     val currentParkingAddress by lazy { session.currentParkingAddress }
     val selectedParkingPlace by lazy { session.selectedParkingPlaceName }
-    val userState by lazy { session.userState }
-    val isArrived by lazy { session.isArrived }
-    val isExit by lazy { session.isExit }
+    val userState by lazy { mapDatabaseRepository.userState }
+    val alertState by lazy { mapDatabaseRepository.alertState }
     private val removeParkingPlaceReservationResult = MutableResultFlow<Unit>()
     private val autoNumber by lazy { session.autoNumber }
     private val selectedParkingPlaceCoordinates by lazy { session.selectedParkingPlaceCoordinates }
@@ -68,13 +63,10 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
         getParkingShortInfo()
         getReservationAddress()
         setAutoNumber()
-//        getBookingTime()
         getBookingRatio()
         getTimeArrive()
-        getIsArrived()
-        getIsExit()
+        getAlertState()
         getTimeExit()
-//        getTimeReservation()
         loadData()
     }
 
@@ -88,11 +80,11 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
                                 timeReservation.value = value
 
                                 if (timeReservation.value == EMPTY_STRING)
-                                    session.changeUserState(UserState.NOTHING.value)
+                                    mapDatabaseRepository.changeUserState(UserState.NOTHING)
                                 else if (timeReservation.value != EMPTY_STRING && timeArrive.value == EMPTY_STRING)
-                                    session.changeUserState(UserState.RESERVED.value)
+                                    mapDatabaseRepository.changeUserState(UserState.RESERVED)
                                 else if (timeArrive.value != EMPTY_STRING)
-                                    session.changeUserState(UserState.ARRIVED.value)
+                                    mapDatabaseRepository.changeUserState(UserState.ARRIVED)
                             }
                         })
                     }
@@ -140,29 +132,6 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
         }
     }
 
-//    fun getTimeReservation() = viewModelScope.launch {
-//        timeReservationResult.loadOrError {
-//            mapDatabaseRepository.getTimeReservation(object : TimeCallback {
-//                override fun onCallback(value: String) {
-//                    timeReservation.value = value
-//
-//                    if (timeReservation.value == EMPTY_STRING)
-//                        session.changeUserState(UserState.NOTHING.value)
-//                    else if (timeReservation.value != EMPTY_STRING && timeArrive.value == EMPTY_STRING)
-//                        session.changeUserState(UserState.RESERVED.value)
-//                    else if (timeArrive.value != EMPTY_STRING)
-//                        session.changeUserState(UserState.ARRIVED.value)
-//                }
-//            })
-//        }
-//    }
-//
-//    fun getBookingTime() = viewModelScope.launch {
-//        bookingTimeResult.loadOrError {
-//            mapDatabaseRepository.getBookingTime()
-//        }
-//    }
-
     fun getTimeExit() = viewModelScope.launch {
         timeExitResult.loadOrError {
             mapDatabaseRepository.getTimeExit()
@@ -185,42 +154,32 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
                     timeArrive.value = value
 
                     if (timeReservation.value == EMPTY_STRING)
-                        session.changeUserState(UserState.NOTHING.value)
+                        mapDatabaseRepository.changeUserState(UserState.NOTHING)
                     else if (timeReservation.value != EMPTY_STRING && timeArrive.value == EMPTY_STRING)
-                        session.changeUserState(UserState.RESERVED.value)
+                        mapDatabaseRepository.changeUserState(UserState.RESERVED)
                     else if (timeArrive.value != EMPTY_STRING)
-                        session.changeUserState(UserState.ARRIVED.value)
+                        mapDatabaseRepository.changeUserState(UserState.ARRIVED)
                 }
             })
         }
     }
 
-    fun getIsArrived() = viewModelScope.launch {
-        isArrivedResult.loadOrError {
-            mapDatabaseRepository.getIsArrived()
+    fun getAlertState() = viewModelScope.launch {
+        isAlertResult.loadOrError {
+            mapDatabaseRepository.getAlertState()
         }
     }
 
-    fun resetIsArrived() = viewModelScope.launch {
-        resetIsArrivedResult.loadOrError {
-            LoadState.LOADING
-            mapDatabaseRepository.resetIsArrived()
-            LoadState.RESETING
-        }
-    }
-
-    fun getIsExit() = viewModelScope.launch {
-        isExitResult.loadOrError {
-            mapDatabaseRepository.getIsExit()
-        }
-    }
-
-    fun resetIsExit() = viewModelScope.launch {
-        resetIsExitResult.loadOrError {
-            session.changeUserState(EMPTY_STRING)
-            LoadState.LOADING
-            mapDatabaseRepository.resetIsExit()
-            LoadState.RESETING
+    fun resetAlertState(state: UserState) = viewModelScope.launch {
+        resetAlertResult.loadOrError {
+            if (state == UserState.ARRIVED) {
+                mapDatabaseRepository.changeUserState(UserState.ARRIVED)
+                mapDatabaseRepository.resetIsArrived()
+            }
+            else if (state == UserState.EXIT) {
+                mapDatabaseRepository.changeUserState(UserState.NOTHING)
+                mapDatabaseRepository.resetIsExit()
+            }
         }
     }
 

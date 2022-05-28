@@ -77,14 +77,9 @@ data class User(
     }
 }
 
-enum class UserState(val value: String) {
-    NOTHING(""),
-    RESERVED("reserved"),
-    ARRIVED("arrived"),
-    EXIT("exit")
-}
-
-enum class LoadState {
-    LOADING,
-    RESETING
+enum class UserState {
+    NOTHING,
+    RESERVED,
+    ARRIVED,
+    EXIT
 }
