@@ -89,7 +89,7 @@ fun BottomOnParkingScreenContent(
     textAddress: String = stringResource(R.string.bottom_title),
     priceParking: Float = 0f,
     timeArriveResult: String,
-    alertState: UserState = UserState.NOTHING,
+    alertState: UserState = UserState.NOT_RESERVED,
     navigateToSchemeScreen: () -> Unit = {}
 ) = Column(
     modifier = Modifier

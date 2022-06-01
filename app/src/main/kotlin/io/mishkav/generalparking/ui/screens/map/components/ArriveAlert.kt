@@ -39,8 +39,7 @@ fun ArriveAlert(
                     style = Typography.h5,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
+                    modifier = Modifier.align(Alignment.BottomCenter)
                 )
             }
             Box(
@@ -54,8 +53,7 @@ fun ArriveAlert(
                     style = Typography.h6,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
+                    modifier = Modifier.align(Alignment.BottomCenter)
                 )
             }
         }

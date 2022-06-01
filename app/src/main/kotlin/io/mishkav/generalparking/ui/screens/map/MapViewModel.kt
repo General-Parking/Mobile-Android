@@ -80,7 +80,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
                                 timeReservation.value = value
 
                                 if (timeReservation.value == EMPTY_STRING)
-                                    mapDatabaseRepository.changeUserState(UserState.NOTHING)
+                                    mapDatabaseRepository.changeUserState(UserState.NOT_RESERVED)
                                 else if (timeReservation.value != EMPTY_STRING && timeArrive.value == EMPTY_STRING)
                                     mapDatabaseRepository.changeUserState(UserState.RESERVED)
                                 else if (timeArrive.value != EMPTY_STRING)
@@ -154,7 +154,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
                     timeArrive.value = value
 
                     if (timeReservation.value == EMPTY_STRING)
-                        mapDatabaseRepository.changeUserState(UserState.NOTHING)
+                        mapDatabaseRepository.changeUserState(UserState.NOT_RESERVED)
                     else if (timeReservation.value != EMPTY_STRING && timeArrive.value == EMPTY_STRING)
                         mapDatabaseRepository.changeUserState(UserState.RESERVED)
                     else if (timeArrive.value != EMPTY_STRING)
@@ -177,7 +177,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
                 mapDatabaseRepository.resetIsArrived()
             }
             else if (state == UserState.EXIT) {
-                mapDatabaseRepository.changeUserState(UserState.NOTHING)
+                mapDatabaseRepository.changeUserState(UserState.NOT_RESERVED)
                 mapDatabaseRepository.resetIsExit()
             }
         }

@@ -78,7 +78,7 @@ data class User(
 }
 
 enum class UserState {
-    NOTHING,
+    NOT_RESERVED,
     RESERVED,
     ARRIVED,
     EXIT

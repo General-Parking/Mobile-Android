@@ -27,10 +27,10 @@ class MapDatabaseRepository @Inject constructor(
     @Inject
     lateinit var session: Session
 
-    private val _userState = MutableStateFlow(UserState.NOTHING)
+    private val _userState = MutableStateFlow(UserState.NOT_RESERVED)
     override val userState = _userState
 
-    private val _alertState = MutableStateFlow(UserState.NOTHING)
+    private val _alertState = MutableStateFlow(UserState.NOT_RESERVED)
     override val alertState = _alertState
 
     override fun changeUserState(state: UserState) {
@@ -123,8 +123,7 @@ class MapDatabaseRepository @Inject constructor(
             "parking/$address/$floor/places/$placeCoordinates/reservation" to firebaseAuth.currentUser?.uid,
             "parking/$address/$floor/places/$placeCoordinates/value" to 1
         )
-        firebaseDatabase
-            .updateChildren(post)
+        firebaseDatabase.updateChildren(post)
     }
 
     override suspend fun removeParkingPlaceReservation(
@@ -155,8 +154,7 @@ class MapDatabaseRepository @Inject constructor(
             //Users car
             "users_car/$address/$autoNumber" to null
         )
-        firebaseDatabase
-            .updateChildren(post)
+        firebaseDatabase.updateChildren(post)
     }
 
     override suspend fun getAutoNumber(): String {
@@ -178,7 +176,7 @@ class MapDatabaseRepository @Inject constructor(
 
                     myCallback.onCallback(timeReservation)
                     if (timeReservation == EMPTY_STRING)
-                        changeUserState(UserState.NOTHING)
+                        changeUserState(UserState.NOT_RESERVED)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -242,7 +240,7 @@ class MapDatabaseRepository @Inject constructor(
                     if (isArrived != EMPTY_STRING)
                         changeAlertState(UserState.ARRIVED)
                     else
-                        changeAlertState(UserState.NOTHING)
+                        changeAlertState(UserState.NOT_RESERVED)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -259,7 +257,7 @@ class MapDatabaseRepository @Inject constructor(
                     if (isExit != EMPTY_STRING)
                         changeAlertState(UserState.EXIT)
                     else
-                        changeAlertState(UserState.NOTHING)
+                        changeAlertState(UserState.NOT_RESERVED)
                 }
 
                 override fun onCancelled(error: DatabaseError) {

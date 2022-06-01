@@ -237,7 +237,7 @@ fun MapScreen(
 fun MapScreenContent(
     parkingCoordinates: Map<Pair<Double, Double>, String> = emptyMap(),
     selectedParkingPlace: String = "",
-    userState: UserState = UserState.NOTHING,
+    userState: UserState = UserState.NOT_RESERVED,
     navController: NavHostController,
     reservationAddress: String,
     setParkingAddress: (address: String) -> Unit = { _ -> },
@@ -250,14 +250,14 @@ fun MapScreenContent(
     }
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = when (userState) {
-            UserState.NOTHING -> BottomSheetState(BottomSheetValue.Collapsed)
+            UserState.NOT_RESERVED -> BottomSheetState(BottomSheetValue.Collapsed)
             else -> BottomSheetState(BottomSheetValue.Expanded)
         }
     )
     val bottomSheetGesturesEnabled = remember {
         mutableStateOf(
             when (userState) {
-                UserState.NOTHING-> true
+                UserState.NOT_RESERVED-> true
                 else -> false
             }
         )
@@ -285,7 +285,9 @@ fun MapScreenContent(
             else -> MaterialTheme.colorScheme.background
         },
         sheetContent = {
+
             Spacer(modifier = Modifier.height(1.dp)) //After a re-compose the sheetContent looses associated anchor
+
             when (userState) {
                 UserState.RESERVED -> when (alertChangeParking.value) {
                     false -> BottomTimerScreen(
@@ -371,9 +373,9 @@ fun MapScreenContent(
                     val markerClick: (Marker) -> Boolean = {
                         setParkingAddress(address)
                         coroutineScope.launch {
-                            if (reservationAddress == "" || reservationAddress == address) {
+                            if (reservationAddress.isEmpty() || reservationAddress == address) {
                                 alertChangeParking.value = false
-                                if (userState == UserState.NOTHING) {
+                                if (userState == UserState.NOT_RESERVED) {
                                     bottomSheetGesturesEnabled.value = true
                                     if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
                                         bottomSheetScaffoldState.bottomSheetState.expand()

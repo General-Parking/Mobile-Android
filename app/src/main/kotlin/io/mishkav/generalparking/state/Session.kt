@@ -2,7 +2,6 @@ package io.mishkav.generalparking.state
 
 import android.content.Context
 import androidx.core.content.edit
-import io.mishkav.generalparking.domain.entities.UserState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -57,9 +56,6 @@ class Session(context: Context) {
         const val PREF_SELECTED_PARKING_PLACE = "selectedParkingPlaceName"
         const val PREF_SELECTED_PARKING_COORDINATES = "selectedParkingPlaceCoordinates"
         const val PREF_SELECTED_PARKING_FLOOR = "_selectedParkingPlaceFloor"
-        const val PREF_USER_STATE = "userState"
-        const val PREF_IS_ARRIVED = "isArrived"
-        const val PREF_IS_EXIT = "isExit"
 
         const val AGREEMENT_URI = "https://www.genparking.com/пользовательское-соглашение"
         const val PREF_NAME = "session"
