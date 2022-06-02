@@ -89,5 +89,6 @@
     <string name="time_without_hours">%02d:%02d</string>
     <string name="time_with_hours">%02d:%02d:%02d</string>
     <string name="price_rub">%d ₽</string>
+    <string name="time_zone">Atlantic/Reykjavik</string>
 
 </resources>

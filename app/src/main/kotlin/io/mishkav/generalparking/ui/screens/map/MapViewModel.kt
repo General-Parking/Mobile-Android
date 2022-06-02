@@ -50,7 +50,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     private val removeParkingPlaceReservationResult = MutableResultFlow<Unit>()
     private val autoNumber by lazy { session.autoNumber }
     private val selectedParkingPlaceCoordinates by lazy { session.selectedParkingPlaceCoordinates }
-    private val _selectedParkingPlaceFloor by lazy { session.selectedParkingPlaceFloor }
+    private val selectedParkingPlaceFloor by lazy { session.selectedParkingPlaceFloor }
     val onTimerResult = MutableResultFlow<Unit>()
 
     init {
@@ -105,7 +105,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
             mapDatabaseRepository.removeParkingPlaceReservation(
                 address = currentParkingAddress.value,
                 autoNumber = autoNumber.value,
-                floor = _selectedParkingPlaceFloor.value.toInt(),
+                floor = selectedParkingPlaceFloor.value.toInt(),
                 placeCoordinates = selectedParkingPlaceCoordinates.value
             )
 
@@ -142,7 +142,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
         bookingRatioResult.loadOrError {
             mapDatabaseRepository.getBookingRatio(
                 address = currentParkingAddress.value,
-                floor = _selectedParkingPlaceFloor.value
+                floor = selectedParkingPlaceFloor.value
             )
         }
     }
