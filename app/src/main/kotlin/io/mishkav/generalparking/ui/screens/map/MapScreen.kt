@@ -129,7 +129,9 @@ fun MapScreenContent(
         },
         sheetPeekHeight = dimensionResource(R.dimen.null_dp)
     ) {
-        Box(Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
             GoogleMap(
                 modifier = Modifier,
                 // TODO Добавить темную тему

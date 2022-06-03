@@ -102,6 +102,7 @@ fun MainScreen(
     Surface(
         color = MaterialTheme.colorScheme.background,
         modifier = Modifier
+            .navigationBarsPadding()
             .fillMaxSize()
             .padding(paddingValues)
     ) {
