@@ -63,6 +63,30 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
         }
     }
 
+    private fun convertRusToLat(numberAuto: String): String {
+        var converted = ""
+        numberAuto.forEach { sym ->
+            converted += if (sym.isLetter()) {
+                when (sym) {
+                    'А' -> 'A'
+                    'В' -> 'В'
+                    'Е' -> 'E'
+                    'К' -> 'K'
+                    'М' -> 'M'
+                    'Н' -> 'H'
+                    'О' -> 'O'
+                    'Р' -> 'P'
+                    'С' -> 'C'
+                    'Т' -> 'T'
+                    'У' -> 'Y'
+                    else -> 'X'
+                }
+            } else
+                sym
+        }
+        return converted
+    }
+
     fun insertExtensionUserData(
         numberAuto: String,
         carBrand: String,
@@ -71,7 +95,7 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
         currentUser.loadOrError {
             _currentUser.value = authDatabaseRepository.getUserDataFromDatabase()
             _currentUser.value = _currentUser.value.copy(
-                numberAuto = numberAuto,
+                numberAuto = convertRusToLat(numberAuto),
                 metaUserInfo = getMetaUserInfoInstance(
                     carBrand = carBrand,
                     name = _currentUser.value.metaUserInfo[FIELD_NAME] ?: DEFAULT_STRING_FIELD,

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.toUpperCase
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -78,8 +79,6 @@ fun RegistrationExtensionData(
     )
 }
 
-fun String.onlyLetters() = all { it.isLetter() }
-
 @Composable
 fun RegistrationExtensionDataContent(
     insertExtensionUserData: (numberAuto: String, carBrand: String, phoneNumber: String) -> Unit = { _, _, _ -> }
@@ -91,7 +90,9 @@ fun RegistrationExtensionDataContent(
     var textNumberAutoRegion by rememberSaveable { mutableStateOf("") }
     var textModel by rememberSaveable { mutableStateOf("") }
     var textPhone by rememberSaveable { mutableStateOf("") }
-    val pattern = remember { Regex("[ABEKMHOPCTYX\\s]*") }
+
+    //Rus symbols, because of back-end...
+    val pattern = remember { Regex("[АВЕКМНОРСТУХ\\s]*") }
 
     val focusManager = LocalFocusManager.current
     val colors = TextFieldDefaults.textFieldColors(
@@ -144,6 +145,7 @@ fun RegistrationExtensionDataContent(
             ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .width(300.dp)
                         .height(100.dp)
@@ -175,8 +177,16 @@ fun RegistrationExtensionDataContent(
                                 keyboardType = KeyboardType.Text,
                                 capitalization = KeyboardCapitalization.Characters
                             ),
-                            placeholder = { Text(stringResource(R.string.a)) },
-                            textStyle = TextStyle(fontSize = 23.sp, fontWeight = FontWeight.Bold),
+                            placeholder = {
+                                Text(
+                                    text = stringResource(R.string.a),
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            },
+                            textStyle = MaterialTheme.typography.titleLarge.copy(
+                                textAlign = TextAlign.Center
+                            ),
                             colors = colors,
                             modifier = Modifier
                                 .width(50.dp)
@@ -193,8 +203,16 @@ fun RegistrationExtensionDataContent(
                                     focusManager.moveFocus(FocusDirection.Right)
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-                            placeholder = { Text(stringResource(R.string.zeros)) },
-                            textStyle = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.Bold),
+                            placeholder = {
+                                Text(
+                                    text = stringResource(R.string.zeros),
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            },
+                            textStyle = MaterialTheme.typography.titleLarge.copy(
+                                textAlign = TextAlign.Center
+                            ),
                             colors = colors,
                             modifier = Modifier
                                 .width(80.dp)
@@ -212,8 +230,16 @@ fun RegistrationExtensionDataContent(
                                 keyboardType = KeyboardType.Text,
                                 capitalization = KeyboardCapitalization.Characters
                             ),
-                            placeholder = { Text(stringResource(R.string.aa)) },
-                            textStyle = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
+                            placeholder = {
+                                Text(
+                                    text = stringResource(R.string.aa),
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            },
+                            textStyle = MaterialTheme.typography.titleLarge.copy(
+                                textAlign = TextAlign.Center
+                            ),
                             colors = colors,
                             modifier = Modifier
                                 .width(70.dp)
@@ -242,8 +268,16 @@ fun RegistrationExtensionDataContent(
                                     focusManager.moveFocus(FocusDirection.Down)
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-                            placeholder = { Text(stringResource(R.string.zeros)) },
-                            textStyle = TextStyle(fontSize = 25.sp, fontWeight = FontWeight.Bold),
+                            placeholder = {
+                                Text(
+                                    text = stringResource(R.string.zeros),
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            },
+                            textStyle = MaterialTheme.typography.titleLarge.copy(
+                                textAlign = TextAlign.Center
+                            ),
                             colors = colors,
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -252,13 +286,13 @@ fun RegistrationExtensionDataContent(
                         Text(
                             text = stringResource(R.string.rus),
                             fontSize = 20.sp,
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
                         )
                     }
                 }
             }
         }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -290,7 +324,6 @@ fun RegistrationExtensionDataContent(
                     )
                 }
             )
-
         }
 
         TextButton(
