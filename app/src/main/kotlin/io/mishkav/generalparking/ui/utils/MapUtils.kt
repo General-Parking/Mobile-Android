@@ -32,6 +32,13 @@ inline fun Result<*>.subscribeOnError(crossinline onError: (message: Int) -> Uni
     }
 }
 
+// content: @Composable () -> Unit
+@Composable
+inline fun Result<*>.subscribeOnErrorMax(onError: @Composable (message: Int) -> Unit) =
+    (this as? ErrorResult)?.message?.let {
+        onError(it)
+    }
+
 object GoogleMapStylePath {
     const val NIGHT = "google_map_night.json"
 }

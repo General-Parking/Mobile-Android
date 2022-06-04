@@ -7,10 +7,16 @@ import io.mishkav.generalparking.domain.entities.UserState
 import kotlinx.coroutines.flow.StateFlow
 
 interface IMapDatabaseRepository {
+    // userState - состояние пользователя: NOT_RESERVED, RESERVED, ARRIVED
+    // alertState - состояние уведомления: NOT_RESERVED, EXIT, ARRIVED
     val userState: StateFlow<UserState>
-    fun changeUserState(state: UserState)
     val alertState: StateFlow<UserState>
+
+    // Change states
+    fun changeUserState(state: UserState)
     fun changeAlertState(state: UserState)
+
+    // Get fields about parking
     suspend fun getParkingCoordinates(): Map<String, String>
     suspend fun getParkingScheme(address: String): Map<String, ParkingScheme>
     suspend fun getReservationAddress(): String
@@ -28,6 +34,8 @@ interface IMapDatabaseRepository {
         placeCoordinates: String
     )
     suspend fun getAutoNumber(): String
+
+    // Get fields for states
     suspend fun getTimeReservation(myCallback: TimeCallback)
     suspend fun getBookingTime(): Long
     suspend fun getBookingRatio(
@@ -36,8 +44,10 @@ interface IMapDatabaseRepository {
     ): Double
     suspend fun getTimeArrive(myCallback: TimeCallback)
     suspend fun getAlertState()
-    suspend fun resetIsArrived()
-    suspend fun resetIsExit()
     suspend fun getTimeExit(): String
     suspend fun getParkingShortInfo(): Map<String, ParkingShortInfo>
+
+    // Reset fields for alertState
+    suspend fun resetIsArrived()
+    suspend fun resetIsExit()
 }

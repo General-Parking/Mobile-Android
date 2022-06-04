@@ -1,5 +1,6 @@
 package io.mishkav.generalparking.ui.screens.map.components
 
+import android.content.res.Resources
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -142,14 +143,14 @@ fun OnParkingBar(
 
     var currentTime by remember {
         mutableStateOf(
-            when (differenceHours) {
-                0 -> timeWithoutHours.format(differenceMinutes, differenceSeconds)
-                else -> timeWithHours.format(
+            if (differenceHours == 0)
+                timeWithoutHours.format(differenceMinutes, differenceSeconds)
+            else
+                timeWithHours.format(
                     differenceHours,
                     differenceMinutes,
                     differenceSeconds
                 )
-            }
         )
     }
 

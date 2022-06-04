@@ -1,5 +1,6 @@
 package io.mishkav.generalparking.ui.screens.map.components
 
+import android.content.res.Resources
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme

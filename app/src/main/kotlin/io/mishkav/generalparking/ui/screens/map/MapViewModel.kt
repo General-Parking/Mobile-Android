@@ -29,8 +29,19 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     @Inject
     lateinit var session: Session
 
+    // Fields about parking
     val parkingCoordinatesResult = MutableResultFlow<Map<Pair<Double, Double>, String>>()
     val reservationAddressResult = MutableResultFlow<String>()
+    val parkingShortInfoResult = MutableResultFlow<Map<String, ParkingShortInfo>>()
+    val autoNumberResult = MutableResultFlow<Unit>()
+    val currentParkingAddress by lazy { session.currentParkingAddress }
+    val selectedParkingPlace by lazy { session.selectedParkingPlaceName }
+    private val removeParkingPlaceReservationResult = MutableResultFlow<Unit>()
+    private val autoNumber by lazy { session.autoNumber }
+    private val selectedParkingPlaceCoordinates by lazy { session.selectedParkingPlaceCoordinates }
+    private val selectedParkingPlaceFloor by lazy { session.selectedParkingPlaceFloor }
+
+    // Fields for userStates
     val timeReservationResult = MutableResultFlow<Unit>()
     var timeReservation = mutableStateOf("")
     val bookingTimeResult = MutableResultFlow<Long>()
@@ -38,20 +49,17 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     val bookingRatioResult = MutableResultFlow<Double>()
     val timeArriveResult = MutableResultFlow<Unit>()
     var timeArrive = mutableStateOf("")
+    val onTimerResult = MutableResultFlow<Unit>()
+
+    // Fields for alertStates
     val isAlertResult = MutableResultFlow<Unit>()
     val resetAlertResult = MutableResultFlow<Unit>()
-    val parkingShortInfoResult = MutableResultFlow<Map<String, ParkingShortInfo>>()
-    val autoNumberResult = MutableResultFlow<Unit>()
-    val isMinSdkVersionApproved = MutableResultFlow<Boolean>()
-    val currentParkingAddress by lazy { session.currentParkingAddress }
-    val selectedParkingPlace by lazy { session.selectedParkingPlaceName }
+
+    // States
     val userState by lazy { mapDatabaseRepository.userState }
     val alertState by lazy { mapDatabaseRepository.alertState }
-    private val removeParkingPlaceReservationResult = MutableResultFlow<Unit>()
-    private val autoNumber by lazy { session.autoNumber }
-    private val selectedParkingPlaceCoordinates by lazy { session.selectedParkingPlaceCoordinates }
-    private val selectedParkingPlaceFloor by lazy { session.selectedParkingPlaceFloor }
-    val onTimerResult = MutableResultFlow<Unit>()
+
+    val isMinSdkVersionApproved = MutableResultFlow<Boolean>()
 
     init {
         appComponent.inject(this)
