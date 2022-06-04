@@ -33,7 +33,7 @@ import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.screens.main.Routes
 import kotlinx.coroutines.launch
 import com.google.maps.android.compose.rememberCameraPositionState
-import io.mishkav.generalparking.ui.components.contents.BottomScreen
+import io.mishkav.generalparking.ui.screens.map.components.BottomScreen
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
 import io.mishkav.generalparking.ui.components.errors.OnErrorResult
 import io.mishkav.generalparking.ui.theme.Shapes
@@ -110,8 +110,8 @@ fun MapScreenContent(
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
-    val raw_image = ImageBitmap.imageResource(id = R.drawable.ic_marker).asAndroidBitmap()
-    val image = Bitmap.createScaledBitmap(raw_image, 130, 170, false)
+    val rawImage = ImageBitmap.imageResource(id = R.drawable.ic_marker).asAndroidBitmap()
+    val image = Bitmap.createScaledBitmap(rawImage, 130, 170, false)
 
     BottomSheetScaffold(
         sheetShape = RoundedCornerShape(

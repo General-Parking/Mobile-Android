@@ -1,5 +1,7 @@
-package io.mishkav.generalparking.ui.components.contents
+package io.mishkav.generalparking.ui.screens.map.components
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -13,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -29,16 +32,32 @@ fun BottomScreen(
     navigateToSchemeScreen: () -> Unit
 ) {
     val viewModel: MapViewModel = viewModel()
+
     val currentParkingAddress by viewModel.currentParkingAddress.collectAsState()
     val parkingShortInfoResult by viewModel.parkingShortInfoResult.collectAsState()
 
+    val context = LocalContext.current
     val currentParkingInfo = parkingShortInfoResult.data?.get(currentParkingAddress)
+    val navigateToGoogleMap: () -> Unit = {
+        viewModel.currentParkingCoordinates?.let { coordinates ->
+            context.startActivity(
+                Intent().apply {
+                    action = Intent.ACTION_VIEW
+                    data = Uri.parse(
+                        "geo:${coordinates.first},${coordinates.second}"
+                    )
+                }
+            )
+        }
+    }
+
     BottomScreenContent(
         textAddress = currentParkingAddress,
         freePlaces = currentParkingInfo?.freePlaces ?: 0,
         totalPlaces = currentParkingInfo?.totalPlaces ?: 0,
         priceParking = currentParkingInfo?.priceOfParking ?: 0f,
-        navigateToSchemeScreen = navigateToSchemeScreen
+        navigateToSchemeScreen = navigateToSchemeScreen,
+        navigateToGoogleMap = navigateToGoogleMap
     )
 }
 
@@ -49,9 +68,9 @@ fun BottomScreenContent(
     totalPlaces: Int = 0,
     priceParking: Float = 0f,
     navigateToSchemeScreen: () -> Unit = {},
-    modifier: Modifier = Modifier
+    navigateToGoogleMap: () -> Unit = {}
 ) = Column(
-    modifier = modifier
+    modifier = Modifier
         .padding(
             horizontal = dimensionResource(R.dimen.bottom_padding),
             vertical = dimensionResource(R.dimen.bottom_top_padding)
@@ -77,7 +96,7 @@ fun BottomScreenContent(
             icon = Icons.Filled.SwapCalls,
             text = stringResource(R.string.route),
             color = MaterialTheme.colorScheme.primary,
-            onClick = {}
+            onClick = navigateToGoogleMap
         )
         Spacer(Modifier.weight(1f))
         Text(
