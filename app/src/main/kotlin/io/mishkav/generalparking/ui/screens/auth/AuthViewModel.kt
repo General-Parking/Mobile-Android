@@ -11,7 +11,7 @@ import io.mishkav.generalparking.data.utils.UserFields.FIELD_NAME
 import io.mishkav.generalparking.data.utils.getMetaUserInfoInstance
 import io.mishkav.generalparking.domain.entities.User
 import io.mishkav.generalparking.domain.repositories.IAuthRepository
-import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
+import io.mishkav.generalparking.domain.repositories.IUserDatabaseRepository
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
 import io.mishkav.generalparking.ui.utils.loadOrError
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +24,7 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
     lateinit var authRepository: IAuthRepository
 
     @Inject
-    lateinit var authDatabaseRepository: IAuthDatabaseRepository
+    lateinit var userDatabaseRepository: IUserDatabaseRepository
 
     val signInResult = MutableResultFlow<Unit>()
     val createNewUserResult = MutableResultFlow<Unit>()
@@ -40,7 +40,7 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
 
     fun signIn(email: String, password: String) = viewModelScope.launch {
         signInResult.loadOrError(R.string.error_auth) {
-            if (!authDatabaseRepository.isMinSdkVersionApproved())
+            if (!userDatabaseRepository.isMinSdkVersionApproved())
                 throw MinSdkVersionException()
 
             authRepository.signInWithEmailAndPassword(email, password)
@@ -49,7 +49,7 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
 
     fun createNewUser(name: String, email: String, password: String) = viewModelScope.launch {
         createNewUserResult.loadOrError(R.string.error_registration) {
-            if (!authDatabaseRepository.isMinSdkVersionApproved())
+            if (!userDatabaseRepository.isMinSdkVersionApproved())
                 throw MinSdkVersionException()
 
             authRepository.createUserWithEmailAndPassword(email, password)
@@ -59,7 +59,7 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
                     name = name
                 )
             )
-            authDatabaseRepository.insertUserData(_currentUser.value)
+            userDatabaseRepository.insertUserData(_currentUser.value)
         }
     }
 
@@ -93,7 +93,7 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
         phoneNumber: String
     ) = viewModelScope.launch {
         currentUser.loadOrError {
-            _currentUser.value = authDatabaseRepository.getUserDataFromDatabase()
+            _currentUser.value = userDatabaseRepository.getUserDataFromDatabase()
             _currentUser.value = _currentUser.value.copy(
                 numberAuto = convertRusToLat(numberAuto),
                 metaUserInfo = getMetaUserInfoInstance(
@@ -102,14 +102,14 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
                     phoneNumber = phoneNumber
                 )
             )
-            authDatabaseRepository.insertUserData(_currentUser.value)
+            userDatabaseRepository.insertUserData(_currentUser.value)
             _currentUser.value
         }
     }
 
     fun resetPassword(email: String) = viewModelScope.launch {
         resetPasswordResult.loadOrError {
-            if (!authDatabaseRepository.isMinSdkVersionApproved())
+            if (!userDatabaseRepository.isMinSdkVersionApproved())
                 throw MinSdkVersionException()
 
             authRepository.sendPasswordResetEmail(email)

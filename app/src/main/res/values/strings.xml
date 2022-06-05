@@ -21,10 +21,14 @@
     <string name="use_terms_href">user agreement</string>
     <string name="have_account">Have an account?</string>
     <string name="input_data_text">Add information to start using the app.</string>
+
     <string name="a">А</string>
-    <string name="zeros">000</string>
     <string name="aa">АА</string>
     <string name="rus">RUS</string>
+    <string name="zeros" translatable="false">000</string>
+    <string name="zero" translatable="false">0</string>
+    <string name="rub" translatable="false">₽</string>
+
     <string name="other_number_format">I have a different number format</string>
     <string name="car_model">Car model</string>
     <string name="phone">Phone</string>
@@ -47,6 +51,9 @@
     <string name="profile">Profile</string>
     <string name="parking_scheme">Parking scheme</string>
 
+    <string name="account_refill">Account refill</string>
+    <string name="pay">Pay</string>
+    <string name="edit">Edit</string>
 
     <string name="success_sending_email">The letter has been sent successfully, rather to the post office!</string>
     <string name="good_text">Good!</string>
@@ -62,14 +69,17 @@
     <string name="go_reserve">Go to reservation</string>
     <string name="space" >" "</string>
     <string name="bottom_title">Street</string>
+
+    <string name="balance" translatable="false">%d ₽</string>
     <string name="bottom_body">Free %d seats from %d</string>
     <string name="minute_cost">%.2f ₽/min</string>
+    <string name="floor_number">%d floor</string>
+
     <string name="choose_seat">Choose a free seat:</string>
     <string name="free">" — free"</string>
     <string name="taken">" — taken"</string>
     <string name="reserve">Reserve</string>
     <string name="chosen_seat">Seat</string>
-    <string name="floor_number">%d floor</string>
     <string name="reserved">Reserved</string>
     <string name="username">Name</string>
     <string name="on_error_body">We have some troubles…</string>

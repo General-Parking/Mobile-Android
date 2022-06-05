@@ -6,6 +6,7 @@ import dagger.Component
 import io.mishkav.generalparking.ui.screens.auth.AuthViewModel
 import io.mishkav.generalparking.ui.screens.main.MainViewModel
 import io.mishkav.generalparking.ui.screens.map.MapViewModel
+import io.mishkav.generalparking.ui.screens.payment.PaymentViewModel
 import io.mishkav.generalparking.ui.screens.scheme.SchemeViewModel
 import io.mishkav.generalparking.ui.screens.profile.ProfileViewModel
 import javax.inject.Singleton
@@ -26,5 +27,6 @@ interface AppComponent {
     fun inject(mapViewModel: MapViewModel)
     fun inject(schemeViewModel: SchemeViewModel)
     fun inject(profileViewModel: ProfileViewModel)
+    fun inject(paymentViewModel: PaymentViewModel)
 }
 

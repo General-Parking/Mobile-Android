@@ -20,6 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -50,6 +52,7 @@ fun MapScreen(
     val parkingCoordinates by viewModel.parkingCoordinatesResult.collectAsState()
     val autoNumber by viewModel.autoNumberResult.collectAsState()
     val isMinSdkVersionApproved by viewModel.isMinSdkVersionApproved.collectAsState()
+    val balance by viewModel.balance.collectAsState()
 
     LaunchedEffect(Unit) { viewModel.onOpen() }
     isMinSdkVersionApproved.takeIf { it is SuccessResult }?.data?.let { result ->
@@ -74,8 +77,12 @@ fun MapScreen(
                     MapScreenContent(
                         parkingCoordinates = parkingCoordinates.data ?: emptyMap(),
                         setParkingAddress = viewModel::setCurrentParkingAddress,
+                        balance = balance.data ?: 0,
                         navigateToSchemeScreen = {
                             navController.navigate(Routes.scheme)
+                        },
+                        navigateToPaymentScreen = {
+                            navController.navigate(Routes.payment)
                         },
                         navigateToProfileScreen = {
                             navController.navigate(Routes.profile)
@@ -99,8 +106,10 @@ fun MapScreen(
 @Composable
 fun MapScreenContent(
     parkingCoordinates: Map<Pair<Double, Double>, String> = emptyMap(),
+    balance: Int = 0,
     setParkingAddress: (address: String) -> Unit = { _ -> },
     navigateToSchemeScreen: () -> Unit = {},
+    navigateToPaymentScreen: () -> Unit = {},
     navigateToProfileScreen: () -> Unit = {}
 ) {
     val moscowLatLng = LatLng(Coordinates.Moscow.latitude, Coordinates.Moscow.longitude)
@@ -112,6 +121,7 @@ fun MapScreenContent(
 
     val rawImage = ImageBitmap.imageResource(id = R.drawable.ic_marker).asAndroidBitmap()
     val image = Bitmap.createScaledBitmap(rawImage, 130, 170, false)
+    val spaceValue = 16.dp
 
     BottomSheetScaffold(
         sheetShape = RoundedCornerShape(
@@ -160,6 +170,7 @@ fun MapScreenContent(
                     )
                 }
             }
+
             Button(
                 elevation = ButtonDefaults.elevation(6.dp, 8.dp),
                 onClick = navigateToProfileScreen,
@@ -176,6 +187,44 @@ fun MapScreenContent(
                     .size(dimensionResource(R.dimen.fab_size))
             ) {
                 Icon(Icons.Filled.Menu, "")
+            }
+
+            Button(
+                onClick = navigateToPaymentScreen,
+                shape = Shapes.medium,
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.primary
+                ),
+                modifier = Modifier
+                    .padding(dimensionResource(R.dimen.fab_top))
+                    .height(60.dp)
+                    .align(Alignment.TopCenter)
+            ) {
+                Spacer(modifier = Modifier.width(spaceValue / 2))
+
+                Text(
+                    text = stringResource(R.string.balance).format(balance),
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.width(spaceValue))
+
+                Divider(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(1.dp),
+                    color = MaterialTheme.colorScheme.outline
+                )
+
+                Spacer(modifier = Modifier.width(spaceValue))
+
+                Icon(
+                    painter = painterResource(R.drawable.ic_add),
+                    contentDescription = null
+                )
+
+                Spacer(modifier = Modifier.width(spaceValue / 2))
             }
         }
     }

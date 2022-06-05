@@ -7,7 +7,7 @@ import io.mishkav.generalparking.R
 import io.mishkav.generalparking.dagger.AppComponent
 import io.mishkav.generalparking.domain.entities.ParkingScheme
 import io.mishkav.generalparking.domain.entities.User
-import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
+import io.mishkav.generalparking.domain.repositories.IUserDatabaseRepository
 import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import io.mishkav.generalparking.state.Session
 import io.mishkav.generalparking.ui.screens.scheme.components.NotSelectedPlaceState
@@ -28,7 +28,7 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
     lateinit var session: Session
 
     @Inject
-    lateinit var authDatabaseRepository: IAuthDatabaseRepository
+    lateinit var userDatabaseRepository: IUserDatabaseRepository
 
     val parkingSchemeResult = MutableResultFlow<Map<String, ParkingScheme>>()
     val setParkingPlaceReservationResult = MutableResultFlow<Unit>()
@@ -110,7 +110,7 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
 
     fun getCurrentUser() = viewModelScope.launch {
         currentUser.loadOrError {
-            authDatabaseRepository.getUserDataFromDatabase()
+            userDatabaseRepository.getUserDataFromDatabase()
         }
     }
 
@@ -118,7 +118,7 @@ class SchemeViewModel(appComponent: AppComponent = GeneralParkingApp.appComponen
     fun onOpen() = viewModelScope.launch {
         onOpenResult.loadOrError {
             val scheme = mapDatabaseRepository.getParkingScheme(currentParkingAddress.value)
-            val user = authDatabaseRepository.getUserDataFromDatabase()
+            val user = userDatabaseRepository.getUserDataFromDatabase()
             val coordinates =
                 scheme[user.reservationLevel]?.places?.filter { it.value.name == user.reservationPlace }?.keys.orEmpty()
                     .firstOrNull() ?: ""

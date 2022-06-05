@@ -5,12 +5,11 @@ import androidx.lifecycle.viewModelScope
 import io.mishkav.generalparking.GeneralParkingApp
 import io.mishkav.generalparking.dagger.AppComponent
 import io.mishkav.generalparking.domain.entities.ParkingShortInfo
-import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
+import io.mishkav.generalparking.domain.repositories.IUserDatabaseRepository
 import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import io.mishkav.generalparking.state.Session
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
 import io.mishkav.generalparking.ui.utils.loadOrError
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,7 +19,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     lateinit var mapDatabaseRepository: IMapDatabaseRepository
 
     @Inject
-    lateinit var authDatabaseRepository: IAuthDatabaseRepository
+    lateinit var userDatabaseRepository: IUserDatabaseRepository
 
     @Inject
     lateinit var session: Session
@@ -29,6 +28,8 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     val parkingShortInfoResult = MutableResultFlow<Map<String, ParkingShortInfo>>()
     val autoNumberResult = MutableResultFlow<Unit>()
     val isMinSdkVersionApproved = MutableResultFlow<Boolean>()
+    val balance = MutableResultFlow<Int>()
+
     val currentParkingAddress by lazy { session.currentParkingAddress }
     val currentParkingCoordinates: Pair<Double, Double>?
         get() = parkingCoordinatesResult.value.data?.filterValues { it == currentParkingAddress.value }?.keys?.firstOrNull()
@@ -42,12 +43,19 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
         getParkingCoordinates()
         getParkingShortInfo()
         setAutoNumber()
+        getUserBalance()
     }
 
 
-    fun getMinSdkApprove() = viewModelScope.launch {
+    private fun getMinSdkApprove() = viewModelScope.launch {
         isMinSdkVersionApproved.loadOrError {
-            authDatabaseRepository.isMinSdkVersionApproved()
+            userDatabaseRepository.isMinSdkVersionApproved()
+        }
+    }
+
+    private fun getUserBalance() = viewModelScope.launch {
+        balance.loadOrError {
+            userDatabaseRepository.getUserBalance()
         }
     }
 

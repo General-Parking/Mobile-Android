@@ -1,6 +1,8 @@
 package io.mishkav.generalparking.ui.utils
 
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.flow.MutableStateFlow
 
 sealed class Result<T>(
@@ -19,3 +21,11 @@ class NothingResult<T> : Result<T>()
 
 fun <T> MutableResultFlow(value: Result<T> = NothingResult()) = MutableStateFlow(value)
 typealias MutableResultFlow<T> = MutableStateFlow<Result<T>>
+
+// Error functions
+@Composable
+inline fun Result<*>.subscribeOnError(crossinline onError: (message: Int) -> Unit) = (this as? ErrorResult)?.message?.let {
+    LaunchedEffect(this) {
+        onError(it)
+    }
+}

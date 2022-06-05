@@ -23,7 +23,6 @@
     <string name="have_account">Есть аккаунт?</string>
     <string name="input_data_text">Добавьте информацию, чтобы начать пользоваться приложением.</string>
     <string name="a">А</string>
-    <string name="zeros">000</string>
     <string name="aa">АА</string>
     <string name="rus">RUS</string>
     <string name="other_number_format">У меня другой формат номера</string>
@@ -50,6 +49,10 @@
 
     <string name="profile">Профиль</string>
     <string name="parking_scheme">Схема паркинга</string>
+
+    <string name="account_refill">Пополнение счета</string>
+    <string name="pay">Оплатить</string>
+    <string name="edit">Изменить</string>
 
     <string name="error_auth">Ошибка авторизации, попробуйте ещё раз</string>
     <string name="error_registration">Ошибка регистрации, возможно такой аккаунт уже существует</string>

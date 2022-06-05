@@ -6,7 +6,7 @@ import io.mishkav.generalparking.GeneralParkingApp
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.dagger.AppComponent
 import io.mishkav.generalparking.domain.entities.User
-import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
+import io.mishkav.generalparking.domain.repositories.IUserDatabaseRepository
 import io.mishkav.generalparking.domain.repositories.IAuthRepository
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
 import io.mishkav.generalparking.ui.utils.loadOrError
@@ -19,7 +19,7 @@ class ProfileViewModel(appComponent: AppComponent = GeneralParkingApp.appCompone
     lateinit var authRepository: IAuthRepository
 
     @Inject
-    lateinit var authDatabaseRepository: IAuthDatabaseRepository
+    lateinit var userDatabaseRepository: IUserDatabaseRepository
 
     val currentUser = MutableResultFlow<User>()
     val signOutResult = MutableResultFlow<Unit>()
@@ -34,7 +34,7 @@ class ProfileViewModel(appComponent: AppComponent = GeneralParkingApp.appCompone
 
     fun getUserDataFromDatabase() = viewModelScope.launch {
         currentUser.loadOrError {
-            authDatabaseRepository.getUserDataFromDatabase()
+            userDatabaseRepository.getUserDataFromDatabase()
         }
     }
 
