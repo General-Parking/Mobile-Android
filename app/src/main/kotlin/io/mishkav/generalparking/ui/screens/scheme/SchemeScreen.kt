@@ -44,6 +44,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
+import coil.compose.AsyncImage
 import com.egoriku.animatedbottomsheet.bottomsheet.collapsed.SheetCollapsed
 import com.egoriku.animatedbottomsheet.bottomsheet.expanded.SheetExpanded
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -400,6 +402,13 @@ fun DrawScheme(
                         }
                     }
                 }
+
+                AsyncImage(
+                    model = "https://storage.yandexcloud.net/mishkav/pokra_test.webp",
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.zIndex(1f)
+                )
             }
         }
     }
