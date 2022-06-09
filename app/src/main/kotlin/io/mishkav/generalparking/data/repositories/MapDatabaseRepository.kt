@@ -9,7 +9,7 @@ import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import io.mishkav.generalparking.state.Session
-import io.mishkav.generalparking.ui.utils.GoogleMapParameters.TIME_ZONE
+import io.mishkav.generalparking.ui.utils.MapParameters.TIME_ZONE
 import io.mishkav.generalparking.ui.utils.onValueListener
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
@@ -43,12 +43,17 @@ class MapDatabaseRepository @Inject constructor(
     }
 
     private fun refreshUserState() {
-        if (_timeReservation.value == EMPTY_STRING)
-            changeUserState(UserState.NOT_RESERVED)
-        else if (_timeReservation.value != EMPTY_STRING && _timeArrive.value == EMPTY_STRING)
-            changeUserState(UserState.RESERVED)
-        else if (_timeArrive.value != EMPTY_STRING)
-            changeUserState(UserState.ARRIVED)
+        when {
+            _timeReservation.value == EMPTY_STRING -> {
+                changeUserState(UserState.NOT_RESERVED)
+            }
+            _timeReservation.value != EMPTY_STRING && _timeArrive.value == EMPTY_STRING -> {
+                changeUserState(UserState.RESERVED)
+            }
+            _timeArrive.value != EMPTY_STRING -> {
+                changeUserState(UserState.ARRIVED)
+            }
+        }
     }
 
     override suspend fun getParkingCoordinates(): Map<String, String> {
@@ -181,7 +186,6 @@ class MapDatabaseRepository @Inject constructor(
                     Timber.tag(TAG).i("getTimeReservation: timeReservation = $_timeReservation")
 
                     refreshUserState()
-//                    myCallback.onCallback(timeReservation)
                 },
                 onCancelledImpl = { error ->
                     Timber.tag(TAG).w(error.toException(), ON_CANCELLED_MESSAGE)
@@ -218,7 +222,6 @@ class MapDatabaseRepository @Inject constructor(
                     Timber.tag(TAG).i("getTimeArrive: timeArrive = $_timeArrive")
 
                     refreshUserState()
-//                    myCallback.onCallback(timeArrive)
                 },
                 onCancelledImpl = { error ->
                     Timber.tag(TAG).w(error.toException(), ON_CANCELLED_MESSAGE)

@@ -10,8 +10,8 @@ interface IMapDatabaseRepository {
     val timeReservation: StateFlow<String>
     val timeArrive: StateFlow<String>
 
-    // userState - состояние пользователя: NOT_RESERVED, RESERVED, ARRIVED
-    // alertState - состояние уведомления: NOT_RESERVED, EXIT, ARRIVED
+    // userState - state of user: NOT_RESERVED, RESERVED, ARRIVED
+    // alertState - state of alert: NOT_RESERVED, EXIT, ARRIVED
     val userState: StateFlow<UserState>
     val alertState: StateFlow<UserState>
 

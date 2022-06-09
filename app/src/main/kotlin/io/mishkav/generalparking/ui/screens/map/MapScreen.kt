@@ -118,14 +118,16 @@ fun MapScreen(
         }
     }
 
+    val isLoading = parkingCoordinates is LoadingResult || reservationAddress is LoadingResult
+            || isAlert is LoadingResult || timeExit is LoadingResult || bookingRatio is LoadingResult
+
     MapScreenContent(
         parkingCoordinates = parkingCoordinates.data ?: emptyMap(),
         selectedParkingPlace = selectedParkingPlace,
         userState = userState,
         navController = navController,
         reservationAddress = reservationAddress.data ?: "",
-        isLoading = parkingCoordinates is LoadingResult || reservationAddress is LoadingResult
-                || isAlert is LoadingResult || timeExit is LoadingResult || bookingRatio is LoadingResult,
+        isLoading = isLoading,
         setParkingAddress = viewModel::setCurrentParkingAddress,
         navigateToSchemeScreen = {
             navController.navigate(Routes.scheme)
@@ -135,33 +137,33 @@ fun MapScreen(
         }
     )
 
-    if (alertState == UserState.ARRIVED && openArriveDialog)
+    if (alertState == UserState.ARRIVED && openArriveDialog) {
         ArriveAlert(
             onClick = {
                 viewModel.resetAlertState(UserState.ARRIVED)
                 openArriveDialog = false
             }
         )
-    else if (alertState == UserState.EXIT)
-        if (timeExit.data ?: "" != "")
+    }
+    else if (alertState == UserState.EXIT) {
+        if (timeExit.data ?: "" != "") {
             ExitAlert(
-                timeExitResult = timeExit.data
-                    ?: "",
+                timeExitResult = timeExit.data ?: "",
                 timeArriveResult = timeArrive,
                 timeReservationResult = timeReservation,
-                priceParking = currentParkingInfo?.priceOfParking
-                    ?: 0f,
-                bookingRatio = bookingRatio.data
-                    ?: 0.2,
+                priceParking = currentParkingInfo?.priceOfParking ?: 0f,
+                bookingRatio = bookingRatio.data ?: 0.2,
                 onClick = {
                     viewModel.resetAlertState(UserState.EXIT)
                     viewModel.removeParkingPlaceReservation()
                     navController.navigate(Routes.map)
                 }
             )
+        }
         else {
             viewModel.getTimeExit()
         }
+    }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -234,12 +236,12 @@ fun MapScreenContent(
             Spacer(modifier = Modifier.height(1.dp)) //After a re-compose the sheetContent looses associated anchor
 
             when (userState) {
-                UserState.RESERVED -> if (!alertChangeParking)
+                UserState.RESERVED -> if (!alertChangeParking) {
                     BottomTimerScreen(
                         name = selectedParkingPlace,
                         navigateToSchemeScreen = navigateToSchemeScreen
                     )
-                else if (showAlertChangeParking)
+                } else if (showAlertChangeParking) {
                     AlertDialog(
                         onDismissRequest = {},
                         text = {
@@ -263,14 +265,15 @@ fun MapScreenContent(
                             }
                         }
                     )
-                UserState.ARRIVED -> if (!alertChangeParking)
+                }
+                UserState.ARRIVED -> if (!alertChangeParking) {
                     BottomOnParkingScreen(
                         name = selectedParkingPlace,
                         navController = navController,
                         navigateToSchemeScreen = navigateToSchemeScreen
                     )
-                    else if (showAlertChangeParking)
-                        AlertDialog(
+                } else if (showAlertChangeParking) {
+                    AlertDialog(
                         onDismissRequest = {},
                         text = {
                             ScreenBody(
@@ -293,6 +296,7 @@ fun MapScreenContent(
                             }
                         }
                     )
+                }
                 else -> {
                     BottomScreen(
                         navigateToSchemeScreen = navigateToSchemeScreen

@@ -32,7 +32,7 @@ import io.mishkav.generalparking.ui.components.texts.BottomBody
 import io.mishkav.generalparking.ui.components.texts.BottomTitle
 import io.mishkav.generalparking.ui.screens.map.MapViewModel
 import io.mishkav.generalparking.ui.theme.*
-import io.mishkav.generalparking.ui.utils.GoogleMapParameters.TIME_ZONE
+import io.mishkav.generalparking.ui.utils.MapParameters.TIME_ZONE
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.subscribeOnError
 import kotlinx.coroutines.delay
