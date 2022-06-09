@@ -33,6 +33,7 @@ import io.mishkav.generalparking.ui.screens.main.Routes
 import kotlinx.coroutines.launch
 import com.google.maps.android.compose.rememberCameraPositionState
 import io.mishkav.generalparking.domain.entities.UserState
+import io.mishkav.generalparking.ui.screens.map.components.BottomScreen
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
 import io.mishkav.generalparking.ui.components.errors.OnErrorResult
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
@@ -306,7 +307,9 @@ fun MapScreenContent(
         },
         sheetPeekHeight = dimensionResource(R.dimen.null_dp)
     ) {
-        Box(Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
             GoogleMap(
                 modifier = Modifier,
                 // TODO Добавить темную тему

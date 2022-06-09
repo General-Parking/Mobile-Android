@@ -13,6 +13,7 @@ import io.mishkav.generalparking.state.Session
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
 import io.mishkav.generalparking.ui.utils.loadOrError
 import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -58,6 +59,8 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     val alertState by lazy {  mapDatabaseRepository.alertState }
 
     val isMinSdkVersionApproved = MutableResultFlow<Boolean>()
+    val currentParkingCoordinates: Pair<Double, Double>?
+        get() = parkingCoordinatesResult.value.data?.filterValues { it == currentParkingAddress.value }?.keys?.firstOrNull()
 
     init {
         appComponent.inject(this)
