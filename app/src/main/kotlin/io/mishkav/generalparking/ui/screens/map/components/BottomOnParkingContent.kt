@@ -1,6 +1,5 @@
 package io.mishkav.generalparking.ui.screens.map.components
 
-import android.content.res.Resources
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -23,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
-import io.mishkav.generalparking.domain.entities.TIME_ZONE
 import io.mishkav.generalparking.domain.entities.UserState
 import io.mishkav.generalparking.ui.components.buttons.SimpleIconTextButton
 import io.mishkav.generalparking.ui.components.errors.OnErrorResult
@@ -33,6 +31,7 @@ import io.mishkav.generalparking.ui.components.texts.BottomTitle
 import io.mishkav.generalparking.ui.screens.map.MapViewModel
 import io.mishkav.generalparking.ui.theme.*
 import io.mishkav.generalparking.ui.utils.ErrorResult
+import io.mishkav.generalparking.ui.utils.GoogleMapParameters.TIME_ZONE
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
 import kotlinx.coroutines.delay
@@ -49,7 +48,7 @@ fun BottomOnParkingScreen(
     val viewModel: MapViewModel = viewModel()
     val currentParkingAddress by viewModel.currentParkingAddress.collectAsState()
     val timeArriveResult by viewModel.timeArriveResult.collectAsState()
-    val timeArrive by viewModel.timeArrive
+    val timeArrive by viewModel.timeArrive.collectAsState()
     val alertState by viewModel.alertState.collectAsState()
     val parkingShortInfoResult by viewModel.parkingShortInfoResult.collectAsState()
     val currentParkingInfo = parkingShortInfoResult.data?.get(currentParkingAddress)
@@ -180,6 +179,8 @@ fun OnParkingBar(
                     differenceSeconds
                 )
             }
+
+            // currentPrice - текущая стоимость нахождения = стоимость(руб/мин) * время нахожения(мин)
             currentPrice = (priceParking / 60).toInt() * (differenceHours * 60 + differenceMinutes)
             delay(1000L)
         }

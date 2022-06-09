@@ -1,6 +1,5 @@
 package io.mishkav.generalparking.ui.screens.map.components
 
-import android.content.res.Resources
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -26,7 +25,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.mishkav.generalparking.R
-import io.mishkav.generalparking.domain.entities.TIME_ZONE
 import io.mishkav.generalparking.ui.components.buttons.SimpleIconButton
 import io.mishkav.generalparking.ui.components.buttons.SimpleIconTextButton
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
@@ -34,6 +32,7 @@ import io.mishkav.generalparking.ui.components.texts.BottomBody
 import io.mishkav.generalparking.ui.components.texts.BottomTitle
 import io.mishkav.generalparking.ui.screens.map.MapViewModel
 import io.mishkav.generalparking.ui.theme.*
+import io.mishkav.generalparking.ui.utils.GoogleMapParameters.TIME_ZONE
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.subscribeOnError
 import kotlinx.coroutines.delay
@@ -55,7 +54,7 @@ fun BottomTimerScreen(
     onTimerResult.subscribeOnError(showMessage)
     val bookingTimeResult by viewModel.bookingTimeResult.collectAsState()
     bookingTimeResult.subscribeOnError(showMessage)
-    val timeReservation by viewModel.timeReservation
+    val timeReservation by viewModel.timeReservation.collectAsState()
 
     val isLoading = onTimerResult is LoadingResult
 

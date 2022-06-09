@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import com.google.android.gms.maps.model.MapStyleOptions
-import io.mishkav.generalparking.ui.utils.GoogleMapStylePath.NIGHT
+import io.mishkav.generalparking.ui.utils.GoogleMapParameters.NIGHT_PATH
 import timber.log.Timber
 import java.io.IOException
 
@@ -14,7 +14,7 @@ fun getGoogleMapStyleOption(): MapStyleOptions? {
     var jsonString: String? = null
 
     try {
-        jsonString = context.assets.open(NIGHT)
+        jsonString = context.assets.open(NIGHT_PATH)
             .bufferedReader()
             .use { it.readText() }
     } catch (ioException: IOException) {
@@ -39,6 +39,7 @@ inline fun Result<*>.subscribeOnErrorMax(onError: @Composable (message: Int) -> 
         onError(it)
     }
 
-object GoogleMapStylePath {
-    const val NIGHT = "google_map_night.json"
+object GoogleMapParameters {
+    const val NIGHT_PATH = "google_map_night.json"
+    const val TIME_ZONE = "Atlantic/Reykjavik"
 }

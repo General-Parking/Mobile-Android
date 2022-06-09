@@ -1,10 +1,7 @@
 package io.mishkav.generalparking.data.repositories
 
-import android.content.res.Resources
-import androidx.compose.ui.res.stringResource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
-import io.mishkav.generalparking.R
 import io.mishkav.generalparking.data.exceptions.PlaceNotReservatedException
 import io.mishkav.generalparking.data.exceptions.PlaceReservationException
 import io.mishkav.generalparking.domain.entities.*
@@ -12,6 +9,7 @@ import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import io.mishkav.generalparking.state.Session
+import io.mishkav.generalparking.ui.utils.GoogleMapParameters.TIME_ZONE
 import io.mishkav.generalparking.ui.utils.onValueListener
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
@@ -34,12 +32,23 @@ class MapDatabaseRepository @Inject constructor(
     private val _alertState = MutableStateFlow(UserState.NOT_RESERVED)
     override val alertState = _alertState
 
+    private val _timeReservation = MutableStateFlow(EMPTY_STRING)
+    override val timeReservation = _timeReservation
+
+    private val _timeArrive = MutableStateFlow(EMPTY_STRING)
+    override val timeArrive = _timeArrive
+
     override fun changeUserState(state: UserState) {
         _userState.value = state
     }
 
-    override fun changeAlertState(state: UserState) {
-        _alertState.value = state
+    private fun refreshUserState() {
+        if (_timeReservation.value == EMPTY_STRING)
+            changeUserState(UserState.NOT_RESERVED)
+        else if (_timeReservation.value != EMPTY_STRING && _timeArrive.value == EMPTY_STRING)
+            changeUserState(UserState.RESERVED)
+        else if (_timeArrive.value != EMPTY_STRING)
+            changeUserState(UserState.ARRIVED)
     }
 
     override suspend fun getParkingCoordinates(): Map<String, String> {
@@ -162,16 +171,17 @@ class MapDatabaseRepository @Inject constructor(
             .getValue() as String
     }
 
-    override suspend fun getTimeReservation(myCallback: TimeCallback) {
+    override suspend fun getTimeReservation() {
 
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/time_reservation")
             .onValueListener(
                 onDataChangeImpl = { dataSnapshot ->
-                    val timeReservation = dataSnapshot.getValue() as String
-                    Timber.tag(TAG).i("getTimeReservation: timeReservation = $timeReservation")
+                    _timeReservation.value = dataSnapshot.getValue() as String
+                    Timber.tag(TAG).i("getTimeReservation: timeReservation = $_timeReservation")
 
-                    myCallback.onCallback(timeReservation)
+                    refreshUserState()
+//                    myCallback.onCallback(timeReservation)
                 },
                 onCancelledImpl = { error ->
                     Timber.tag(TAG).w(error.toException(), ON_CANCELLED_MESSAGE)
@@ -198,16 +208,17 @@ class MapDatabaseRepository @Inject constructor(
             .getValue() as Double
     }
 
-    override suspend fun getTimeArrive(myCallback: TimeCallback) {
+    override suspend fun getTimeArrive() {
 
         firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/time_arrive")
             .onValueListener(
                 onDataChangeImpl = { dataSnapshot ->
-                    val timeArrive = dataSnapshot.getValue() as String
-                    Timber.tag(TAG).i("getTimeArrive: timeArrive = $timeArrive")
+                    _timeArrive.value = dataSnapshot.getValue() as String
+                    Timber.tag(TAG).i("getTimeArrive: timeArrive = $_timeArrive")
 
-                    myCallback.onCallback(timeArrive)
+                    refreshUserState()
+//                    myCallback.onCallback(timeArrive)
                 },
                 onCancelledImpl = { error ->
                     Timber.tag(TAG).w(error.toException(), ON_CANCELLED_MESSAGE)
@@ -231,9 +242,9 @@ class MapDatabaseRepository @Inject constructor(
                     val isArrived = dataSnapshot.getValue() as String
                     Timber.tag(TAG).i("getIsArrived: isArrived = $isArrived")
                     if (isArrived != EMPTY_STRING)
-                        changeAlertState(UserState.ARRIVED)
+                        _alertState.value = UserState.ARRIVED
                     else
-                        changeAlertState(UserState.NOT_RESERVED)
+                        _alertState.value = UserState.NOT_RESERVED
                 },
                 onCancelledImpl = { error ->
                     Timber.tag(TAG).w(error.toException(), ON_CANCELLED_MESSAGE)
@@ -247,9 +258,9 @@ class MapDatabaseRepository @Inject constructor(
                     val isExit = dataSnapshot.getValue() as String
                     Timber.tag(TAG).i("getIsExit: isExit = $isExit")
                     if (isExit != EMPTY_STRING)
-                        changeAlertState(UserState.EXIT)
+                        _alertState.value = UserState.EXIT
                     else
-                        changeAlertState(UserState.NOT_RESERVED)
+                        _alertState.value = UserState.NOT_RESERVED
                 },
                 onCancelledImpl = { error ->
                     Timber.tag(TAG).w(error.toException(), ON_CANCELLED_MESSAGE)

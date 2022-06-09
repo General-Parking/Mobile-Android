@@ -6,7 +6,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SwapCalls
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -81,11 +80,6 @@ fun BottomScreenContent(
         Text(
             text = stringResource(R.string.minute_cost).format(priceParking),
             color = MaterialTheme.colorScheme.onPrimary
-        )
-        SimpleIconTextButton(
-            icon = Icons.Outlined.Info,
-            text = stringResource(R.string.more),
-            onClick = {}
         )
     }
     BottomTextButton(

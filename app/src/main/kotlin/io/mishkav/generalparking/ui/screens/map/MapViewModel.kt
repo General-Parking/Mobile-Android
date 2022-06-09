@@ -1,13 +1,11 @@
 package io.mishkav.generalparking.ui.screens.map
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.mishkav.generalparking.GeneralParkingApp
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.dagger.AppComponent
 import io.mishkav.generalparking.domain.entities.ParkingShortInfo
-import io.mishkav.generalparking.domain.entities.TimeCallback
 import io.mishkav.generalparking.domain.entities.UserState
 import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
 import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
@@ -43,12 +41,12 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
 
     // Fields for userStates
     val timeReservationResult = MutableResultFlow<Unit>()
-    var timeReservation = mutableStateOf("")
+    val timeReservation by lazy { mapDatabaseRepository.timeReservation }
     val bookingTimeResult = MutableResultFlow<Long>()
     val timeExitResult = MutableResultFlow<String>()
     val bookingRatioResult = MutableResultFlow<Double>()
     val timeArriveResult = MutableResultFlow<Unit>()
-    var timeArrive = mutableStateOf("")
+    val timeArrive by lazy { mapDatabaseRepository.timeArrive }
     val onTimerResult = MutableResultFlow<Unit>()
 
     // Fields for alertStates
@@ -56,8 +54,8 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
     val resetAlertResult = MutableResultFlow<Unit>()
 
     // States
-    val userState by lazy { mapDatabaseRepository.userState }
-    val alertState by lazy { mapDatabaseRepository.alertState }
+    val userState by lazy {  mapDatabaseRepository.userState }
+    val alertState by lazy {  mapDatabaseRepository.alertState }
 
     val isMinSdkVersionApproved = MutableResultFlow<Boolean>()
 
@@ -83,18 +81,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
             val jobsToLoad = arrayOf(
                 launch {
                     timeReservationResult.loadOrError {
-                        mapDatabaseRepository.getTimeReservation(object : TimeCallback {
-                            override fun onCallback(value: String) {
-                                timeReservation.value = value
-
-                                if (timeReservation.value == EMPTY_STRING)
-                                    mapDatabaseRepository.changeUserState(UserState.NOT_RESERVED)
-                                else if (timeReservation.value != EMPTY_STRING && timeArrive.value == EMPTY_STRING)
-                                    mapDatabaseRepository.changeUserState(UserState.RESERVED)
-                                else if (timeArrive.value != EMPTY_STRING)
-                                    mapDatabaseRepository.changeUserState(UserState.ARRIVED)
-                            }
-                        })
+                        mapDatabaseRepository.getTimeReservation()
                     }
                 },
                 launch {
@@ -157,18 +144,7 @@ class MapViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent) 
 
     fun getTimeArrive() = viewModelScope.launch {
         timeArriveResult.loadOrError {
-            mapDatabaseRepository.getTimeArrive(object : TimeCallback {
-                override fun onCallback(value: String) {
-                    timeArrive.value = value
-
-                    if (timeReservation.value == EMPTY_STRING)
-                        mapDatabaseRepository.changeUserState(UserState.NOT_RESERVED)
-                    else if (timeReservation.value != EMPTY_STRING && timeArrive.value == EMPTY_STRING)
-                        mapDatabaseRepository.changeUserState(UserState.RESERVED)
-                    else if (timeArrive.value != EMPTY_STRING)
-                        mapDatabaseRepository.changeUserState(UserState.ARRIVED)
-                }
-            })
+            mapDatabaseRepository.getTimeArrive()
         }
     }
 

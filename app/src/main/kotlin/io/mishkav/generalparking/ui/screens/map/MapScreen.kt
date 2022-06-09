@@ -74,8 +74,8 @@ fun MapScreen(
     resetAlert.subscribeOnError(showMessage)
     val isMinSdkVersionApproved by viewModel.isMinSdkVersionApproved.collectAsState()
 
-    val timeArrive by viewModel.timeArrive
-    val timeReservation by viewModel.timeReservation
+    val timeArrive by viewModel.timeArrive.collectAsState()
+    val timeReservation by viewModel.timeReservation.collectAsState()
     val timeExit by viewModel.timeExitResult.collectAsState()
     timeExit.subscribeOnErrorMax { id ->
         OnErrorResult(
@@ -234,13 +234,13 @@ fun MapScreenContent(
             Spacer(modifier = Modifier.height(1.dp)) //After a re-compose the sheetContent looses associated anchor
 
             when (userState) {
-                UserState.RESERVED -> when (alertChangeParking) {
-                    false -> BottomTimerScreen(
+                UserState.RESERVED -> if (!alertChangeParking)
+                    BottomTimerScreen(
                         name = selectedParkingPlace,
                         navigateToSchemeScreen = navigateToSchemeScreen
                     )
-                    else -> if (showAlertChangeParking)
-                        AlertDialog(
+                else if (showAlertChangeParking)
+                    AlertDialog(
                         onDismissRequest = {},
                         text = {
                             ScreenBody(
@@ -263,14 +263,13 @@ fun MapScreenContent(
                             }
                         }
                     )
-                }
-                UserState.ARRIVED -> when (alertChangeParking) {
-                    false -> BottomOnParkingScreen(
+                UserState.ARRIVED -> if (!alertChangeParking)
+                    BottomOnParkingScreen(
                         name = selectedParkingPlace,
                         navController = navController,
                         navigateToSchemeScreen = navigateToSchemeScreen
                     )
-                    else ->  if (showAlertChangeParking)
+                    else if (showAlertChangeParking)
                         AlertDialog(
                         onDismissRequest = {},
                         text = {
@@ -294,7 +293,6 @@ fun MapScreenContent(
                             }
                         }
                     )
-                }
                 else -> {
                     BottomScreen(
                         navigateToSchemeScreen = navigateToSchemeScreen
