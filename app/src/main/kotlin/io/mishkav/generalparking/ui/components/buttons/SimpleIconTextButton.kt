@@ -24,7 +24,6 @@ fun SimpleIconTextButton(
     onClick: () -> Unit
 ) = Button(
     onClick = onClick,
-    elevation = ButtonDefaults.elevation(0.dp, 0.dp),
     colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colorScheme.surface),
     modifier = modifier
 ) {

@@ -76,3 +76,10 @@ data class User(
         }
     }
 }
+
+enum class UserState {
+    NOT_RESERVED,
+    RESERVED,
+    ARRIVED,
+    EXIT
+}

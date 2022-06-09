@@ -50,14 +50,12 @@ class Session(context: Context) {
         _selectedParkingPlaceFloor.value = floor
     }
 
-
     companion object {
         const val PREF_CURRENT_PARKING_ADDRESS = "currentParkingAddress"
         const val PREF_AUTO_NUMBER = "autoNumber"
         const val PREF_SELECTED_PARKING_PLACE = "selectedParkingPlaceName"
         const val PREF_SELECTED_PARKING_COORDINATES = "selectedParkingPlaceCoordinates"
         const val PREF_SELECTED_PARKING_FLOOR = "_selectedParkingPlaceFloor"
-        const val PREF_IS_CURRENT_USER_RESERVED_PLACE = "isCurrentUserReservedParkingPlace"
 
         const val AGREEMENT_URI = "https://www.genparking.com/пользовательское-соглашение"
         const val PREF_NAME = "session"

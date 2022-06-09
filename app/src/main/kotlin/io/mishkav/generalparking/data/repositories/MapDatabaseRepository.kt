@@ -4,20 +4,57 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import io.mishkav.generalparking.data.exceptions.PlaceNotReservatedException
 import io.mishkav.generalparking.data.exceptions.PlaceReservationException
-import io.mishkav.generalparking.domain.entities.ParkingPlace
-import io.mishkav.generalparking.domain.entities.ParkingScheme
-import io.mishkav.generalparking.domain.entities.ParkingShortInfo
+import io.mishkav.generalparking.domain.entities.*
 import io.mishkav.generalparking.domain.repositories.IMapDatabaseRepository
 import kotlinx.coroutines.tasks.await
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
+import io.mishkav.generalparking.state.Session
+import io.mishkav.generalparking.ui.utils.MapParameters.TIME_ZONE
+import io.mishkav.generalparking.ui.utils.onValueListener
+import kotlinx.coroutines.flow.MutableStateFlow
+import timber.log.Timber
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 class MapDatabaseRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val firebaseDatabase: DatabaseReference
 ) : IMapDatabaseRepository {
+
+    @Inject
+    lateinit var session: Session
+
+    private val _userState = MutableStateFlow(UserState.NOT_RESERVED)
+    override val userState = _userState
+
+    private val _alertState = MutableStateFlow(UserState.NOT_RESERVED)
+    override val alertState = _alertState
+
+    private val _timeReservation = MutableStateFlow(EMPTY_STRING)
+    override val timeReservation = _timeReservation
+
+    private val _timeArrive = MutableStateFlow(EMPTY_STRING)
+    override val timeArrive = _timeArrive
+
+    override fun changeUserState(state: UserState) {
+        _userState.value = state
+    }
+
+    private fun refreshUserState() {
+        when {
+            _timeReservation.value == EMPTY_STRING -> {
+                changeUserState(UserState.NOT_RESERVED)
+            }
+            _timeReservation.value != EMPTY_STRING && _timeArrive.value == EMPTY_STRING -> {
+                changeUserState(UserState.RESERVED)
+            }
+            _timeArrive.value != EMPTY_STRING -> {
+                changeUserState(UserState.ARRIVED)
+            }
+        }
+    }
 
     override suspend fun getParkingCoordinates(): Map<String, String> {
         return firebaseDatabase
@@ -25,6 +62,14 @@ class MapDatabaseRepository @Inject constructor(
             .get()
             .await()
             .getValue() as Map<String, String>
+    }
+
+    override suspend fun getReservationAddress(): String {
+        return firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/reservation_address")
+            .get()
+            .await()
+            .getValue() as String
     }
 
     override suspend fun getParkingScheme(address: String): Map<String, ParkingScheme> {
@@ -68,8 +113,8 @@ class MapDatabaseRepository @Inject constructor(
         placeCoordinates: String, //i_j
         autoNumber: String
     ) {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS", Locale.getDefault())
-        val timeReservation = dateFormat.format(Date())
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
+        val timeReservation = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneId.of(TIME_ZONE)).format(formatter)
 
         //Check
         val checkReservation = firebaseDatabase
@@ -81,43 +126,17 @@ class MapDatabaseRepository @Inject constructor(
         if (checkReservation == 1L)
             throw PlaceReservationException()
 
-        //Users car
-        firebaseDatabase
-            .child("users_car/$address/$autoNumber")
-            .setValue(firebaseAuth.currentUser?.uid)
-            .await()
-
-        //Users
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/reservation_address")
-            .setValue(address)
-            .await()
-
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/reservation_place")
-            .setValue(namePlace)
-            .await()
-
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/reservation_level")
-            .setValue(floor)
-            .await()
-
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/time_reservation")
-            .setValue(timeReservation)
-            .await()
-
-        //Parking
-        firebaseDatabase
-            .child("parking/$address/$floor/places/$placeCoordinates/reservation")
-            .setValue(firebaseAuth.currentUser?.uid)
-            .await()
-
-        firebaseDatabase
-            .child("parking/$address/$floor/places/$placeCoordinates/value")
-            .setValue(1)
-            .await()
+        // Paths to info about Users, Parking, Users car
+        val post = mapOf(
+            "users_car/$address/$autoNumber" to firebaseAuth.currentUser?.uid,
+            "users/${firebaseAuth.currentUser?.uid}/reservation_address" to address,
+            "users/${firebaseAuth.currentUser?.uid}/reservation_place" to namePlace,
+            "users/${firebaseAuth.currentUser?.uid}/reservation_level" to floor,
+            "users/${firebaseAuth.currentUser?.uid}/time_reservation" to timeReservation,
+            "parking/$address/$floor/places/$placeCoordinates/reservation" to firebaseAuth.currentUser?.uid,
+            "parking/$address/$floor/places/$placeCoordinates/value" to 1
+        )
+        firebaseDatabase.updateChildren(post)
     }
 
     override suspend fun removeParkingPlaceReservation(
@@ -136,48 +155,137 @@ class MapDatabaseRepository @Inject constructor(
         if (checkReservation == 0L)
             throw PlaceNotReservatedException()
 
-        //Users
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/reservation_address")
-            .setValue(EMPTY_STRING)
-            .await()
-
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/reservation_place")
-            .setValue(EMPTY_STRING)
-            .await()
-
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/reservation_level")
-            .setValue(EMPTY_STRING)
-            .await()
-
-        firebaseDatabase
-            .child("users/${firebaseAuth.currentUser?.uid}/time_reservation")
-            .setValue(EMPTY_STRING)
-            .await()
-
-        //Parking
-        firebaseDatabase
-            .child("parking/$address/$floor/places/$placeCoordinates/reservation")
-            .setValue(SPACE)
-            .await()
-
-        firebaseDatabase
-            .child("parking/$address/$floor/places/$placeCoordinates/value")
-            .setValue(0)
-            .await()
-
-        //Users car
-        firebaseDatabase
-            .child("users_car/$address/$autoNumber")
-            .removeValue()
-            .await()
+        // Paths to info about Users, Parking, Users car
+        val post = mapOf(
+            "users/${firebaseAuth.currentUser?.uid}/reservation_address" to EMPTY_STRING,
+            "users/${firebaseAuth.currentUser?.uid}/reservation_place" to EMPTY_STRING,
+            "users/${firebaseAuth.currentUser?.uid}/reservation_level" to EMPTY_STRING,
+            "users/${firebaseAuth.currentUser?.uid}/time_reservation" to EMPTY_STRING,
+            "parking/$address/$floor/places/$placeCoordinates/reservation" to SPACE,
+            "parking/$address/$floor/places/$placeCoordinates/value" to 0,
+            "users_car/$address/$autoNumber" to null
+        )
+        firebaseDatabase.updateChildren(post)
     }
 
     override suspend fun getAutoNumber(): String {
         return firebaseDatabase
             .child("users/${firebaseAuth.currentUser?.uid}/number_auto")
+            .get()
+            .await()
+            .getValue() as String
+    }
+
+    override suspend fun getTimeReservation() {
+
+        firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/time_reservation")
+            .onValueListener(
+                onDataChangeImpl = { dataSnapshot ->
+                    _timeReservation.value = dataSnapshot.getValue() as String
+                    Timber.tag(TAG).i("getTimeReservation: timeReservation = $_timeReservation")
+
+                    refreshUserState()
+                },
+                onCancelledImpl = { error ->
+                    Timber.tag(TAG).w(error.toException(), ON_CANCELLED_MESSAGE)
+                }
+            )
+    }
+
+    override suspend fun getBookingTime(): Long {
+        return firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/remaining_booking_time")
+            .get()
+            .await()
+            .getValue() as Long
+    }
+
+    override suspend fun getBookingRatio(
+        address: String,
+        floor: String
+    ): Double {
+        return firebaseDatabase
+            .child("parking/$address/$floor/booking_ratio")
+            .get()
+            .await()
+            .getValue() as Double
+    }
+
+    override suspend fun getTimeArrive() {
+
+        firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/time_arrive")
+            .onValueListener(
+                onDataChangeImpl = { dataSnapshot ->
+                    _timeArrive.value = dataSnapshot.getValue() as String
+                    Timber.tag(TAG).i("getTimeArrive: timeArrive = $_timeArrive")
+
+                    refreshUserState()
+                },
+                onCancelledImpl = { error ->
+                    Timber.tag(TAG).w(error.toException(), ON_CANCELLED_MESSAGE)
+                }
+            )
+    }
+
+    override suspend fun resetIsArrived() {
+        firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/arrive")
+            .setValue(EMPTY_STRING)
+            .await()
+    }
+
+    override suspend fun getAlertState() {
+
+        firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/arrive")
+            .onValueListener(
+                onDataChangeImpl = { dataSnapshot ->
+                    val isArrived = dataSnapshot.getValue() as String
+                    Timber.tag(TAG).i("getIsArrived: isArrived = $isArrived")
+                    if (isArrived != EMPTY_STRING)
+                        _alertState.value = UserState.ARRIVED
+                    else
+                        _alertState.value = UserState.NOT_RESERVED
+                },
+                onCancelledImpl = { error ->
+                    Timber.tag(TAG).w(error.toException(), ON_CANCELLED_MESSAGE)
+                }
+            )
+
+        firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/exit")
+            .onValueListener(
+                onDataChangeImpl = { dataSnapshot ->
+                    val isExit = dataSnapshot.getValue() as String
+                    Timber.tag(TAG).i("getIsExit: isExit = $isExit")
+                    if (isExit != EMPTY_STRING)
+                        _alertState.value = UserState.EXIT
+                    else
+                        _alertState.value = UserState.NOT_RESERVED
+                },
+                onCancelledImpl = { error ->
+                    Timber.tag(TAG).w(error.toException(), ON_CANCELLED_MESSAGE)
+                }
+            )
+    }
+
+    override suspend fun resetIsExit() {
+        val post = mapOf(
+            "exit" to EMPTY_STRING,
+            "time_arrive" to EMPTY_STRING,
+            "time_exit" to EMPTY_STRING,
+            "time_reservation" to EMPTY_STRING
+        )
+        firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}")
+            .updateChildren(post)
+    }
+
+    override suspend fun getTimeExit(): String {
+        return firebaseDatabase
+            .child("users/${firebaseAuth.currentUser?.uid}/time_exit")
             .get()
             .await()
             .getValue() as String
@@ -216,8 +324,11 @@ class MapDatabaseRepository @Inject constructor(
         private const val PATH_TO_PRICE_PARKING = "price_parking"
         private const val PATH_TO_TOTAL_PLACES = "total_places"
 
+        private const val ON_CANCELLED_MESSAGE = "loadPost:onCancelled"
+
         private const val EMPTY_STRING = ""
         private const val SPACE = " "
+        private const val TAG = "MapDatabaseRepository"
 
         private val CLASS_STRING = String::class.java
         private val CLASS_INT = Int::class.java
