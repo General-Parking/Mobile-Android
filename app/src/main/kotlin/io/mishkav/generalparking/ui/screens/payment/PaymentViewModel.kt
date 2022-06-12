@@ -16,6 +16,7 @@ class PaymentViewModel(appComponent: AppComponent = GeneralParkingApp.appCompone
     lateinit var userDatabaseRepository: IUserDatabaseRepository
 
     val balance = MutableResultFlow<Int>()
+    val giftResult = MutableResultFlow<Unit>()
 
     init {
         appComponent.inject(this)
@@ -28,6 +29,12 @@ class PaymentViewModel(appComponent: AppComponent = GeneralParkingApp.appCompone
     private fun getUserBalance() = viewModelScope.launch {
         balance.loadOrError {
             userDatabaseRepository.getUserBalance()
+        }
+    }
+
+    fun setGiftBalance(newBalance: Int) = viewModelScope.launch {
+        giftResult.loadOrError {
+            userDatabaseRepository.setGiftBalance(newBalance)
         }
     }
 }

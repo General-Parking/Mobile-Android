@@ -7,4 +7,5 @@ interface IUserDatabaseRepository {
     suspend fun getUserDataFromDatabase(): User
     suspend fun getUserBalance(): Int
     suspend fun isMinSdkVersionApproved(): Boolean
+    suspend fun setGiftBalance(balance: Int)
 }

@@ -1,9 +1,7 @@
 package io.mishkav.generalparking.data.repositories
 
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ktx.getValue
 import io.mishkav.generalparking.data.exceptions.NullUserException
 import io.mishkav.generalparking.data.utils.UserFields
 import io.mishkav.generalparking.data.utils.UserFields.DefaultFields.DEFAULT_STRING_FIELD
@@ -107,6 +105,18 @@ class UserDatabaseRepository @Inject constructor(
             .await()
 
         return minSdkVersionBack.getValue(CLASS_FLOAT)!! <= MIN_SDK_VERSION
+    }
+
+    override suspend fun setGiftBalance(balance: Int) {
+        currentUserUid.let { uid ->
+            if (uid == null)
+                throw NullUserException()
+
+            firebaseDatabase
+                .child("${PATH_TO_USERS}/$uid/$PATH_TO_ACCOUNT_BALANCE")
+                .setValue(balance)
+                .await()
+        }
     }
 
     companion object {
