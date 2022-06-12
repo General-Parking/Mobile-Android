@@ -14,6 +14,16 @@ object PaymentConfig {
     // Hardcode, but need because of extension and requirements...
     val paymentMethods = arrayListOf(
         PaymentMethods(
+            title = "Apple Pay",
+            description = "Коммисия 0%, минимум 0 ₽",
+            icon = R.drawable.ic_gift
+        ),
+        PaymentMethods(
+            title = "Банковская карта",
+            description = "Коммисия 0%, минимум 0 ₽",
+            icon = R.drawable.ic_gift
+        ),
+        PaymentMethods(
             title = "Бесплатно",
             description = "Коммисия 0%, минимум 0 ₽",
             icon = R.drawable.ic_gift

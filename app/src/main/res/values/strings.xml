@@ -89,6 +89,7 @@
     <string name="on_error_body">We have some troubles…</string>
     <string name="repeat_request">Repeat request</string>
     <string name="on_error_def">An unexpected error occurred</string>
+    <string name="payment_methods">Payment methods</string>
 
 
 </resources>

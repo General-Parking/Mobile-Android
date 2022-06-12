@@ -19,7 +19,6 @@ import androidx.compose.material.Card
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -48,7 +46,10 @@ import io.mishkav.generalparking.ui.components.buttons.TextButton
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
 import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.components.topAppBar.TopAppBarWithBackButton
+import io.mishkav.generalparking.ui.screens.main.Routes
+import io.mishkav.generalparking.ui.screens.payment.components.PaymentItem
 import io.mishkav.generalparking.ui.screens.payment.config.PaymentConfig
+import io.mishkav.generalparking.ui.screens.payment.config.PaymentMethods
 import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.utils.LoadingResult
 import io.mishkav.generalparking.ui.utils.SuccessResult
@@ -67,12 +68,14 @@ fun PaymentScreen(
     val giftResult by viewModel.giftResult.collectAsState()
     giftResult.subscribeOnError(showMessage)
 
-    var isSuccessPaymentDialogVisiable by remember {
+    val selectedOption by viewModel.selectedOption.collectAsState()
+
+    var isSuccessPaymentDialogVisible by remember {
         mutableStateOf(false)
     }
     giftResult.takeIf { it is SuccessResult }?.data?.let {
         LaunchedEffect(Unit) {
-            isSuccessPaymentDialogVisiable = true
+            isSuccessPaymentDialogVisible = true
         }
     }
 
@@ -83,14 +86,18 @@ fun PaymentScreen(
     PaymentScreenContent(
         balance = balance.data ?: 0,
         defaultPaymentPrice = 150,
+        selectedOption = selectedOption,
         isLoading = balance is LoadingResult || giftResult is LoadingResult,
         onPaying = viewModel::setGiftBalance,
         navigateBack = {
             navController.popBackStack()
+        },
+        navigateToChange = {
+            navController.navigate(Routes.changeMethod)
         }
     )
 
-    if (isSuccessPaymentDialogVisiable) {
+    if (isSuccessPaymentDialogVisible) {
         AlertDialog(
             onDismissRequest = {},
             shape = RoundedCornerShape(
@@ -126,8 +133,10 @@ fun PaymentScreenContent(
     balance: Int = 0,
     isLoading: Boolean = false,
     defaultPaymentPrice: Int = 0,
+    selectedOption: PaymentMethods,
     onPaying: (newBalance: Int) -> Unit = { _ -> },
-    navigateBack: () -> Unit = {}
+    navigateBack: () -> Unit = {},
+    navigateToChange: () -> Unit = {}
 ) = Box(
     modifier = Modifier.fillMaxSize()
 ) {
@@ -240,18 +249,16 @@ fun PaymentScreenContent(
 
                 // TODO Choose depends on selected method
                 PaymentItem(
-                    title = PaymentConfig.paymentMethods.first().title,
-                    description = PaymentConfig.paymentMethods.first().description,
-                    painter = painterResource(PaymentConfig.paymentMethods.first().icon)
+                    title = selectedOption.title,
+                    description = selectedOption.description,
+                    painter = painterResource(selectedOption.icon)
                 )
 
                 Spacer(modifier = Modifier.height(verticalPadding / 2))
 
                 TextButton(
                     text = stringResource(R.string.edit),
-                    onClick = {
-                        //TODO onClick
-                    },
+                    onClick = navigateToChange,
                     modifier = Modifier.padding(horizontal = horizontalPadding)
                 )
 
@@ -287,44 +294,10 @@ fun PaymentScreenContent(
     )
 }
 
-@Composable
-private fun PaymentItem(
-    title: String,
-    description: String,
-    painter: Painter
-) {
-    Row(
-        modifier = Modifier
-            .padding(horizontal = 10.dp)
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
-    ) {
-        Icon(
-            painter = painter,
-            contentDescription = null
-        )
-
-        Spacer(modifier = Modifier.width(10.dp))
-
-        Column(
-            verticalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-            )
-
-            Text(
-                text = description,
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-    }
-}
-
 @Preview(showBackground = false)
 @Composable
 fun PaymentScreenPreview() {
-    PaymentScreenContent()
+    PaymentScreenContent(
+        selectedOption = PaymentConfig.paymentMethods[2]
+    )
 }

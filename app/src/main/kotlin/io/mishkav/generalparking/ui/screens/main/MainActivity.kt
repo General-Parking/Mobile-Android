@@ -37,6 +37,7 @@ import io.mishkav.generalparking.ui.screens.auth.forgotPassword.ForgotPasswordSc
 import io.mishkav.generalparking.ui.screens.auth.registration.RegistrationScreen
 import io.mishkav.generalparking.ui.screens.auth.registrationExtensionData.RegistrationExtensionData
 import io.mishkav.generalparking.ui.screens.map.MapScreen
+import io.mishkav.generalparking.ui.screens.payment.ChangeMethodScreen
 import io.mishkav.generalparking.ui.screens.payment.PaymentScreen
 import io.mishkav.generalparking.ui.screens.scheme.SchemeScreen
 import io.mishkav.generalparking.ui.screens.profile.ProfileScreen
@@ -185,6 +186,12 @@ fun MainScreen(
                     showMessage = showMessage
                 )
             }
+
+            composable(Routes.changeMethod) {
+                ChangeMethodScreen(
+                    navController = navController
+                )
+            }
         }
     }
 }
@@ -199,4 +206,5 @@ object Routes {
     const val scheme = "scheme"
     const val profile = "profile"
     const val payment = "payment"
+    const val changeMethod = "changeMethod"
 }
