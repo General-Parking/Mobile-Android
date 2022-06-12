@@ -35,10 +35,13 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import io.mishkav.generalparking.R
@@ -195,21 +198,29 @@ fun PaymentScreenContent(
                 Text(
                     text = stringResource(R.string.zero),
                     textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        textAlign = TextAlign.Center,
+                        fontSize = 32.sp
+                    ),
                     modifier = Modifier.fillMaxWidth()
                 )
             },
-            textStyle = MaterialTheme.typography.titleLarge.copy(
-                textAlign = TextAlign.Center
+            textStyle = MaterialTheme.typography.titleMedium.copy(
+                textAlign = TextAlign.Center,
+                fontSize = 32.sp
             ),
             trailingIcon = {
                 Text(
                     text = stringResource(R.string.rub),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontSize = 32.sp
+                    )
                 )
             },
             colors = colors,
             modifier = Modifier
-                .height(60.dp)
+                // .height(60.dp)
                 .width(LocalConfiguration.current.screenWidthDp.dp / 2)
                 .padding(horizontal = horizontalPadding),
         )
