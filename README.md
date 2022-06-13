@@ -74,11 +74,11 @@
 
 ### Используемый стек и подходы
 
-- Kotlin
-- Jetpack Compose
-- Clean Architecture
-- MVVM
-- Coroutines
-- Dagger
-- Firebase
+- [Kotlin](https://kotlinlang.org/)
+- [Jetpack Compose](https://developer.android.com/jetpack/compose)
+- [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+- [MVVM](https://ru.wikipedia.org/wiki/Model-View-ViewModel)
+- [Coroutines](https://kotlinlang.org/docs/coroutines-overview.html)
+- [Dagger](https://dagger.dev/)
+- [Firebase](https://firebase.google.com/)
 - и много всего другого... 
