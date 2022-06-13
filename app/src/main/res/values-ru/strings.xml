@@ -23,7 +23,6 @@
     <string name="have_account">Есть аккаунт?</string>
     <string name="input_data_text">Добавьте информацию, чтобы начать пользоваться приложением.</string>
     <string name="a">А</string>
-    <string name="zeros">000</string>
     <string name="aa">АА</string>
     <string name="rus">RUS</string>
     <string name="other_number_format">У меня другой формат номера</string>
@@ -51,6 +50,13 @@
     <string name="profile">Профиль</string>
     <string name="parking_scheme">Схема паркинга</string>
 
+    <string name="account_refill">Пополнение счета</string>
+    <string name="pay">Оплатить</string>
+    <string name="edit">Изменить</string>
+    <string name="payment_info">Обратите внимание на комиссию внешних сервисов</string>
+    <string name="payment_method">Способ оплаты</string>
+    <string name="payment_success_info">Вы успешно пополнили счет!</string>
+
     <string name="error_auth">Ошибка авторизации, попробуйте ещё раз</string>
     <string name="error_registration">Ошибка регистрации, возможно такой аккаунт уже существует</string>
     <string name="error_email_not_verified">Почта не подтверждена. Пожалуйста, проверьте свою почту</string>
@@ -61,19 +67,23 @@
     <string name="go_reserve">Перейти к бронированию</string>
     <string name="space" >" "</string>
     <string name="bottom_title">Улица</string>
-    <string name="bottom_body">Свободно %d мест из %d</string>
-    <string name="minute_cost">%.2f ₽/мин</string>
     <string name="choose_seat">Выберите свободное место:</string>
     <string name="free">" — свободные"</string>
     <string name="taken">" — занятые"</string>
     <string name="reserve">Забронировать</string>
     <string name="chosen_seat">Место</string>
+
+    <string name="bottom_body">Свободно %d мест из %d</string>
+    <string name="minute_cost">%.2f ₽/мин</string>
     <string name="floor_number">%d этаж</string>
+    <string name="balance_after_replenishment">Баланс после пополнения %d ₽</string>
+
     <string name="reserved">Забронировано</string>
     <string name="username">Имя</string>
     <string name="on_error_body">Что-то пошло не так…</string>
     <string name="repeat_request">Повторить запрос</string>
     <string name="on_error_def">Произошла непредвиденная ошибка</string>
+    <string name="payment_methods">Способы оплаты</string>
     <string name="reservation_retention">Удержание брони:</string>
     <string name="paid_retention">Платное удержание:</string>
     <string name="arrive_title">Добро пожаловать!</string>

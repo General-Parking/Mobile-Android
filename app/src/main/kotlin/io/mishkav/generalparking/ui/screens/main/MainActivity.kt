@@ -18,7 +18,9 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -35,9 +37,12 @@ import io.mishkav.generalparking.ui.screens.auth.forgotPassword.ForgotPasswordSc
 import io.mishkav.generalparking.ui.screens.auth.registration.RegistrationScreen
 import io.mishkav.generalparking.ui.screens.auth.registrationExtensionData.RegistrationExtensionData
 import io.mishkav.generalparking.ui.screens.map.MapScreen
+import io.mishkav.generalparking.ui.screens.payment.ChangeMethodScreen
+import io.mishkav.generalparking.ui.screens.payment.PaymentScreen
 import io.mishkav.generalparking.ui.screens.scheme.SchemeScreen
 import io.mishkav.generalparking.ui.screens.profile.ProfileScreen
 import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,6 +100,15 @@ fun MainScreen(
     val onError: @Composable (Int) -> Unit = { message ->
         val strMessage = stringResource(message)
         LaunchedEffect(Unit) {
+            scaffoldState.snackbarHostState.showSnackbar(strMessage)
+        }
+    }
+    // TODO Migrate from onErro to showMessage
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val showMessage: (Int) -> Unit = { message ->
+        val strMessage = context.getString(message)
+        scope.launch {
             scaffoldState.snackbarHostState.showSnackbar(strMessage)
         }
     }
@@ -158,8 +172,22 @@ fun MainScreen(
                     onError = onError
                 )
             }
+
             composable(Routes.profile) {
                 ProfileScreen(
+                    navController = navController
+                )
+            }
+
+            composable(Routes.payment) {
+                PaymentScreen(
+                    navController = navController,
+                    showMessage = showMessage
+                )
+            }
+
+            composable(Routes.changeMethod) {
+                ChangeMethodScreen(
                     navController = navController
                 )
             }
@@ -176,4 +204,6 @@ object Routes {
     const val map = "map"
     const val scheme = "scheme"
     const val profile = "profile"
+    const val payment = "payment"
+    const val changeMethod = "changeMethod"
 }

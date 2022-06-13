@@ -296,7 +296,7 @@ fun TimerBar(
         progress = animatedProgress,
         backgroundColor = when {
             !enabled && darkTheme -> Orange400
-            !enabled && !darkTheme -> Gray400
+            !enabled && !darkTheme -> Gray600
             else -> MaterialTheme.colorScheme.background
         },
         color = Green600

@@ -10,14 +10,14 @@ import io.mishkav.generalparking.data.utils.UserFields.DefaultFields.DEFAULT_IMA
 import io.mishkav.generalparking.data.utils.UserFields.DefaultFields.DEFAULT_REMAINING_BOOKING_TIME
 import io.mishkav.generalparking.data.utils.toMap
 import io.mishkav.generalparking.domain.entities.User
-import io.mishkav.generalparking.domain.repositories.IAuthDatabaseRepository
+import io.mishkav.generalparking.domain.repositories.IUserDatabaseRepository
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class AuthDatabaseRepository @Inject constructor(
+class UserDatabaseRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val firebaseDatabase: DatabaseReference
-) : IAuthDatabaseRepository {
+) : IUserDatabaseRepository {
 
     private val currentUserUid: String?
         get() = firebaseAuth.currentUser?.uid
@@ -85,6 +85,19 @@ class AuthDatabaseRepository @Inject constructor(
         }
     }
 
+    override suspend fun getUserBalance(): Int {
+        currentUserUid.let { uid ->
+            if (uid == null)
+                throw NullUserException()
+
+            return firebaseDatabase
+                .child("${PATH_TO_USERS}/$uid/$PATH_TO_ACCOUNT_BALANCE")
+                .get()
+                .await()
+                .getValue(CLASS_INT) ?: DEFAULT_INT_FIELD
+        }
+    }
+
     override suspend fun isMinSdkVersionApproved(): Boolean {
         val minSdkVersionBack = firebaseDatabase
             .child(PATH_TO_MIN_SDK)
@@ -94,9 +107,22 @@ class AuthDatabaseRepository @Inject constructor(
         return minSdkVersionBack.getValue(CLASS_FLOAT)!! <= MIN_SDK_VERSION
     }
 
+    override suspend fun setGiftBalance(balance: Int) {
+        currentUserUid.let { uid ->
+            if (uid == null)
+                throw NullUserException()
+
+            firebaseDatabase
+                .child("${PATH_TO_USERS}/$uid/$PATH_TO_ACCOUNT_BALANCE")
+                .setValue(balance)
+                .await()
+        }
+    }
+
     companion object {
         private const val PATH_TO_USERS = "users"
         private const val PATH_TO_MIN_SDK = "minimumClientVersion"
+        private const val PATH_TO_ACCOUNT_BALANCE= "account_balance"
         private const val MIN_SDK_VERSION = 1.1f
 
         private val CLASS_STRING = String::class.java

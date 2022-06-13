@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -74,6 +75,7 @@ fun MapScreen(
     val resetAlert by viewModel.resetAlertResult.collectAsState()
     resetAlert.subscribeOnError(showMessage)
     val isMinSdkVersionApproved by viewModel.isMinSdkVersionApproved.collectAsState()
+    val balance by viewModel.balance.collectAsState()
 
     val timeArrive by viewModel.timeArrive.collectAsState()
     val timeReservation by viewModel.timeReservation.collectAsState()
@@ -129,9 +131,13 @@ fun MapScreen(
         navController = navController,
         reservationAddress = reservationAddress.data ?: "",
         isLoading = isLoading,
+        balance = balance.data ?: 0,
         setParkingAddress = viewModel::setCurrentParkingAddress,
         navigateToSchemeScreen = {
             navController.navigate(Routes.scheme)
+        },
+        navigateToPaymentScreen = {
+            navController.navigate(Routes.payment)
         },
         navigateToProfileScreen = {
             navController.navigate(Routes.profile)
@@ -176,8 +182,10 @@ fun MapScreenContent(
     navController: NavHostController,
     reservationAddress: String,
     isLoading: Boolean = false,
+    balance: Int = 0,
     setParkingAddress: (address: String) -> Unit = { _ -> },
     navigateToSchemeScreen: () -> Unit = {},
+    navigateToPaymentScreen: () -> Unit = {},
     navigateToProfileScreen: () -> Unit = {}
 ) {
     val moscowLatLng = LatLng(Coordinates.Moscow.latitude, Coordinates.Moscow.longitude)
@@ -217,6 +225,7 @@ fun MapScreenContent(
             CircularLoader()
         }
     }
+    val spaceValue = 16.dp
 
     BottomSheetScaffold(
         sheetShape = RoundedCornerShape(
@@ -367,6 +376,44 @@ fun MapScreenContent(
                     .size(dimensionResource(R.dimen.fab_size))
             ) {
                 Icon(Icons.Filled.Menu, "")
+            }
+
+            Button(
+                onClick = navigateToPaymentScreen,
+                shape = Shapes.medium,
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.primary
+                ),
+                modifier = Modifier
+                    .padding(dimensionResource(R.dimen.fab_top))
+                    .height(60.dp)
+                    .align(Alignment.TopCenter)
+            ) {
+                Spacer(modifier = Modifier.width(spaceValue / 2))
+
+                Text(
+                    text = stringResource(R.string.balance).format(balance),
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.width(spaceValue))
+
+                Divider(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(1.dp),
+                    color = MaterialTheme.colorScheme.outline
+                )
+
+                Spacer(modifier = Modifier.width(spaceValue))
+
+                Icon(
+                    painter = painterResource(R.drawable.ic_add),
+                    contentDescription = null
+                )
+
+                Spacer(modifier = Modifier.width(spaceValue / 2))
             }
         }
     }
