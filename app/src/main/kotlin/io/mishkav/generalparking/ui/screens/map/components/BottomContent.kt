@@ -8,7 +8,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SwapCalls
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -18,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.buttons.BottomTextButton
@@ -89,7 +87,7 @@ fun BottomScreenContent(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 10.dp)
+            .padding(vertical = dimensionResource(R.dimen.standard_padding))
             .horizontalScroll(rememberScrollState())
     ) {
         SimpleIconTextButton(
@@ -102,11 +100,6 @@ fun BottomScreenContent(
         Text(
             text = stringResource(R.string.minute_cost).format(priceParking),
             color = MaterialTheme.colorScheme.onPrimary
-        )
-        SimpleIconTextButton(
-            icon = Icons.Outlined.Info,
-            text = stringResource(R.string.more),
-            onClick = {}
         )
     }
     BottomTextButton(

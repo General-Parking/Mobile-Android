@@ -90,6 +90,21 @@
     <string name="repeat_request">Repeat request</string>
     <string name="on_error_def">An unexpected error occurred</string>
     <string name="payment_methods">Payment methods</string>
+    <string name="reservation_retention">Reservation retention:</string>
+    <string name="paid_retention">Paid retention:</string>
+    <string name="arrive_title">Welcome!</string>
+    <string name="arrive_body">You have arrived at General Parking</string>
+    <string name="scheme">Scheme</string>
+    <string name="time_on_parking">Time on parking:</string>
+    <string name="see_you_again">See you again!</string>
+    <string name="finish">Finish</string>
+    <string name="time_exit_alert">Time:</string>
+    <string name="price_exit_alert">Price:</string>
+    <string name="minutes_exit_alert">min</string>
+    <string name="parking_change_body">You have already booked a spot in another car park, cancel your reservation if you want to book in this car park</string>
+    <string name="time_without_hours">%02d:%02d</string>
+    <string name="time_with_hours">%02d:%02d:%02d</string>
+    <string name="price_rub">%d ₽</string>
 
 
 </resources>

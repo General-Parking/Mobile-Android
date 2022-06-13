@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.theme.Typography
 import io.mishkav.generalparking.ui.theme.generalParkingLightBackground
@@ -16,6 +17,7 @@ import io.mishkav.generalparking.ui.theme.generalParkingLightBackground
 @Composable
 fun TextButton(
     modifier: Modifier = Modifier,
+    shape: Shape = Shapes.large,
     text: String,
     onClick: () -> Unit
 ) = Box(
@@ -23,7 +25,7 @@ fun TextButton(
 ) {
     Button(
         onClick = onClick,
-        shape = Shapes.large,
+        shape = shape,
         colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colorScheme.primary),
         modifier = Modifier
             .fillMaxWidth()

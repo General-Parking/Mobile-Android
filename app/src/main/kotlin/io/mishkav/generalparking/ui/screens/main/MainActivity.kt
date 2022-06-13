@@ -162,8 +162,7 @@ fun MainScreen(
 
             composable(Routes.map) {
                 MapScreen(
-                    navController = navController,
-                    onError = onError
+                    navController = navController
                 )
             }
 

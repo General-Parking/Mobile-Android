@@ -84,5 +84,20 @@
     <string name="repeat_request">Повторить запрос</string>
     <string name="on_error_def">Произошла непредвиденная ошибка</string>
     <string name="payment_methods">Способы оплаты</string>
+    <string name="reservation_retention">Удержание брони:</string>
+    <string name="paid_retention">Платное удержание:</string>
+    <string name="arrive_title">Добро пожаловать!</string>
+    <string name="arrive_body">Вы приехали на парковку General Parking</string>
+    <string name="scheme">Схема</string>
+    <string name="time_on_parking">Время на паркинге:</string>
+    <string name="see_you_again">До новых встреч!</string>
+    <string name="finish">Завершить</string>
+    <string name="time_exit_alert">Время:</string>
+    <string name="price_exit_alert">Стоимость:</string>
+    <string name="minutes_exit_alert">мин</string>
+    <string name="parking_change_body">Вы уже забронировали место на другой парковке, отмените бронь если хотите забронировать в этой парковке</string>
+    <string name="time_without_hours">%02d:%02d</string>
+    <string name="time_with_hours">%02d:%02d:%02d</string>
+    <string name="price_rub">%d ₽</string>
 
 </resources>
