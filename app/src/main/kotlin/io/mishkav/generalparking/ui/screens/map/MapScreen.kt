@@ -122,7 +122,7 @@ fun MapScreen(
     }
 
     val isLoading = parkingCoordinates is LoadingResult || reservationAddress is LoadingResult
-            || isAlert is LoadingResult || timeExit is LoadingResult || bookingRatio is LoadingResult
+            || isAlert is LoadingResult || timeExit is LoadingResult || bookingRatio is LoadingResult || balance is LoadingResult
 
     MapScreenContent(
         parkingCoordinates = parkingCoordinates.data ?: emptyMap(),

@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.buttons.BottomTextButton
@@ -83,7 +84,6 @@ fun BottomScreenContent(
     )
 
     Row (
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
@@ -96,7 +96,9 @@ fun BottomScreenContent(
             color = MaterialTheme.colorScheme.primary,
             onClick = navigateToGoogleMap
         )
-        Spacer(Modifier.weight(1f))
+
+        Spacer(Modifier.width(20.dp))
+
         Text(
             text = stringResource(R.string.minute_cost).format(priceParking),
             color = MaterialTheme.colorScheme.onPrimary
