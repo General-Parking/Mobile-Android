@@ -82,3 +82,13 @@
 - [Dagger](https://dagger.dev/)
 - [Firebase](https://firebase.google.com/)
 - и много всего другого... 
+
+# Полезные ссылки проекта General Parking
+
+[Эмулятор заезда и выезда из паркинга для тестовой БД](https://github.com/IvanLyutak/TestEmulators)
+
+[Эмулятор заезда и выезда из паркинга для основной БД](https://github.com/IvanLyutak/Emulators)
+
+[Документация пользователя базы данных](https://docs.google.com/document/d/1DQVeUMXectKqXcjGpcQl4quEwg8TSSHiw9SurNDWKJg/edit)
+
+[Презентация проекта](https://docs.google.com/presentation/d/16-eHbvozZKoFUfgVn2WLcvX_8upM2R1_eMdlzpbycws/edit?usp=sharing)
