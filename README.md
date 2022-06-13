@@ -50,7 +50,7 @@
 <tr>
   <td><img src="https://user-images.githubusercontent.com/54765046/173416918-f04aeef5-3aff-4474-8291-601d6c9c15e9.jpeg"></td>
   <td><img src="https://user-images.githubusercontent.com/54765046/173420788-121b819e-7301-435e-a5ae-9d3a6f6f2b4b.jpeg"></td>
-  <td><img src="https://user-images.githubusercontent.com/54765046/173420781-70c87539-9063-416c-b4aa-72bcaff40e63.jpeg"></td>
+  <td><img src="https://user-images.githubusercontent.com/54765046/173425663-afe4e19f-7207-4b55-8ebe-d3082435750f.jpeg"></td>
 </tr>
 </table>
 

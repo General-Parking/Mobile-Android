@@ -258,12 +258,7 @@ fun OnParkingBar(
                         dimensionResource(R.dimen.bottom_shape),
                     )
                 )
-                .background(
-                    when {
-                        darkTheme -> generalParkingLightBackground
-                        else -> Gray600
-                    }
-                )
+                .background(Gray600)
                 .padding(dimensionResource(R.dimen.standard_padding))
         ) {
             Icon(
