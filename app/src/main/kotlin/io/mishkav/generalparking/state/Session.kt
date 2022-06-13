@@ -66,7 +66,6 @@ class Session(context: Context) {
         const val PREF_SELECTED_PARKING_PLACE = "selectedParkingPlaceName"
         const val PREF_SELECTED_PARKING_COORDINATES = "selectedParkingPlaceCoordinates"
         const val PREF_SELECTED_PARKING_FLOOR = "_selectedParkingPlaceFloor"
-        const val PREF_IS_CURRENT_USER_RESERVED_PLACE = "isCurrentUserReservedParkingPlace"
         const val PREF_SELECTED_OPTION = "selectedOption"
 
         const val AGREEMENT_URI = "https://www.genparking.com/пользовательское-соглашение"

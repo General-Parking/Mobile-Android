@@ -21,11 +21,3 @@ class NothingResult<T> : Result<T>()
 
 fun <T> MutableResultFlow(value: Result<T> = NothingResult()) = MutableStateFlow(value)
 typealias MutableResultFlow<T> = MutableStateFlow<Result<T>>
-
-// Error functions
-@Composable
-inline fun Result<*>.subscribeOnError(crossinline onError: (message: Int) -> Unit) = (this as? ErrorResult)?.message?.let {
-    LaunchedEffect(this) {
-        onError(it)
-    }
-}

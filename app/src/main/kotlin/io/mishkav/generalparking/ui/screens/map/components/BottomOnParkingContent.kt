@@ -261,7 +261,7 @@ fun OnParkingBar(
                 .background(
                     when {
                         darkTheme -> generalParkingLightBackground
-                        else -> Gray400
+                        else -> Gray600
                     }
                 )
                 .padding(dimensionResource(R.dimen.standard_padding))

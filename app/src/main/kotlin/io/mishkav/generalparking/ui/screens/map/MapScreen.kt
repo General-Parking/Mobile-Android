@@ -121,41 +121,6 @@ fun MapScreen(
         }
     }
 
-    parkingCoordinates.also { result ->
-        when (result) {
-            is ErrorResult -> OnErrorResult(
-                onClick = viewModel::onOpen,
-                message = result.message ?: R.string.on_error_def,
-                navController = navController,
-                isTopAppBarAvailable = false
-            )
-            is SuccessResult -> when (autoNumber) {
-                is ErrorResult -> onError(result.message!!)
-                else -> {
-                    MapScreenContent(
-                        parkingCoordinates = parkingCoordinates.data ?: emptyMap(),
-                        setParkingAddress = viewModel::setCurrentParkingAddress,
-                        balance = balance.data ?: 0,
-                        navigateToSchemeScreen = {
-                            navController.navigate(Routes.scheme)
-                        },
-                        navigateToPaymentScreen = {
-                            navController.navigate(Routes.payment)
-                        },
-                        navigateToProfileScreen = {
-                            navController.navigate(Routes.profile)
-                        }
-                    )
-                }
-            }
-            is LoadingResult -> Box(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularLoader()
-            }
     val isLoading = parkingCoordinates is LoadingResult || reservationAddress is LoadingResult
             || isAlert is LoadingResult || timeExit is LoadingResult || bookingRatio is LoadingResult
 
@@ -166,9 +131,13 @@ fun MapScreen(
         navController = navController,
         reservationAddress = reservationAddress.data ?: "",
         isLoading = isLoading,
+        balance = balance.data ?: 0,
         setParkingAddress = viewModel::setCurrentParkingAddress,
         navigateToSchemeScreen = {
             navController.navigate(Routes.scheme)
+        },
+        navigateToPaymentScreen = {
+            navController.navigate(Routes.payment)
         },
         navigateToProfileScreen = {
             navController.navigate(Routes.profile)
