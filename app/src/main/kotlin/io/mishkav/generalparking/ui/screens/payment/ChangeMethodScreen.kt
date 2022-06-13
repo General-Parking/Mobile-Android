@@ -16,7 +16,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,6 +27,7 @@ import io.mishkav.generalparking.ui.components.topAppBar.TopAppBarWithBackButton
 import io.mishkav.generalparking.ui.screens.payment.components.PaymentItem
 import io.mishkav.generalparking.ui.screens.payment.config.PaymentConfig
 import io.mishkav.generalparking.ui.screens.payment.config.PaymentMethods
+import io.mishkav.generalparking.ui.theme.Gray700
 import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.theme.Yellow400
 
@@ -50,7 +50,7 @@ fun ChangeMethodScreen(
 
 @Composable
 fun ChangeMethodScreenContent(
-    selectedOption: PaymentMethods,
+    selectedOption: String,
     viewModel: PaymentViewModel,
     navigateBack: () -> Unit = {}
 ) = Box(
@@ -80,7 +80,7 @@ fun ChangeMethodScreenContent(
         Column {
 
             PaymentConfig.paymentMethods.forEach { methodData ->
-                val selected = selectedOption == methodData
+                val selected = selectedOption == methodData.title
                 PaymentItem(
                     title = methodData.title,
                     description = methodData.description,
@@ -96,8 +96,8 @@ fun ChangeMethodScreenContent(
                         )
                         .border(
                             border = when {
-                                selected -> BorderStroke(2.dp, SolidColor(Yellow400))
-                                else -> BorderStroke(0.dp, Color.Transparent)
+                                selected -> BorderStroke(3.dp, SolidColor(Yellow400))
+                                else -> BorderStroke(1.dp, SolidColor(Gray700))
                             },
                             shape = Shapes.small
                         )

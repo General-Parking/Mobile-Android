@@ -11,9 +11,6 @@ import io.mishkav.generalparking.data.utils.UserFields.DefaultFields.DEFAULT_REM
 import io.mishkav.generalparking.data.utils.toMap
 import io.mishkav.generalparking.domain.entities.User
 import io.mishkav.generalparking.domain.repositories.IUserDatabaseRepository
-import io.mishkav.generalparking.ui.screens.payment.config.PaymentConfig
-import io.mishkav.generalparking.ui.screens.payment.config.PaymentMethods
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -24,12 +21,6 @@ class UserDatabaseRepository @Inject constructor(
 
     private val currentUserUid: String?
         get() = firebaseAuth.currentUser?.uid
-
-    override val selectedOption = MutableStateFlow(PaymentConfig.paymentMethods[1])
-
-    override fun changeSelected(method: PaymentMethods) {
-        selectedOption.value = method
-    }
 
     override suspend fun insertUserData(user: User) {
         currentUserUid.let { uid ->

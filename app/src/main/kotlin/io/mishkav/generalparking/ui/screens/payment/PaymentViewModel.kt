@@ -5,11 +5,10 @@ import androidx.lifecycle.viewModelScope
 import io.mishkav.generalparking.GeneralParkingApp
 import io.mishkav.generalparking.dagger.AppComponent
 import io.mishkav.generalparking.domain.repositories.IUserDatabaseRepository
-import io.mishkav.generalparking.ui.screens.payment.config.PaymentConfig
+import io.mishkav.generalparking.state.Session
 import io.mishkav.generalparking.ui.screens.payment.config.PaymentMethods
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
 import io.mishkav.generalparking.ui.utils.loadOrError
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,10 +17,13 @@ class PaymentViewModel(appComponent: AppComponent = GeneralParkingApp.appCompone
     @Inject
     lateinit var userDatabaseRepository: IUserDatabaseRepository
 
+    @Inject
+    lateinit var session: Session
+
     val balance = MutableResultFlow<Int>()
     val giftResult = MutableResultFlow<Unit>()
 
-    val selectedOption by lazy { userDatabaseRepository.selectedOption}
+    val selectedOption by lazy { session.selectedOption}
 
     init {
         appComponent.inject(this)
@@ -32,7 +34,7 @@ class PaymentViewModel(appComponent: AppComponent = GeneralParkingApp.appCompone
     }
 
     fun changeSelected(method: PaymentMethods) {
-        userDatabaseRepository.changeSelected(method)
+        session.changeSelectedOption(method)
     }
 
     private fun getUserBalance() = viewModelScope.launch {

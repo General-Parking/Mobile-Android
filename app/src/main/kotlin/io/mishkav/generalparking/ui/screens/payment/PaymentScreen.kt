@@ -35,8 +35,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -136,7 +134,7 @@ fun PaymentScreenContent(
     balance: Int = 0,
     isLoading: Boolean = false,
     defaultPaymentPrice: Int = 0,
-    selectedOption: PaymentMethods = PaymentConfig.paymentMethods[1],
+    selectedOption: String = PaymentConfig.paymentMethods[1].title,
     onPaying: (newBalance: Int) -> Unit = { _ -> },
     navigateBack: () -> Unit = {},
     navigateToChange: () -> Unit = {}
@@ -158,6 +156,13 @@ fun PaymentScreenContent(
         focusedIndicatorColor = MaterialTheme.colorScheme.primary,
         backgroundColor = Color.Transparent
     )
+
+    var selectedMethod: PaymentMethods = PaymentConfig.paymentMethods[1]
+    PaymentConfig.paymentMethods.forEach { methodData ->
+        if (methodData.title == selectedOption) {
+            selectedMethod = methodData
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -260,9 +265,9 @@ fun PaymentScreenContent(
 
                 // TODO Choose depends on selected method
                 PaymentItem(
-                    title = selectedOption.title,
-                    description = selectedOption.description,
-                    painter = painterResource(selectedOption.icon)
+                    title = selectedMethod.title,
+                    description = selectedMethod.description,
+                    painter = painterResource(selectedMethod.icon)
                 )
 
                 Spacer(modifier = Modifier.height(verticalPadding / 2))

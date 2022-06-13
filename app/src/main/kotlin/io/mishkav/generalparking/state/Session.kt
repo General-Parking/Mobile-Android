@@ -2,6 +2,8 @@ package io.mishkav.generalparking.state
 
 import android.content.Context
 import androidx.core.content.edit
+import io.mishkav.generalparking.ui.screens.payment.config.PaymentConfig
+import io.mishkav.generalparking.ui.screens.payment.config.PaymentMethods
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -23,6 +25,9 @@ class Session(context: Context) {
 
     private val _selectedParkingPlaceFloor = MutableStateFlow(sharedPreferences.getString(PREF_SELECTED_PARKING_FLOOR, "").orEmpty())
     val selectedParkingPlaceFloor: StateFlow<String> = _selectedParkingPlaceFloor
+
+    private val _selectedOption = MutableStateFlow(sharedPreferences.getString(PREF_SELECTED_OPTION, PaymentConfig.paymentMethods[1].title).orEmpty())
+    val selectedOption: StateFlow<String> = _selectedOption
 
     fun changeCurrentParkingAddress(address: String) {
         sharedPreferences.edit { putString(PREF_CURRENT_PARKING_ADDRESS, address) }
@@ -50,6 +55,10 @@ class Session(context: Context) {
         _selectedParkingPlaceFloor.value = floor
     }
 
+    fun changeSelectedOption(method: PaymentMethods) {
+        sharedPreferences.edit { putString(PREF_SELECTED_PARKING_FLOOR, method.title) }
+        _selectedOption.value = method.title
+    }
 
     companion object {
         const val PREF_CURRENT_PARKING_ADDRESS = "currentParkingAddress"
@@ -58,6 +67,7 @@ class Session(context: Context) {
         const val PREF_SELECTED_PARKING_COORDINATES = "selectedParkingPlaceCoordinates"
         const val PREF_SELECTED_PARKING_FLOOR = "_selectedParkingPlaceFloor"
         const val PREF_IS_CURRENT_USER_RESERVED_PLACE = "isCurrentUserReservedParkingPlace"
+        const val PREF_SELECTED_OPTION = "selectedOption"
 
         const val AGREEMENT_URI = "https://www.genparking.com/пользовательское-соглашение"
         const val PREF_NAME = "session"
