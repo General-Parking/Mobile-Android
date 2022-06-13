@@ -25,7 +25,7 @@ class UserDatabaseRepository @Inject constructor(
     private val currentUserUid: String?
         get() = firebaseAuth.currentUser?.uid
 
-    override val selectedOption = MutableStateFlow(PaymentConfig.paymentMethods[2])
+    override val selectedOption = MutableStateFlow(PaymentConfig.paymentMethods[1])
 
     override fun changeSelected(method: PaymentMethods) {
         selectedOption.value = method

@@ -136,7 +136,7 @@ fun PaymentScreenContent(
     balance: Int = 0,
     isLoading: Boolean = false,
     defaultPaymentPrice: Int = 0,
-    selectedOption: PaymentMethods,
+    selectedOption: PaymentMethods = PaymentConfig.paymentMethods[1],
     onPaying: (newBalance: Int) -> Unit = { _ -> },
     navigateBack: () -> Unit = {},
     navigateToChange: () -> Unit = {}
@@ -308,7 +308,5 @@ fun PaymentScreenContent(
 @Preview(showBackground = false)
 @Composable
 fun PaymentScreenPreview() {
-    PaymentScreenContent(
-        selectedOption = PaymentConfig.paymentMethods[2]
-    )
+    PaymentScreenContent()
 }
