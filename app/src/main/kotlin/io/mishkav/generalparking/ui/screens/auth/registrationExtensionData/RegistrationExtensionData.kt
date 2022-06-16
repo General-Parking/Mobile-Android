@@ -149,7 +149,7 @@ fun RegistrationExtensionDataContent(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .width(300.dp)
-                        .height(100.dp)
+                        .height(80.dp)
                         .background(
                             Color.Black,
                             shape = Shapes.small
@@ -282,11 +282,11 @@ fun RegistrationExtensionDataContent(
                             colors = colors,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(60.dp)
+                                .height(55.dp)
                         )
                         Text(
                             text = stringResource(R.string.rus),
-                            fontSize = 20.sp,
+                            fontSize = 10.sp,
                             modifier = Modifier.align(Alignment.CenterHorizontally)
                         )
                     }
