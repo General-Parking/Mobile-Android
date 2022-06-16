@@ -44,6 +44,7 @@ import io.mishkav.generalparking.ui.theme.GeneralParkingTheme
 import io.mishkav.generalparking.ui.theme.Shapes
 import io.mishkav.generalparking.ui.utils.ErrorResult
 import io.mishkav.generalparking.ui.utils.LoadingResult
+import io.mishkav.generalparking.ui.utils.PhoneNumberVisualTransformation
 import io.mishkav.generalparking.ui.utils.SuccessResult
 
 @Composable
@@ -89,7 +90,7 @@ fun RegistrationExtensionDataContent(
     var textNumberAutoRightSymbols by rememberSaveable { mutableStateOf("") }
     var textNumberAutoRegion by rememberSaveable { mutableStateOf("") }
     var textModel by rememberSaveable { mutableStateOf("") }
-    var textPhone by rememberSaveable { mutableStateOf("") }
+    var textPhone by rememberSaveable { mutableStateOf("+7") }
 
     //Rus symbols, because of back-end...
     val pattern = remember { Regex("[АВЕКМНОРСТУХ\\s]*") }
@@ -317,6 +318,7 @@ fun RegistrationExtensionDataContent(
                     textPhone = it
                 },
                 keyboardType = KeyboardType.Phone,
+                visualTransformation = PhoneNumberVisualTransformation(),
                 label = {
                     Text(
                         text = stringResource(R.string.phone),
@@ -340,7 +342,7 @@ fun RegistrationExtensionDataContent(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = false)
 @Composable
 fun PreviewInputDataScreen() {
     GeneralParkingTheme {
