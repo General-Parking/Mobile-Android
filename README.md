@@ -83,6 +83,13 @@
 - [Firebase](https://firebase.google.com/)
 - и много всего другого... 
 
+### Архитектура
+
+В данном приложении использовался подход [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html), благодаря которому приложение делиться на 3 основных слоя:
+- Data - работа с сетью
+- Domain - бизнес логика
+- UI - отображение контента
+
 # Полезные ссылки проекта General Parking
 
 [Эмулятор заезда и выезда из паркинга для тестовой БД](https://github.com/IvanLyutak/TestEmulators)
