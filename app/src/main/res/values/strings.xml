@@ -105,6 +105,7 @@
     <string name="time_without_hours">%02d:%02d</string>
     <string name="time_with_hours">%02d:%02d:%02d</string>
     <string name="price_rub">%d ₽</string>
+    <string name="reset_paid_retention">You have canceled your booking. With a paid retention, the required amount will be deducted from you.</string>
 
 
 </resources>

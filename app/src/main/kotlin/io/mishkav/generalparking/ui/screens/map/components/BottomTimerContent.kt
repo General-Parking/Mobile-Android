@@ -5,10 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
@@ -27,9 +24,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import io.mishkav.generalparking.R
 import io.mishkav.generalparking.ui.components.buttons.SimpleIconButton
 import io.mishkav.generalparking.ui.components.buttons.SimpleIconTextButton
+import io.mishkav.generalparking.ui.components.buttons.TextButton
 import io.mishkav.generalparking.ui.components.loaders.CircularLoader
 import io.mishkav.generalparking.ui.components.texts.BottomBody
 import io.mishkav.generalparking.ui.components.texts.BottomTitle
+import io.mishkav.generalparking.ui.components.texts.ScreenBody
 import io.mishkav.generalparking.ui.screens.map.MapViewModel
 import io.mishkav.generalparking.ui.theme.*
 import io.mishkav.generalparking.ui.utils.MapParameters.TIME_ZONE
@@ -95,6 +94,38 @@ fun BottomTimerScreenContent(
     modifier = Modifier
         .fillMaxWidth()
 ) {
+    var showAlertPaidRetention by remember { mutableStateOf(false) }
+
+    if (showAlertPaidRetention) {
+        AlertDialog(
+            shape = RoundedCornerShape(
+                dimensionResource(R.dimen.bottom_shape),
+            ),
+            onDismissRequest = {},
+            text = {
+                ScreenBody(
+                    text = stringResource(R.string.reset_paid_retention)
+                )
+            },
+            backgroundColor = MaterialTheme.colorScheme.background,
+            buttons = {
+                Row(
+                    modifier = Modifier.padding(all = 8.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    TextButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(R.string.good_text),
+                        onClick = {
+                            showAlertPaidRetention = false
+                            onRemoveReservationButtonClick()
+                        }
+                    )
+                }
+            }
+        )
+    }
+
     Surface(
         elevation = dimensionResource(R.dimen.standard_elevation),
         shape = RoundedCornerShape(
@@ -172,7 +203,7 @@ fun BottomTimerScreenContent(
                     icon = Icons.Filled.Delete,
                     color = Gray500,
                     onClick = {
-                        onRemoveReservationButtonClick()
+                        showAlertPaidRetention = true
                     }
                 )
             }
@@ -232,6 +263,7 @@ fun TimerBar(
         enabled = false
         progress = 0f
     }
+
     var currentTime by remember {
         mutableStateOf(
             when (differenceHours) {
