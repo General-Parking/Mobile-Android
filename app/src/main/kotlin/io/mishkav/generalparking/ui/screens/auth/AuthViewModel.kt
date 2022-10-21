@@ -1,5 +1,6 @@
 package io.mishkav.generalparking.ui.screens.auth
 
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.mishkav.generalparking.GeneralParkingApp
@@ -12,6 +13,7 @@ import io.mishkav.generalparking.data.utils.getMetaUserInfoInstance
 import io.mishkav.generalparking.domain.entities.User
 import io.mishkav.generalparking.domain.repositories.IAuthRepository
 import io.mishkav.generalparking.domain.repositories.IUserDatabaseRepository
+import io.mishkav.generalparking.state.Session
 import io.mishkav.generalparking.ui.utils.MutableResultFlow
 import io.mishkav.generalparking.ui.utils.loadOrError
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,10 +28,15 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
     @Inject
     lateinit var userDatabaseRepository: IUserDatabaseRepository
 
+    @Inject
+    lateinit var session: Session
+
     val signInResult = MutableResultFlow<Unit>()
     val createNewUserResult = MutableResultFlow<Unit>()
     val resetPasswordResult = MutableResultFlow<Unit>()
     val isEmailVerified = MutableResultFlow<Boolean>()
+
+    val getSavedParams by lazy { session.getSavedParams}
 
     private val _currentUser = MutableStateFlow<User>(User.getInstance())
     val currentUser = MutableResultFlow<User>()
@@ -38,13 +45,28 @@ class AuthViewModel(appComponent: AppComponent = GeneralParkingApp.appComponent)
         appComponent.inject(this)
     }
 
-    fun signIn(email: String, password: String) = viewModelScope.launch {
+    fun signIn(email: String, password: String, saveParams: Boolean, sharedPreferences: SharedPreferences) = viewModelScope.launch {
         signInResult.loadOrError(R.string.error_auth) {
             if (!userDatabaseRepository.isMinSdkVersionApproved())
                 throw MinSdkVersionException()
 
             authRepository.signInWithEmailAndPassword(email, password)
+
+            val isVerified = authRepository.isEmailVerified()!!
+            if (isVerified && saveParams) {
+                sharedPreferences.edit().apply {
+                    putString("user.email", email)
+                    putString("user.password", password)
+                }.apply()
+
+                changeGetSavedParams("false")
+            }
         }
+    }
+
+
+    fun changeGetSavedParams(flag: String) {
+        session.changeGetSavedParams(flag)
     }
 
     fun createNewUser(name: String, email: String, password: String) = viewModelScope.launch {

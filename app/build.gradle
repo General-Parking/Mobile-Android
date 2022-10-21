@@ -43,6 +43,8 @@ android {
     }
     buildFeatures {
         compose true
+        dataBinding = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion compose_version
@@ -67,10 +69,10 @@ dependencies {
     implementation "androidx.compose.ui:ui-tooling-preview:1.1.1"
     debugImplementation "androidx.compose.ui:ui-tooling:1.1.1"
     implementation "androidx.compose.material:material-icons-extended:1.1.1"
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
     implementation 'androidx.activity:activity-compose:1.4.0'
     implementation 'androidx.compose.material3:material3:1.0.0-alpha09'
-    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0"
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 
     // Accompanist
     implementation "com.google.accompanist:accompanist-pager:$accompanistVersion"
@@ -114,6 +116,13 @@ dependencies {
     // Lottie
     implementation "com.airbnb.android:lottie-compose:5.0.3"
 
-    //Phone number formatter
+    // Phone number formatter
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.50'
+
+    // Biometric authentication
+    implementation 'androidx.biometric:biometric:1.1.0'
+
+    // Security crypto
+    implementation "androidx.security:security-crypto:1.1.0-alpha03"
+
 }

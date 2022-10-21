@@ -100,5 +100,8 @@
     <string name="time_with_hours">%02d:%02d:%02d</string>
     <string name="price_rub">%d ₽</string>
     <string name="reset_paid_retention">Вы отменили бронирование. При платном удержании с вас спишется необходимая сумма.</string>
+    <string name="use_biometric">Использовать биометрию для входа в этот аккаунт?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
 
 </resources>

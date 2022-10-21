@@ -1,35 +1,78 @@
 {
   "project_info": {
-    "project_number": "682056175289",
-    "firebase_url": "https://general-parking-test-default-rtdb.firebaseio.com",
-    "project_id": "general-parking-test",
-    "storage_bucket": "general-parking-test.appspot.com"
+    "project_number": "22901107179",
+    "firebase_url": "https://gdeparkovka-6360b.firebaseio.com",
+    "project_id": "gdeparkovka-6360b",
+    "storage_bucket": "gdeparkovka-6360b.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:682056175289:android:b734f5fb33d4f6ec4f5568",
+        "mobilesdk_app_id": "1:22901107179:android:1116b22d4f0efa0dc511ae",
         "android_client_info": {
-          "package_name": "io.mishkav.generalparking"
+          "package_name": "com.generalparkingandroid.generalparking"
         }
       },
       "oauth_client": [
         {
-          "client_id": "682056175289-tum88ni51ds5lc2euj6fl03f3sjvsiq0.apps.googleusercontent.com",
+          "client_id": "22901107179-hkps06sn85396a7femc0kmq7vlcpthac.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAP6zTAnAXRb5nB_vNCN3z-ti4RsHpnn4s"
+          "current_key": "AIzaSyCqidS7Kg-sbxOm8b6n2uboQpPW1UBGYQA"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "682056175289-tum88ni51ds5lc2euj6fl03f3sjvsiq0.apps.googleusercontent.com",
+              "client_id": "22901107179-hkps06sn85396a7femc0kmq7vlcpthac.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "22901107179-55ft3hmrd33658ra72hl6458q6emksbd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "GdeParkovka"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22901107179:android:993ea2ee95131ab3c511ae",
+        "android_client_info": {
+          "package_name": "io.mishkav.generalparking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22901107179-hkps06sn85396a7femc0kmq7vlcpthac.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqidS7Kg-sbxOm8b6n2uboQpPW1UBGYQA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "22901107179-hkps06sn85396a7femc0kmq7vlcpthac.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "22901107179-55ft3hmrd33658ra72hl6458q6emksbd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "GdeParkovka"
+              }
             }
           ]
         }

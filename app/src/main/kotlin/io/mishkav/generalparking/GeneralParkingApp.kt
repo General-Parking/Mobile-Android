@@ -17,7 +17,6 @@ class GeneralParkingApp : Application() {
             .builder()
             .context(this)
             .build()
-
         //logging
         val formatStrategy = PrettyFormatStrategy
             .newBuilder()
