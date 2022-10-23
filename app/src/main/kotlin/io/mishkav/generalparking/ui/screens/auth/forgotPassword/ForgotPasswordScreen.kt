@@ -1,11 +1,13 @@
 package io.mishkav.generalparking.ui.screens.auth.forgotPassword
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -14,6 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -96,11 +100,18 @@ fun ForgotPasswordScreenContent(
 
     var textEmail by rememberSaveable { mutableStateOf("") }
 
+    val focusManager = LocalFocusManager.current
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxWidth()
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })
+            }
             .padding(horizontal = dimensionResource(R.dimen.main_hor_padding), vertical = 60.dp)
     ) {
         ScreenTitle(
@@ -117,6 +128,7 @@ fun ForgotPasswordScreenContent(
                 textEmail = it
             },
             keyboardType = KeyboardType.Email,
+            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
             label = {
                 Text(
                     text = stringResource(R.string.email),

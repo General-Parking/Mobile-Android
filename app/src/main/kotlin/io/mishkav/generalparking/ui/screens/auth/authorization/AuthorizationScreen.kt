@@ -4,8 +4,10 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -16,11 +18,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -113,6 +117,7 @@ fun AuthorizationScreenContent(
     var passwordVisibility by remember { mutableStateOf(false) }
     var showAlertSetBiometric by remember { mutableStateOf(false) }
 
+    val focusManager = LocalFocusManager.current
     val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
 
     val sharedPreferences = EncryptedSharedPreferences.create(
@@ -140,6 +145,11 @@ fun AuthorizationScreenContent(
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxWidth()
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })
+            }
             .systemBarsPadding()
             .padding(
                 horizontal = dimensionResource(R.dimen.main_hor_padding),
@@ -167,6 +177,7 @@ fun AuthorizationScreenContent(
                     textEmail = it
                 },
                 keyboardType = KeyboardType.Email,
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                 label = {
                     Text(
                         text = stringResource(R.string.email),
@@ -181,6 +192,7 @@ fun AuthorizationScreenContent(
                 },
                 visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardType = KeyboardType.Password,
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                 label = {
                     Text(
                         text = stringResource(R.string.password),

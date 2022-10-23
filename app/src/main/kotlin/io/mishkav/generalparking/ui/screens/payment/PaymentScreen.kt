@@ -3,6 +3,7 @@ package io.mishkav.generalparking.ui.screens.payment
 import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,8 +33,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -86,7 +89,7 @@ fun PaymentScreen(
         viewModel.onOpen()
     }
 
-    viewModel.changeBalance(balance.data.toString() ?: "0")
+    viewModel.changeBalance(balance.data.toString())
 
     PaymentScreenContent(
         balance = balance.data ?: 0,
@@ -171,8 +174,16 @@ fun PaymentScreenContent(
         }
     }
 
+    val focusManager = LocalFocusManager.current
+
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })
+            },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 

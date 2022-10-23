@@ -1,9 +1,11 @@
 package io.mishkav.generalparking.ui.screens.auth.registration
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -13,6 +15,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -90,12 +94,18 @@ fun RegistrationScreenContent(
     var textName by rememberSaveable { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(false) }
 
+    val focusManager = LocalFocusManager.current
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxWidth()
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })
+            }
             .padding(
                 horizontal = dimensionResource(R.dimen.main_hor_padding),
                 vertical = dimensionResource(R.dimen.main_vert_padding)
@@ -120,6 +130,7 @@ fun RegistrationScreenContent(
                     textName = it
                 },
                 keyboardType = KeyboardType.Text,
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                 label = {
                     Text(
                         text = stringResource(R.string.name),
@@ -133,6 +144,7 @@ fun RegistrationScreenContent(
                     textEmail = it
                 },
                 keyboardType = KeyboardType.Email,
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                 label = {
                     Text(
                         text = stringResource(R.string.email),
@@ -147,6 +159,7 @@ fun RegistrationScreenContent(
                 },
                 visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardType = KeyboardType.Password,
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                 label = { Text(stringResource(R.string.password)) },
                 trailingIcon = {
                     val image = if (passwordVisibility)

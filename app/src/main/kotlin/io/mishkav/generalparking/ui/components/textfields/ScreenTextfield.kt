@@ -1,5 +1,6 @@
 package io.mishkav.generalparking.ui.components.textfields
 
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.TextField
@@ -8,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -23,16 +25,19 @@ fun ScreenTextfield(
     label: @Composable (() -> Unit)? = null,
     placeholder: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions()
 ) = TextField(
     value = value,
     onValueChange = onValueChange,
-    keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
     enabled = enabled,
     label = label,
     placeholder = placeholder,
     trailingIcon = trailingIcon,
     visualTransformation = visualTransformation,
+    keyboardOptions = keyboardOptions.copy(imeAction = ImeAction.Done, keyboardType = keyboardType),
+    keyboardActions = keyboardActions,
     singleLine = true,
     textStyle = Typography.body1
         .merge(
