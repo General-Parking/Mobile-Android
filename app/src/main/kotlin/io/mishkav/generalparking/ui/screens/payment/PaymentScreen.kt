@@ -1,5 +1,6 @@
 package io.mishkav.generalparking.ui.screens.payment
 
+import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -84,12 +86,15 @@ fun PaymentScreen(
         viewModel.onOpen()
     }
 
+    viewModel.changeBalance(balance.data.toString() ?: "0")
+
     PaymentScreenContent(
         balance = balance.data ?: 0,
         defaultPaymentPrice = 150,
         selectedOption = selectedOption,
         isLoading = balance is LoadingResult || giftResult is LoadingResult,
         onPaying = viewModel::setGiftBalance,
+        changePaymentAmount = viewModel::changePaymentAmount,
         navigateBack = {
             navController.popBackStack()
         },
@@ -136,6 +141,7 @@ fun PaymentScreenContent(
     defaultPaymentPrice: Int = 0,
     selectedOption: String = PaymentConfig.paymentMethods[1].title,
     onPaying: (newBalance: Int) -> Unit = { _ -> },
+    changePaymentAmount: (newAmount: String) -> Unit = { _ -> },
     navigateBack: () -> Unit = {},
     navigateToChange: () -> Unit = {}
 ) = Box(
@@ -144,6 +150,7 @@ fun PaymentScreenContent(
     var paymentText by remember {
         mutableStateOf("$defaultPaymentPrice")
     }
+    changePaymentAmount(paymentText)
     val horizontalPadding = 12.dp
     val verticalPadding = 64.dp
     val colors = TextFieldDefaults.textFieldColors(
@@ -197,6 +204,7 @@ fun PaymentScreenContent(
             value = paymentText,
             onValueChange = { value ->
                 paymentText = value.filter { it.isDigit() }
+                changePaymentAmount(paymentText)
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             placeholder = {
@@ -294,15 +302,21 @@ fun PaymentScreenContent(
         Spacer(modifier = Modifier.height(verticalPadding / 4))
     }
 
+    val context = LocalContext.current
+
     TextButton(
         text = stringResource(R.string.pay),
         onClick = {
-            onPaying(
-                if (paymentText.isNotEmpty())
-                    balance + paymentText.toInt()
-                else
-                    balance
-            )
+            if (selectedMethod == PaymentConfig.paymentMethods[1]) {
+                onPaying(
+                    if (paymentText.isNotEmpty())
+                        balance + paymentText.toInt()
+                    else
+                        balance
+                )
+            } else if (selectedMethod == PaymentConfig.paymentMethods[0]) {
+                context.startActivity(Intent(context, CloudPaymentsLauncher::class.java))
+            }
         },
         modifier = Modifier
             .align(Alignment.BottomCenter)

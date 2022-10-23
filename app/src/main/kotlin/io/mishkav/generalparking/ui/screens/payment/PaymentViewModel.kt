@@ -23,7 +23,9 @@ class PaymentViewModel(appComponent: AppComponent = GeneralParkingApp.appCompone
     val balance = MutableResultFlow<Int>()
     val giftResult = MutableResultFlow<Unit>()
 
-    val selectedOption by lazy { session.selectedOption}
+    val selectedOption by lazy { session.selectedOption }
+    val paymentAmount by lazy { session.paymentAmount }
+    val balanceAmount by lazy { session.balance }
 
     init {
         appComponent.inject(this)
@@ -35,6 +37,14 @@ class PaymentViewModel(appComponent: AppComponent = GeneralParkingApp.appCompone
 
     fun changeSelected(method: PaymentMethods) {
         session.changeSelectedOption(method)
+    }
+
+    fun changePaymentAmount(amount: String) {
+        session.changePaymentAmount(amount)
+    }
+
+    fun changeBalance(amount: String) {
+        session.changeBalance(amount)
     }
 
     private fun getUserBalance() = viewModelScope.launch {

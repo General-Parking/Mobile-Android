@@ -79,6 +79,7 @@ object BiometricAuth {
             .setTitle(title)
             .setSubtitle(subtitle)
             .setNegativeButtonText(negativeText)
+            .setConfirmationRequired(false)
             .build()
 
         biometricPrompt.authenticate(promptInfo)

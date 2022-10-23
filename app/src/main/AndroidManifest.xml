@@ -24,6 +24,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.screens.payment.CloudPaymentsLauncher"
+            android:label="CloudPaymentsLauncher"
+            android:theme="@style/Theme.GeneralParking.NoActionBar">
+        </activity>
+        <activity
+            android:name=".ui.screens.auth.authorization.BiometricPrompt"
+            android:label="CloudPaymentsLauncher"
+            android:theme="@style/Theme.GeneralParking.NoActionBar">
+        </activity>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />

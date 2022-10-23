@@ -32,6 +32,12 @@ class Session(context: Context) {
     private val _getSavedParams = MutableStateFlow(sharedPreferences.getString(PREF_GET_SAVED_PARAMS, "").orEmpty())
     val getSavedParams: StateFlow<String> = _getSavedParams
 
+    private val _paymentAmount = MutableStateFlow(sharedPreferences.getString(PREF_PAYMENT_AMOUNT, "").orEmpty())
+    val paymentAmount: StateFlow<String> = _paymentAmount
+
+    private val _balance = MutableStateFlow(sharedPreferences.getString(PREF_BALANCE, "").orEmpty())
+    val balance: StateFlow<String> = _balance
+
     fun changeCurrentParkingAddress(address: String) {
         sharedPreferences.edit { putString(PREF_CURRENT_PARKING_ADDRESS, address) }
         _currentParkingAddress.value = address
@@ -68,6 +74,16 @@ class Session(context: Context) {
         _getSavedParams.value = flag
     }
 
+    fun changePaymentAmount(amount: String) {
+        sharedPreferences.edit { putString(PREF_PAYMENT_AMOUNT, amount) }
+        _paymentAmount.value = amount
+    }
+
+    fun changeBalance(amount: String) {
+        sharedPreferences.edit { putString(PREF_BALANCE, amount) }
+        _balance.value = amount
+    }
+
     companion object {
         const val PREF_CURRENT_PARKING_ADDRESS = "currentParkingAddress"
         const val PREF_AUTO_NUMBER = "autoNumber"
@@ -76,6 +92,8 @@ class Session(context: Context) {
         const val PREF_SELECTED_PARKING_FLOOR = "_selectedParkingPlaceFloor"
         const val PREF_SELECTED_OPTION = "selectedOption"
         const val PREF_GET_SAVED_PARAMS = "getSavedParams"
+        const val PREF_PAYMENT_AMOUNT = "paymentAmount"
+        const val PREF_BALANCE = "balance"
 
         const val AGREEMENT_URI = "https://www.genparking.com/пользовательское-соглашение"
         const val PREF_NAME = "session"
